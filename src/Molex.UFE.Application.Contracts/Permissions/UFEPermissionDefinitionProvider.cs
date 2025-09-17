@@ -23,13 +23,13 @@ public class UFEPermissionDefinitionProvider : PermissionDefinitionProvider
     private readonly IAbpLazyServiceProvider _lazyServiceProvider;
     public UFEPermissionDefinitionProvider(IAbpLazyServiceProvider lazyServiceProvider)
     {
-        _lazyServiceProvider= lazyServiceProvider;
+        _lazyServiceProvider = lazyServiceProvider;
     }
     public override void Define(IPermissionDefinitionContext context)
     {
-        //demo Please add RequiredApplication(QMS) for all QMS permissions
+        //demo Please add RequiredApplication(VMS) for all VMS permissions
         //var DemoGroup = context.AddGroup("Demo", L("Demo"));
-        //var demoPermission = DemoGroup.AddPermission("Demo", L("View")).RequireApplication("QMS");
+        //var demoPermission = DemoGroup.AddPermission("Demo", L("View")).RequireApplication("VMS");
 
 
 

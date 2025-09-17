@@ -24,7 +24,7 @@ namespace Molex.UFE.Controllers
             var apis = base.Get(model);
             foreach (var item in apis.Modules)
             {
-                item.Value.RemoteServiceName = "qms";
+                item.Value.RemoteServiceName = "vms";
             }
 
 

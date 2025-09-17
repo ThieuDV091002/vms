@@ -23,11 +23,11 @@ public class HomeController : AbpController
     {
         return Task.FromResult(JsonSerializer.Serialize(new
         {
-            Name = "UFE-QMS-SVC",
+            Name = "UFE-VMS-SVC",
             Version = Environment.GetEnvironmentVariable("Version") ?? "1.0.0",
             SourceVersion = Environment.GetEnvironmentVariable("SourceVersion") ?? "N/A",
             BuildTime = Environment.GetEnvironmentVariable("BuildTime") ?? DateTime.Now.ToString("O"),
-            Description = "UFE-QMS-SVC",
+            Description = "UFE-VMS-SVC",
             Company = "Molex",
             ServerName = Environment.MachineName,
             IPAddress = GetLocalIPAddress(),
