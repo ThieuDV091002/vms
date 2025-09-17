@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+USER root
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# Environment variables
+ENV Version=1.0.0
+
+# Copy the pre-built artifacts from CI build
+COPY artifacts/publish/ ./
+COPY artifacts/dbmigrator/ ./dbmigrator/
+
+# Set the entrypoint
+ENTRYPOINT ["sh", "-c", "cp /app/appsettings.json /app/dbmigrator/appsettings.json && if [ \"$DBMigration\" = \"true\" ]; then dotnet /app/dbmigrator/Molex.UFE.DbMigrator.dll & fi && dotnet /app/Molex.UFE.HttpApi.Host.dll"]

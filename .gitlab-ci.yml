@@ -1,0 +1,214 @@
+stages:
+  - build
+  - build image
+  - deploy to k8s and add tag
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  DOTNET_NOLOGO: "1"
+  # Limit concurrent operations to reduce memory usage
+  DOTNET_MAXCPUCOUNT: "2"
+  # Set memory limits for .NET processes
+  COMPlus_GCHeapHardLimit: "1000000000"
+  DOCKER_IMAGE: "registry.gitlab.com/molex/coc/dt/da/ufe/services/qms/ufe-qms-svc:${CI_COMMIT_REF_NAME}"
+  # Buildah configuration
+  BUILDAH_ISOLATION: chroot
+  STORAGE_DRIVER: vfs
+  
+
+
+build:
+  tags:
+    - saas-linux-large-amd64
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  before_script:
+    - echo "Start build only, skip tag/version calculation"
+  rules:
+    - when: always
+  script:
+    - dotnet restore Molex.UFE.sln --verbosity minimal
+    - dotnet build Molex.UFE.sln --configuration Release --no-restore --verbosity minimal
+    # Publish HttpApi.Host
+    - dotnet publish src/Molex.UFE.HttpApi.Host/Molex.UFE.HttpApi.Host.csproj --configuration Release --no-build --output artifacts/publish /p:UseAppHost=false
+    # Build and output DbMigrator
+    - dotnet build src/Molex.UFE.DbMigrator/Molex.UFE.DbMigrator.csproj --configuration Release --no-restore --output artifacts/dbmigrator
+    # List artifacts for verification
+    - echo "Published artifacts:"
+    - ls -la artifacts/publish/
+    - echo "DbMigrator artifacts:"
+    - ls -la artifacts/dbmigrator/
+  artifacts:
+    paths:
+      - artifacts/publish/
+      - artifacts/dbmigrator/
+
+build image:
+  stage: build image
+  image: quay.io/buildah/stable:latest
+  needs:
+    - build
+  dependencies:
+    - build
+  variables:
+    # Buildah configuration for rootless container builds
+    BUILDAH_ISOLATION: chroot
+    STORAGE_DRIVER: vfs
+    BUILDAH_FORMAT: docker
+    # Memory optimization settings
+    BUILDAH_LAYERS: "false"
+    # Limit concurrent operations
+    GOMAXPROCS: "2"
+  resource_group: docker-build
+  tags:
+    - saas-linux-large-amd64
+  only:
+    - develop
+  before_script:
+   # Initialize Buildah storage
+    - buildah version
+    - |
+      # Calculate incremental version number in build image stage
+      export ReleaseNumber=${ReleaseNumber:-2508}
+      # Fetch latest tags from remote to ensure we have the most up-to-date tag list
+      echo "Fetching latest tags from remote..."
+      git fetch --tags || echo "Warning: Could not fetch tags from remote"
+      # Debug: Show what tags we have
+      echo "All tags found:"
+      git tag -l | sort -V | tail -10
+      # Check if we have tags with the expected ReleaseNumber pattern (新格式: ${ReleaseNumber}.*.0)
+      expected_pattern_tags=$(git tag -l "${ReleaseNumber}.*.0" | wc -l)
+      echo "Tags matching expected pattern ${ReleaseNumber}.*.0: $expected_pattern_tags"
+      if [ "$expected_pattern_tags" -eq 0 ]; then
+        # not found ReleaseNumber.*.0 tag，use ${ReleaseNumber}.001.0
+        echo "No tags found with expected pattern ${ReleaseNumber}.*.0, using ${ReleaseNumber}.001.0 as version."
+        export version="${ReleaseNumber}.001.0"
+      else
+        # Use the expected ReleaseNumber pattern
+        echo "Looking for existing tags with pattern: $ReleaseNumber.*.0"
+        highest_build_number=$(git tag -l "${ReleaseNumber}.*.0" | sed -E "s/${ReleaseNumber}\.([0-9]+)\.0/\1/" | sort -n | tail -1)
+        if [ -z "$highest_build_number" ] || [ "$highest_build_number" = "" ]; then
+          buildNumber=1
+        else
+          buildNumber=$((highest_build_number + 1))
+        fi
+        if [ $buildNumber -gt 999 ]; then
+          echo "Error: Build number $buildNumber exceeds limit (999)"
+          exit 1
+        fi
+        export buildNumber=$(printf "%03d" $buildNumber)
+        export version="$ReleaseNumber.$buildNumber.0"
+        echo "Using calculated version number for image tag: $version"
+      fi
+      # Save version to file for next stages
+      echo "version=$version" > version.txt
+  script:
+    # Verify artifacts are available from build stage
+    - echo "Verifying build artifacts are available..."
+    - ls -la artifacts/
+    - echo "Published artifacts:"
+    - ls -la artifacts/publish/
+    - echo "DbMigrator artifacts:"
+    - ls -la artifacts/dbmigrator/
+    
+    # Prepare artifacts-based Dockerfile with version information
+    - echo "Preparing Dockerfile.artifacts with build info"
+    - cp src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts.bak
+    - sed -i "s|ENV Version=1.0.0|ENV Version=$version|g" src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts
+    - echo "ENV SourceVersion=$CI_COMMIT_SHA" >> src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts
+    - echo "ENV BuildTime=$(date -Is)" >> src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts
+    
+    # Build and push with Buildah using pre-built artifacts
+    - echo "Building Docker image with Buildah using pre-built artifacts..."
+    - buildah login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Build using the artifacts-based Dockerfile (much faster, less memory)
+    - |
+      buildah build-using-dockerfile \
+        -f src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts \
+        -t $CI_REGISTRY_IMAGE:$version \
+        .
+    - buildah push $CI_REGISTRY_IMAGE:$version
+    
+    - echo "Image build and push completed successfully"
+  artifacts:
+    reports:
+      dotenv: version.txt
+    paths:
+      - src/Molex.UFE.HttpApi.Host/Dockerfile.artifacts
+      - version.txt
+    expire_in: 1 week
+
+tag:
+  tags:
+    - ufe
+  stage: deploy to k8s and add tag
+  image: alpine/git:latest
+  needs:
+    - build image
+  before_script:
+    - |
+      # Use version from build image stage - no fallback calculation
+      if [ -f version.txt ]; then
+        source version.txt
+        echo "Using version from build image stage: $version"
+      else
+        echo "Error: version.txt not found. The build image stage must run successfully first."
+        echo "This stage depends on the version calculated in the build image stage."
+        exit 1
+      fi
+  only:
+    - develop
+  script:
+    # Create and push git tag
+    - git config --global user.email "ufe-devops@molex.com"
+    - git config --global user.name "gitlab+deploy-token-devops"
+    # Check if tag already exists and create/push accordingly
+    - |
+      echo "Processing tag: $version"
+      
+      # Always try to push if we have credentials, whether tag exists locally or not
+      if [ -n "$GitUser" ] && [ -n "$GitPassword" ]; then
+        echo "Setting up Git credentials for push"
+        # Remove existing remote if it exists, then add new one
+        git remote remove gitlab-push 2>/dev/null || true
+        git remote add gitlab-push https://${GitUser}:${GitPassword}@gitlab.com/${CI_PROJECT_PATH}.git
+        
+        # Check if tag exists locally
+        if git rev-parse "$version" >/dev/null 2>&1; then
+          echo "Tag $version exists locally, attempting to push to remote"
+          git push gitlab-push "$version" || echo "Failed to push existing tag, but continuing..."
+        else
+          echo "Creating new tag $version"
+          git tag -a "$version" -m "Release $version - BuildTime $(date -Is)"
+          echo "Pushing new tag to remote"
+          git push gitlab-push "$version" || echo "Failed to push new tag, but continuing..."
+        fi
+        
+        # Verify the tag was pushed by checking remote
+        echo "Verifying tag on remote..."
+        git ls-remote --tags gitlab-push | grep "$version" && echo "Tag $version confirmed on remote" || echo "Tag $version not found on remote"
+      else
+        # No credentials - just create locally if needed
+        if git rev-parse "$version" >/dev/null 2>&1; then
+          echo "Tag $version already exists locally"
+        else
+          echo "Creating local tag $version (no push credentials available)"
+          git tag -a "$version" -m "Release $version - BuildTime $(date -Is)"
+        fi
+        echo "Tag $version created locally only (push skipped due to missing credentials)"
+      fi
+      
+      echo "Tag processing completed for version: $version"
+    # Update deployment if needed
+    - |
+      if [ -n "$updateImageURL" ] && [ -n "$AccessKey" ]; then
+        echo "Updating deployment with version: $version"
+        curl -X PUT \
+          -H "content-type: application/json" \
+          -H "Cookie: KuboardUsername=admin; KuboardAccessKey=$AccessKey" \
+          -d "{\"kind\":\"deployments\",\"namespace\":\"ufe-qms-dev\",\"name\":\"qms-svc\",\"images\":{\"registry.gitlab.com/molex/coc/dt/da/ufe/services/mms/ufe-qms-svc\":\"registry.gitlab.com/molex/coc/dt/da/ufe/services/mms/ufe-qms-svc:$version\"}}" \
+          "$updateImageURL"
+      else
+        echo "Deployment update skipped - missing updateImageURL or AccessKey"
+      fi

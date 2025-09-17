@@ -1,0 +1,1 @@
+dotnet run --project  .\src\Molex.UFE.HttpApi.Host

@@ -1,0 +1,17 @@
+﻿using System;
+using Volo.Abp;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities.Events.Distributed;
+
+namespace Molex.UFE.Etos;
+
+[Serializable]
+public class DivisionEto : EntityEto<Guid>, ISoftDelete
+{    
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string DisplayName { get; set; }
+    public Guid Corporate { get; set; }
+    public ExtraPropertyDictionary? ExtraProperties { get; set; }
+    public bool IsDeleted { get; set; }
+}
