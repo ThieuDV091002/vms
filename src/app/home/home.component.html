@@ -1,0 +1,37 @@
+<abp-page title="">
+
+    <!-- <iframe src="https://dev.ufe.molex.com:30967/d/bdly0ipp8atj4c/new-dashboard?orgId=1&kiosk" width="100%"
+        height="800px" frameborder="0"></iframe> -->
+    <app-dashboard [homepage]="true"></app-dashboard>
+</abp-page>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{ centered: true, size: 'lg' }">
+    <ng-template #abpHeader>
+        <h3>{{ '::LABEL_ChooseYourSite' | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <div>
+            <h5>{{ '::LABEL_CurrentSite' | abpLocalization }}</h5>
+        </div>
+        <div class="p-2">
+            <span class="selected-tenant">{{ currentTenantName }}</span>
+        </div>
+        <hr />
+        <div>
+            <h5>{{ '::LABEL_AllAccessibleSite' | abpLocalization }}</h5>
+        </div>
+        <div class="p-2 mb-5 row">
+            @for (item of userInfo?.accessibleTenants; track $index) {
+            <div class="col-4 mb-2"
+                [class]="currentTenantId === item.tenantId ? 'selected-tenant cursor' : 'cursor tenant-name'"
+                (click)="switchTenant(item.tenantId)">
+                <span [tooltip]="currentTenantId === item.tenantId ? ('::LABEL_CurrentTenant' | abpLocalization) : ('::LABEL_SwitchtoTenantt' | abpLocalization) + ' ' + item.tenantName + ' - ' + item.displayLongText"
+                    placement="bottom" [adaptivePosition]="false" container="body" containerClass="customClass">
+                    {{item.displayLongText}}
+                </span>
+            </div>
+            }
+        </div>
+    </ng-template>
+</abp-modal>

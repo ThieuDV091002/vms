@@ -1,0 +1,54 @@
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+
+.message-view {
+    height: calc(100% - 35px);
+}
+
+::ng-deep .carousel-control-prev,
+::ng-deep .carousel-control-next {
+    display: none !important;
+}
+
+::ng-deep .carousel-indicators [data-bs-target] {
+    background-color: var(--lpx-content-text);
+}
+
+::ng-deep.carousel-indicators .active {
+    background-color: var(--lpx-brand);
+
+}
+
+::ng-deep.carousel-item {
+    transition: none;
+}
+
+::ng-deep.carousel,
+::ng-deep.carousel-inner,
+::ng-deep.carousel-item {
+  height: 100%;
+  width: 100%;
+  .item {
+    height: 100%;
+  }
+}
+
+.img-fluid {
+  margin-left: auto;
+  margin-right: auto;
+}
+.close-button {
+  font-size: 1.2rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+}

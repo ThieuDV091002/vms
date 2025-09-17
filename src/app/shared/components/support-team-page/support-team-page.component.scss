@@ -1,0 +1,53 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+ngx-datatable {
+    height: 96%;
+
+    ::ng-deep {
+        >div {
+            height: 100% !important;
+
+            .datatable-body {
+                height: calc(100% - 4.1rem) !important;
+            }
+        }
+
+        .datatable-footer {
+            overflow: hidden;
+
+            .datatable-footer-inner {
+                height: 2rem !important;
+
+                .page-count,
+                .datatable-pager {
+                    height: 2rem !important;
+                    line-height: 2rem !important;
+                }
+            }
+        }
+    }
+}
+
+.support-table-container {
+    height: calc(100% - 45px);
+}
+
+.support-team-height {
+    height: calc(100% - 50px);
+}
+
+.header-width {
+    width: calc(100% - 40px);
+}
+
+::ng-deep .my-tooltip-class {
+    z-index: 9999999999999 !important;
+    max-width: none;
+    white-space: nowrap;
+}

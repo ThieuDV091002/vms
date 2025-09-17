@@ -1,0 +1,245 @@
+<app-modeling-template [title]="'::UserMenu'" [data]="data" [objectType]="'UserMenus'"
+  [permissions]="{create: 'UserMenu.Create', edit: 'UserMenu.Edit', delete: 'UserMenu.Delete', copy: 'UserMenu.Copy', import: 'UserMenu.Import', export: 'UserMenu.Export'}"
+  [copyPrefix]="'::LABEL_NewUserMenu'"
+  [columns]="[{displayKey:'::Name', field: 'name'},{displayKey: '::Order', field: 'order'}, {displayKey: '::IconClass', field: 'iconClass'}]"
+  [list]="list" [hasLastUpdate]="true" (copyData)="copy($event)" (multiDelete)="multiDelete($event)" (dataAdd)="add()"
+  (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)"
+  (import)="import($event)" (dataViewHistory)="viewHistory($event)"
+  [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button"
+            role="tab" aria-controls="general" aria-selected="true">
+            {{ '::LABEL_General' | abpLocalization }}
+          </button>
+        </li>
+        <li class="nav-item" role="presentation" *ngIf="selected.id">
+          <button class="nav-link" id="subMenus-tab" data-bs-toggle="tab" data-bs-target="#subMenus" type="button"
+            role="tab" aria-controls="subMenus" aria-selected="false">
+            {{ '::SubMenus' | abpLocalization }}
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div class="form-group mb-2">
+            <label for="userMenu-name"
+              [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+            <input type="text" id="userMenu-name" class="form-control" formControlName="name" autofocus
+            (input)="form.controls['displayName'].setValue($event.target.value)"/>
+          </div>
+          <div class="form-group mb-2">
+            <label for="userMenu-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName' |
+              abpLocalization}}</label><span> * </span>
+            <div class="input-group">
+              <input id="userMenu-displayName" class="form-control" [value]="selected.displayName"
+                (input)="updateValue($event)" formControlName="displayName" />
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#infoModal"
+                  (click)="selectDispalyName()">
+                  ...
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-2">
+            <label for="userMenu-value" [title]="'::INFO_Value' | abpLocalization">{{'::Value'|abpLocalization}}</label>
+            <input type="text" id="userMenu-value" class="form-control" [value]="selectedValue" readonly />
+          </div>
+          <div class="form-group mb-2">
+            <label for="userMenu-order" [title]="'::INFO_Order' | abpLocalization">{{'::Order'|abpLocalization}}</label>
+            <input type="text" id="userMenu-order" class="form-control" formControlName="order" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="userMenu-iconClass"
+              [title]="'::INFO_Icon' | abpLocalization">{{'::IconClass'|abpLocalization}}</label>
+            <app-icon-picker [iconControl]="form.controls['iconClass']"></app-icon-picker>
+          </div>
+          <div class="form-group">
+            <label for="userMenu-description"
+              [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+            <input type="text" id="userMenu-description" class="form-control" formControlName="description" />
+          </div>
+        </div>
+        <div class="tab-pane fade" id="subMenus" role="tabpanel" aria-labelledby="subMenus-tab" *ngIf="selected.id">
+          <div class="text-lg-end pt-2">
+            <button class="btn btn-primary btn-sm mx-2" type="button" (click)="addMenuItem()">
+              {{ '::AddMenuItem' | abpLocalization }}
+            </button>
+            <button *abpPermission="'UserMenu.Create'" class="btn btn-primary btn-sm" type="button"
+              (click)="addSubMenu()">
+              {{ '::AddSubMenu' | abpLocalization }}
+            </button>
+          </div>
+          <ngx-datatable [rows]="selected.children" [count]="selected.children?.length" default>
+            <ngx-datatable-column [width]="40" [canAutoResize]="false" [sortable]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <div ngbDropdown container="body" class="d-inline-block">
+                  <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 30px;"
+                    data-toggle="dropdown" aria-haspopup="true" ngbDropdownToggle></i>
+                  <div ngbDropdownMenu aria-labelledby="dropdownitems">
+                    <button type="button" ngbDropdownItem (click)="editMenuItem( row)">
+                      {{ '::Edit' | abpLocalization }}
+                    </button>
+                    <button type="button" ngbDropdownItem (click)="deleteMenuItem(row)">
+                      {{ '::Delete' | abpLocalization }}
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [name]="'::Order' | abpLocalization" prop="order" [width]="60"
+              [canAutoResize]="false"></ngx-datatable-column>
+            <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="displayName"></ngx-datatable-column>
+            <ngx-datatable-column [name]="'::Path' | abpLocalization" prop="path"></ngx-datatable-column>
+            <ngx-datatable-column [name]="'::Menu' | abpLocalization" prop="menu"></ngx-datatable-column>
+            <ngx-datatable-column [name]="'::IconClass' | abpLocalization" [width]="80" [canAutoResize]="false"
+              [sortable]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <i [ngClass]="row['iconClass']"></i>
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isDisplayNameModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::Select:DisplayName' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-label-selector (selected)="onDisplayNameSelected($event)"></app-label-selector>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isMenuItemDisplayNameModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::Select:DisplayName' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-label-selector (selected)="onMenuItemDisplayNameSelected($event)"></app-label-selector>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isAddModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ (menuItemSelected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    @if (menuItemForm) {
+
+    <form [formGroup]="menuItemForm">
+      <div class="form-group mb-2">
+        <label for="userMenuItem-name"
+          [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+        <input type="text" id="userMenuItem-name" class="form-control" formControlName="name" autofocus />
+      </div>
+      <div class="form-group mb-2">
+        <label for="userMenuItem-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName' |
+          abpLocalization}}</label><span> * </span>
+        <div class="input-group">
+          <input id="userMenuItem-displayName" class="form-control" [value]="menuItemSelected.displayName"
+            (input)="updateMenuItemValue($event)" formControlName="displayName" />
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#infoModal"
+              (click)="selectMenuItemDispalyName()">
+              ...
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-2">
+        <label for="userMenuItem-value" [title]="'::INFO_Value' | abpLocalization">{{'::Value'|abpLocalization}}</label>
+        <input type="text" id="userMenuItem-value" class="form-control" [value]="menuItemSelectedValue" readonly />
+      </div>
+      <div class="form-group mb-2" *ngIf="menuItemSelected.menuType === 1">
+        <label for="userMenuItem-path"
+          [title]="'::INFO_Path' | abpLocalization">{{'::Path'|abpLocalization}}</label><span> * </span>
+        <input class="form-control" list="datalistOptions" id="userMenuItem-path" formControlName="path">
+        <datalist id="datalistOptions">
+          <option [ngValue]="null"></option>
+          <option [ngValue]="route" *ngFor="let route of routes">{{ route }}</option>
+        </datalist>
+      </div>
+      <div class="form-group mb-2">
+        <label for="userMenuItem-order"
+          [title]="'::INFO_Order' | abpLocalization">{{'::Order'|abpLocalization}}</label><span> * </span>
+        <input type="text" id="userMenuItem-order" class="form-control" formControlName="order" />
+      </div>
+      <div class="form-group mb-2">
+        <label for="userMenuItem-iconClass"
+          [title]="'::INFO_Icon' | abpLocalization">{{'::IconClass'|abpLocalization}}</label>
+        <app-icon-picker [iconControl]="menuItemForm.controls['iconClass']"></app-icon-picker>
+      </div>
+      <div class="form-group mb-2" *ngIf="menuItemSelected.menuType === 2">
+        <label for="userMenuItem-SubMenuId"
+          [title]="'::INFO_SubMenu' | abpLocalization">{{'::SubMenu'|abpLocalization}}</label><span> * </span>
+        <select class="form-control form-select" id="userMenuItem-SubMenuId" formControlName="subMenuId">
+          <option [ngValue]="null"></option>
+          <option [ngValue]="menu.id" *ngFor="let menu of getMenus()" [selected]="menu.id===menuItemSelected.subMenuId">
+            {{ menu.name }}</option>
+        </select>
+      </div>
+      <div class=" form-group">
+        <label for="userMenuItem-description"
+          [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+        <input type="text" id="userMenuItem-description" class="form-control" formControlName="description" />
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="menuItemForm?.invalid" (click)="saveMenuItems()">{{
+      'AbpIdentity::Save' | abpLocalization }}</abp-button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal *ngIf="isHistoryModalVisible" [(isHistoryModalVisible)]="isHistoryModalVisible"
+  [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm *ngIf="importConfirmVisible" [(importConfirmVisible)]="importConfirmVisible"
+  [existingData]="existingData" [objectType]="'UserMenus'" (customeImport)="customeImport($event)">
+</app-import-confirm>

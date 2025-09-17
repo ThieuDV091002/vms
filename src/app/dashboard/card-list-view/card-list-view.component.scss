@@ -1,0 +1,90 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var(--lpx-border-color);
+
+    ::ng-deep .page-count {
+        text-align: start;
+    }
+}
+
+:host ::ng-deep .row.entry-row {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+
+.activity-card {
+    padding-left: 0.1rem !important;
+    padding-right: 0.1rem !important;
+    height: 100%;
+}
+
+
+.data-list-padding {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+}
+
+.data-list-margin {
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+}
+
+.custom-ng-select {
+    ::ng-deep .ng-value-container {
+        overflow: auto !important;
+        flex-wrap: nowrap !important;
+    }
+}
+
+.filter-selected {
+    font-weight: 900;
+    color: blue;
+}
+
+ngx-datatable {
+    height: 96%;
+
+    ::ng-deep {
+        >div {
+            height: 100% !important;
+
+            .datatable-body {
+                height: calc(100% - 5rem) !important;
+            }
+        }
+
+        .datatable-footer {
+            overflow: hidden;
+
+            .datatable-footer-inner {
+                height: 2rem !important;
+
+                .page-count,
+                .datatable-pager {
+                    height: 2rem !important;
+                    line-height: 2rem !important;
+                }
+            }
+        }
+    }
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+.data-card {
+    background-color: #053E4F;
+    height: 5rem;
+}

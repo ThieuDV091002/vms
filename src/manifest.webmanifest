@@ -1,0 +1,59 @@
+{
+  "name": "UFE",
+  "short_name": "UFE",
+  "theme_color": "#1976d2",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "assets/icons/MOSAIC_Circle_72x72.webp",
+      "sizes": "72x72",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_96x96.webp",
+      "sizes": "96x96",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_128x128.webp",
+      "sizes": "128x128",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_144x144.webp",
+      "sizes": "144x144",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_152x152.webp",
+      "sizes": "152x152",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_192x192.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_384x384.webp",
+      "sizes": "384x384",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/MOSAIC_Circle_512x512.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "maskable any"
+    }
+  ]
+}

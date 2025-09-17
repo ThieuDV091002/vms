@@ -1,0 +1,745 @@
+<abp-page>
+  <abp-page-toolbar-container *ngIf="!queryId && !homepage" class="action-container">
+    <div class="dashboard-list">
+      <ng-select *ngIf="dashboards?.length" [items]="dashboards" bindLabel="name" [clearable]="false"
+        [(ngModel)]="selectedDashboard" (change)="dashboardChange($event)" class="me-2">
+      </ng-select>
+      <span (click)="copyId()" *ngIf="selectedDashboard" title="Copy dashboard menu path to clipboard"><i class="fa fa-copy"></i></span>
+    </div>
+    <div class="action-bar" #actionBar>
+      <button class="btn btn-primary btn-sm me-1" type="button" (click)="viewHistory()" [disabled]="!selectedDashboard">
+        <i class="fas fa-history"></i>
+        {{ '::ViewHistory' | abpLocalization }}
+      </button>
+      <button *abpPermission="'Dashboard.Import'" class="btn btn-outline-primary btn-sm me-1" type="button"
+        (click)="selectImportFile.value='';selectImportFile.click()">
+        <i class="fa fa-file-import me-1" aria-hidden="true"></i>
+        {{ '::Import' | abpLocalization }}
+      </button>
+      <input type="file" #selectImportFile class="d-none" (change)="onFileChange($event)"
+          [accept]="importAndExportOnlyJson ? acceptFileType[FileType.Json] : (acceptFileType[FileType.Json] + ',' + acceptFileType[FileType.Excel])" />
+      <div ngbDropdown *abpPermission="'Dashboard.Export'" class="d-inline-block me-1">
+        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+          aria-haspopup="true" ngbDropdownToggle [disabled]="!selectedDashboard">
+          <i class="fa fa-download me-1" aria-hidden="true"></i>
+          {{ '::Export' | abpLocalization }}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdown">
+          <button ngbDropdownItem (click)="exportClick(FileType.Json)">
+            {{ '::ToJson' | abpLocalization }}
+          </button>
+          <button ngbDropdownItem (click)="exportClick(FileType.Excel)">
+            {{ '::ToExcel' | abpLocalization }}
+          </button>
+          <button ngbDropdownItem (click)="exportAllClick(FileType.Json)">
+            {{ '::ExportAllToJSON' | abpLocalization }}
+          </button>
+          <button ngbDropdownItem (click)="exportAllClick(FileType.Excel)">
+            {{ '::ExportAllToExcel' | abpLocalization }}
+          </button>
+        </div>
+      </div>
+      <button *abpPermission="'Dashboard.Copy'" class="btn btn-primary btn-sm me-1" type="button"
+        (click)="copyDataClick()" [disabled]="!selectedDashboard">
+        <i class="fas fa-copy"></i>
+        {{ '::Copy' | abpLocalization }}
+      </button>
+      <!-- <button class="btn btn-sm btn-light me-2" [disabled]="!selectedDashboard" (click)="addWidget = true">{{'::LABEL_AddWidget' | abpLocalization}}</button> -->
+      <button *abpPermission="'Dashboard.Create'" class="btn btn-primary btn-sm me-1" type="button"
+        (click)="openCreateDashboard()">
+        <i class="fas fa-plus"></i>
+        {{ '::Create' | abpLocalization }}
+      </button>
+      <button *abpPermission="'Dashboard.Update'" class="btn btn-primary btn-sm me-1" [disabled]="!selectedDashboard"
+        type="button" (click)="openCreateDashboard(false)">
+        <i class="fas fa-edit"></i>
+        {{ '::Edit' | abpLocalization }}
+      </button>
+      <button *abpPermission="'Dashboard.Delete'" class="btn btn-danger btn-sm"
+        [disabled]="!selectedDashboard || (selectedDashboard.name === homePageName)" type="button"
+        (click)="deleteDashboard()">
+        <i class="fas fa-trash"></i>
+        {{ '::Delete' | abpLocalization }}
+      </button>
+    </div>
+  </abp-page-toolbar-container>
+  <div class="card"
+    [class.one-widget-layout-with-header]="selectedDashboard && !queryId && !homepage && (selectedDashboard.layout === '1X1' || selectedDashboard.layout === '1X2')"
+    [class.one-widget-layout-without-header]="selectedDashboard && (queryId || homepage) && (selectedDashboard.layout === '1X1' || selectedDashboard.layout === '1X2')">
+    <!-- <span *ngIf="selectedDashboard && selectedDashboard.hasDateTier"
+      class="filter-icon cursor-pointer position-absolute" [title]="'data tier filter'"
+      (click)="datatierFilterShow=!datatierFilterShow">
+      <i [class]="'fas fa-arrow-' +(datatierFilterShow? 'up': 'down')+'-wide-short'"></i>
+    </span> -->
+
+    <div class="card-body">
+      <div class="dashboard" *ngIf="selectedDashboard">
+        <div class="d-flex dashboard-header">
+          <h5 class="m-0 d-flex align-items-center">{{selectedDashboard.name}}</h5>
+          @if (currentSiteName && selectedDashboard && (selectedDashboard.showTenantDataTier || selectedDashboard.layout === 'siteHuddleDaily' || selectedDashboard.layout === 'siteHuddleMonthly')) {
+            <span class="site-title ms-3 me-1">{{'::Site' | abpLocalization}}</span>
+            <span class="site-name">{{currentSiteName}}</span>
+          }
+          @if (selectedDashboard.extraProperties?.dataTierLevel && selectedDashboard.extraProperties?.dataTierLevel !== 'No') {
+          <app-data-tier-filter [multiple]="selectedDashboard.layout === 'productionReviewBoard' ? false : true" (areaChange)="areaChange($event)"
+            (cellChange)="cellChange($event)" [dataTierTreeNode]="haveAccessTreeNode"
+            (workCenterChange)="workCenterChange($event)" (deleteChange)="dataTierDelete()"
+            [dataTierLevel]="selectedDashboard.extraProperties.dataTierLevel">
+          </app-data-tier-filter>
+          }
+        </div>
+        <div class="row">
+          <!-- cell huddle start -->
+          @if (selectedDashboard.layout === 'CellHuddle') {
+            <div class="pt-1 cell-huddle-widget" [class.has-action]="queryId" [class.has-datatier]="selectedDashboard.extraProperties?.dataTierLevel !== 'No'">
+              <nav>
+                <div class="nav flex-column flex-sm-row" id="nav-tab" role="tablist">
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" [class.active]="hasSafetyAlertActivated" id="nav-safety-tab" data-bs-toggle="tab" data-bs-target="#nav-safety" type="button" role="tab" aria-controls="nav-safety" aria-selected="true" href="#nav-safety-tab" (click)="refreshCalendar()">{{'::LABEL_Safety' | abpLocalization}}
+                    @if (hasSafetyAlert && safetyAlertNumber > 0) {
+                      <i class="ics-icon ms-1 fas fa-person-falling-burst"></i><span class="ics-num">{{safetyAlertNumber}}</span>
+                    }
+                  </button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" [class.active]="!hasSafetyAlertActivated" id="nav-kpi-tab" data-bs-toggle="tab" data-bs-target="#nav-kpi" type="button" role="tab" aria-controls="nav-kpi" aria-selected="false" (click)="refreshCalendar()">{{'::LABEL_KPI' | abpLocalization}}</button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" id="nav-leading-indicators-tab" data-bs-toggle="tab" data-bs-target="#nav-leading-indicators" type="button" role="tab" aria-controls="nav-leading-indicators" aria-selected="false">{{'::Leading Indicators' | abpLocalization}}</button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" id="nav-activity-cards-tab" data-bs-toggle="tab" data-bs-target="#nav-activity-cards" type="button" role="tab" aria-controls="nav-activity-cards" aria-selected="false">{{'::Activity Cards' | abpLocalization}}</button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" id="nav--shift-comments-tab" data-bs-toggle="tab" data-bs-target="#nav-shift-comments" type="button" role="tab" aria-controls="nav-shift-comments" aria-selected="false">{{'::LABEL_ShiftComments' | abpLocalization}}</button>
+                </div>
+              </nav>
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade" [ngClass]="{'active': hasSafetyAlertActivated, 'show': hasSafetyAlertActivated}" id="nav-safety" [class.expand]="cellHuddleSafetyExpand" role="tabpanel" aria-labelledby="nav-safety-tab" tabindex="0">
+                  <div class="safety-content">
+                    <div class="col-4" [class.widget-expand]="currentCellHuddleIdx === 1">
+                        <div class="cell-add-widget" *ngIf="!findWidgetBySeq(1)">
+                          <a *ngIf="!queryId"
+                            href="javascript:void(0)"
+                            (click)="selectedWidgetIndex=1; addWidget = true;">
+                            {{'::LABEL_AddWidget' | abpLocalization}}
+                          </a>
+                        </div>
+                        <app-widget-container
+                          *ngIf="findWidgetBySeq(1)"
+                          [widget]="findWidgetBySeq(1)"
+                          [index]="1"
+                          [selectedIndex]="selectedIndex"
+                          [layoutClass]="layoutClass"
+                          [queryId]="!enableEdit"
+                          [homePage]="homepage"
+                          [haveAccessTreeNode]="haveAccessTreeNode"
+                          [selectedDataTier]="selectedDataTier"
+                          [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                          (widgetUpdate)="widgetUpdate($event)"
+                          (expandChange)="expandChange($event)">
+                        </app-widget-container>
+                    </div>
+                    <div class="col-8" [class.widget-expand]="currentCellHuddleIdx === 2">
+                        <div class="cell-add-widget" *ngIf="!findWidgetBySeq(2)">
+                          <a *ngIf="!queryId"
+                              href="javascript:void(0)"
+                              (click)="selectedWidgetIndex=2; addWidget = true;">
+                              {{'::LABEL_AddWidget' | abpLocalization}}
+                            </a>
+                        </div>
+
+                        <app-widget-container
+                          *ngIf="findWidgetBySeq(2)"
+                          [widget]="findWidgetBySeq(2)"
+                          [index]="2"
+                          [selectedIndex]="selectedIndex"
+                          [layoutClass]="layoutClass"
+                          [queryId]="!enableEdit"
+                          [homePage]="homepage"
+                          [haveAccessTreeNode]="haveAccessTreeNode"
+                          [selectedDataTier]="selectedDataTier"
+                          [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                          (broadcastMsgListChange)="getSafetyAlertInfo()"
+                          (widgetUpdate)="widgetUpdate($event)"
+                          (expandChange)="expandChange($event)">
+                        </app-widget-container>
+                    </div>
+                  </div>
+                </div>
+                <!-- KPI Tab -->
+                <div class="tab-pane fade" [ngClass]="{'active': !hasSafetyAlertActivated, 'show': !hasSafetyAlertActivated}" id="nav-kpi" [class.expand]="cellHuddleKpiExpand" role="tabpanel" aria-labelledby="nav-kpi-tab" tabindex="0">
+                  <div class="kpi-header">
+                    <div class="col-3 text-center fw-bold">
+                      <p>
+                        {{'::LABEL_Quality' | abpLocalization}}
+                        <span class="ms-2 cursor-pointer" (click)="toogleTarget('FPY')">
+                          <i [class]="isFPY ? 'fa fa-toggle-on fa-lg toggle-button' : 'fa fa-toggle-off fa-lg toggle-button'"></i>
+                          <span class="ms-1 fs-6 fw-normal">{{(isFPY ? '::LABEL_FPYPercentage' : '::LABEL_SPPM') | abpLocalization}}</span>
+                        </span>
+                      </p>
+                    </div>
+                    <div class="col-3 text-center fw-bold">
+                      <p>{{'::LABEL_Availability' | abpLocalization}}</p>
+                    </div>
+                    <div class="col-3 text-center fw-bold">
+                      <p>
+                        {{'::LABEL_Performance' | abpLocalization}}
+                        <span class="ms-2 cursor-pointer" (click)="toogleTarget('UPPH')">
+                          <i [class]="isUPPH ? 'fa fa-toggle-on fa-lg toggle-button' : 'fa fa-toggle-off fa-lg toggle-button'"></i>
+                          <span class="ms-1 fs-6 fw-normal">{{(isUPPH ? '::LABEL_UPPH' : '::LABEL_Eff') | abpLocalization}}</span>
+                        </span>
+                      </p>
+                    </div>
+                    <div class="col-3 text-center fw-bold">
+                      <p>{{'::LABEL_Delivery' | abpLocalization}}</p>
+                    </div>
+                  </div>
+                  <div class="cell-huddle-kpi-content">
+                    @for (i of [3,4,5,6,7,8,9,10,11,12,13,14]; track i) {
+                      <div class="col-3" [class.widget-expand]="currentCellHuddleIdx === i">
+                        <div>
+                          <div class="cell-add-widget" *ngIf="!findWidgetBySeq(i)">
+                            <a *ngIf="!queryId"
+                              href="javascript:void(0)"
+                              (click)="selectedWidgetIndex=i; addWidget = true;">
+                              {{'::LABEL_AddWidget' | abpLocalization}}
+                            </a>
+                          </div>
+                          <app-widget-container
+                            *ngIf="findWidgetBySeq(i)"
+                            [widget]="findWidgetBySeq(i)"
+                            [index]="i"
+                            [selectedIndex]="selectedIndex"
+                            [layoutClass]="layoutClass"
+                            [queryId]="!enableEdit"
+                            [homePage]="homepage"
+                            [haveAccessTreeNode]="haveAccessTreeNode"
+                            [selectedDataTier]="selectedDataTier"
+                            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                            (widgetUpdate)="widgetUpdate($event)"
+                            (expandChange)="expandChange($event)"
+                            [isFPY]="isFPY"
+                            [isUPPH]="isUPPH">
+                          </app-widget-container>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <!-- leading indicators -->
+                <div class="tab-pane fade" id="nav-leading-indicators" role="tabpanel" aria-labelledby="nav-leading-indicators-tab" tabindex="0">
+                  <div class="leading-indicators-content">
+                    <div class="cell-add-widget" *ngIf="!findWidgetBySeq(15)">
+                      <a *ngIf="!queryId"
+                        href="javascript:void(0)"
+                        (click)="selectedWidgetIndex=15; addWidget = true;">
+                        {{'::LABEL_AddWidget' | abpLocalization}}
+                      </a>
+                    </div>
+
+                      <app-widget-container
+                        *ngIf="findWidgetBySeq(15)"
+                        [widget]="findWidgetBySeq(15)"
+                        [index]="15"
+                        [selectedIndex]="selectedIndex"
+                        [layoutClass]="layoutClass"
+                        [queryId]="!enableEdit"
+                        [homePage]="homepage"
+                        [haveAccessTreeNode]="haveAccessTreeNode"
+                        [selectedDataTier]="selectedDataTier"
+                        [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                        (widgetUpdate)="widgetUpdate($event)"
+                        (expandChange)="expandChange($event)">
+                      </app-widget-container>
+                  </div>
+                </div>
+                <!-- activity cards -->
+                <div class="tab-pane fade" id="nav-activity-cards" role="tabpanel" aria-labelledby="nav-activity-cards-tab" tabindex="0">
+                  <div class="activity-cards-content">
+                    <div class="cell-add-widget" *ngIf="!findWidgetBySeq(16)">
+                      <a *ngIf="!queryId"
+                        href="javascript:void(0)"
+                        (click)="selectedWidgetIndex=16; addWidget = true;">
+                        {{'::LABEL_AddWidget' | abpLocalization}}
+                      </a>
+                    </div>
+                    <app-widget-container
+                      *ngIf="findWidgetBySeq(16)"
+                      [widget]="findWidgetBySeq(16)"
+                      [index]="16"
+                      [selectedIndex]="selectedIndex"
+                      [layoutClass]="layoutClass"
+                      [queryId]="!enableEdit"
+                      [homePage]="homepage"
+                      [haveAccessTreeNode]="haveAccessTreeNode"
+                      [selectedDataTier]="selectedDataTier"
+                      [defaultDataTierLevel]="selectedDashboard.extraProperties?.dataTierLevel"
+                      [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                      (widgetUpdate)="widgetUpdate($event)"
+                      (expandChange)="expandChange($event)">
+                    </app-widget-container>
+                  </div>
+                </div>
+                <!-- shift comments -->
+                <div class="tab-pane fade" id="nav-shift-comments" role="tabpanel" aria-labelledby="nav-shift-comments-tab" tabindex="0">
+                  <div class="shift-comments-content">
+                    <div class="cell-add-widget" *ngIf="!findWidgetBySeq(17)">
+                      <a *ngIf="!queryId"
+                        href="javascript:void(0)"
+                        (click)="selectedWidgetIndex=17; addWidget = true;">
+                        {{'::LABEL_AddWidget' | abpLocalization}}
+                      </a>
+                    </div>
+
+                    <app-widget-container
+                      *ngIf="findWidgetBySeq(17)"
+                      [widget]="findWidgetBySeq(17)"
+                      [index]="17"
+                      [selectedIndex]="selectedIndex"
+                      [layoutClass]="layoutClass"
+                      [queryId]="!enableEdit"
+                      [homePage]="homepage"
+                      [haveAccessTreeNode]="haveAccessTreeNode"
+                      [selectedDataTier]="selectedDataTier"
+                      [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                      (widgetUpdate)="widgetUpdate($event)"
+                      (expandChange)="expandChange($event)">
+                    </app-widget-container>
+                </div>
+                </div>
+              </div>
+            </div>
+          <!-- cell huddle end -->
+          <!-- area huddle start -->
+          } @else if (selectedDashboard.layout === 'AreaHuddle') {
+            <div class="pt-1 cell-huddle-widget" [class.has-action]="queryId" [class.has-datatier]="selectedDashboard.extraProperties?.dataTierLevel !== 'No'">
+              <nav>
+                <div class="nav flex-column flex-sm-row" id="nav-tab" role="tablist">
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" [class.active]="hasSafetyAlertActivated" id="nav-safety-tab" data-bs-toggle="tab" data-bs-target="#nav-safety" type="button" role="tab" aria-controls="nav-safety" aria-selected="true" href="#nav-safety-tab">{{'::LABEL_Safety' | abpLocalization}}
+                    @if (hasSafetyAlert && safetyAlertNumber > 0) {
+                      <i class="ics-icon ms-1 fas fa-person-falling-burst"></i><span class="ics-num">{{safetyAlertNumber}}</span>
+                    }
+                  </button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" [class.active]="!hasSafetyAlertActivated" id="nav-kpi-tab" data-bs-toggle="tab" data-bs-target="#nav-kpi" type="button" role="tab" aria-controls="nav-kpi" aria-selected="false" (click)="recalculateTableSize()">{{'::LABEL_KPI' | abpLocalization}}</button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" id="nav-leading-indicators-tab" data-bs-toggle="tab" data-bs-target="#nav-leading-indicators" type="button" role="tab" aria-controls="nav-leading-indicators" aria-selected="false">{{'::Leading Indicators' | abpLocalization}}</button>
+                  <button class="flex-sm-fill text-sm-center nav-link fw-bold huddle-tab" id="nav-activity-cards-tab" data-bs-toggle="tab" data-bs-target="#nav-activity-cards" type="button" role="tab" aria-controls="nav-activity-cards" aria-selected="false">{{'::Activity Cards' | abpLocalization}}</button>
+                </div>
+              </nav>
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade" [ngClass]="{'active': hasSafetyAlertActivated, 'show': hasSafetyAlertActivated}" id="nav-safety" [class.expand]="areaHuddleSafetyExpand" role="tabpanel" aria-labelledby="nav-safety-tab" tabindex="0">
+                  <div class="safety-content">
+                    <div class="col-4" [class.widget-expand]="currentAreaHuddleIdx === 1">
+                        <div class="cell-add-widget" *ngIf="!findWidgetBySeq(1)">
+                          <a *ngIf="!queryId"
+                            href="javascript:void(0)"
+                            (click)="selectedWidgetIndex=1; addWidget = true;">
+                            {{'::LABEL_AddWidget' | abpLocalization}}
+                          </a>
+                        </div>
+                        <app-widget-container
+                          *ngIf="findWidgetBySeq(1)"
+                          [widget]="findWidgetBySeq(1)"
+                          [index]="1"
+                          [selectedIndex]="selectedIndex"
+                          [layoutClass]="layoutClass"
+                          [queryId]="!enableEdit"
+                          [homePage]="homepage"
+                          [haveAccessTreeNode]="haveAccessTreeNode"
+                          [selectedDataTier]="selectedDataTier"
+                          [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                          (widgetUpdate)="widgetUpdate($event)"
+                          (expandChange)="expandChange($event)">
+                        </app-widget-container>
+                    </div>
+                    <div class="col-8" [class.widget-expand]="currentAreaHuddleIdx === 2">
+                        <div class="cell-add-widget" *ngIf="!findWidgetBySeq(2)">
+                          <a  *ngIf="!queryId"
+                              href="javascript:void(0)"
+                              (click)="selectedWidgetIndex=2; addWidget = true;">
+                              {{'::LABEL_AddWidget' | abpLocalization}}
+                            </a>
+                        </div>
+
+                        <app-widget-container
+                          *ngIf="findWidgetBySeq(2)"
+                          [widget]="findWidgetBySeq(2)"
+                          [index]="2"
+                          [selectedIndex]="selectedIndex"
+                          [layoutClass]="layoutClass"
+                          [queryId]="!enableEdit"
+                          [homePage]="homepage"
+                          [haveAccessTreeNode]="haveAccessTreeNode"
+                          [selectedDataTier]="selectedDataTier"
+                          [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                          (broadcastMsgListChange)="getSafetyAlertInfo()"
+                          (widgetUpdate)="widgetUpdate($event)"
+                          (expandChange)="expandChange($event)">
+                        </app-widget-container>
+                    </div>
+                  </div>
+                </div>
+                <!-- KPI Tab -->
+                <div class="tab-pane fade" [ngClass]="{'active': !hasSafetyAlertActivated, 'show': !hasSafetyAlertActivated}" id="nav-kpi" [class.expand]="areaHuddleKpiExpand" role="tabpanel" aria-labelledby="nav-kpi-tab" tabindex="0">
+                  <div class="kpi-header">
+                    <div class="col-4 text-center fw-bold">
+                      <p>{{'::LABEL_Quality' | abpLocalization}}</p>
+                    </div>
+                    <div class="col-4 text-center fw-bold">
+                      <p>{{'::LABEL_Performance' | abpLocalization}}</p>
+                    </div>
+                    <div class="col-4 text-center fw-bold">
+                      <p>{{'::LABEL_Delivery' | abpLocalization}}</p>
+                    </div>
+                  </div>
+                  <div class="kpi-content">
+                    @for (i of [3,4,5,6,7,8]; track i) {
+                      <div class="col-4" [class.widget-expand]="currentAreaHuddleIdx === i">
+                        <div>
+                          <div class="cell-add-widget" *ngIf="!findWidgetBySeq(i)">
+                            <a *ngIf="!queryId"
+                              href="javascript:void(0)"
+                              (click)="selectedWidgetIndex=i; addWidget = true;">
+                              {{'::LABEL_AddWidget' | abpLocalization}}
+                            </a>
+                          </div>
+                          <app-widget-container
+                            *ngIf="findWidgetBySeq(i)"
+                            [widget]="findWidgetBySeq(i)"
+                            [index]="i"
+                            [selectedIndex]="selectedIndex"
+                            [layoutClass]="layoutClass"
+                            [queryId]="!enableEdit"
+                            [homePage]="homepage"
+                            [haveAccessTreeNode]="haveAccessTreeNode"
+                            [selectedDataTier]="selectedDataTier"
+                            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                            (widgetUpdate)="widgetUpdate($event)"
+                            (expandChange)="expandChange($event)">
+                          </app-widget-container>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  <div class="area-huddle-kpi-table" [class.widget-expand]="currentAreaHuddleIdx === 9">
+                    <!-- <app-area-huddle-kpi-table [selectedDataTier]="selectedDataTier">
+                    </app-area-huddle-kpi-table> -->
+                    <div class="cell-add-widget" *ngIf="!findWidgetBySeq(9)">
+                      <a *ngIf="!queryId"
+                        href="javascript:void(0)"
+                        (click)="selectedWidgetIndex=9; addWidget = true;">
+                        {{'::LABEL_AddWidget' | abpLocalization}}
+                      </a>
+                    </div>
+
+                      <app-widget-container
+                        *ngIf="findWidgetBySeq(9)"
+                        [widget]="findWidgetBySeq(9)"
+                        [index]="9"
+                        [selectedIndex]="selectedIndex"
+                        [layoutClass]="layoutClass"
+                        [queryId]="!enableEdit"
+                        [homePage]="homepage"
+                        [haveAccessTreeNode]="haveAccessTreeNode"
+                        [selectedDataTier]="selectedDataTier"
+                        [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                        (widgetUpdate)="widgetUpdate($event)"
+                        (expandChange)="expandChange($event)">
+                      </app-widget-container>
+                  </div>
+                </div>
+                <!-- leading indicators -->
+                <div class="tab-pane fade" id="nav-leading-indicators" role="tabpanel" aria-labelledby="nav-leading-indicators-tab" tabindex="0">
+                  <div class="leading-indicators-content">
+                    <div class="cell-add-widget" *ngIf="!findWidgetBySeq(10)">
+                      <a *ngIf="!queryId"
+                        href="javascript:void(0)"
+                        (click)="selectedWidgetIndex=10; addWidget = true;">
+                        {{'::LABEL_AddWidget' | abpLocalization}}
+                      </a>
+                    </div>
+
+                      <app-widget-container
+                        *ngIf="findWidgetBySeq(10)"
+                        [widget]="findWidgetBySeq(10)"
+                        [index]="10"
+                        [selectedIndex]="selectedIndex"
+                        [layoutClass]="layoutClass"
+                        [queryId]="!enableEdit"
+                        [homePage]="homepage"
+                        [haveAccessTreeNode]="haveAccessTreeNode"
+                        [selectedDataTier]="selectedDataTier"
+                        [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                        (widgetUpdate)="widgetUpdate($event)"
+                        (expandChange)="expandChange($event)">
+                      </app-widget-container>
+                  </div>
+                </div>
+                <!-- activity cards -->
+                <div class="tab-pane fade" id="nav-activity-cards" role="tabpanel" aria-labelledby="nav-activity-cards-tab" tabindex="0">
+                  <div class="activity-cards-content">
+                    <div class="cell-add-widget" *ngIf="!findWidgetBySeq(11)">
+                      <a *ngIf="!queryId"
+                        href="javascript:void(0)"
+                        (click)="selectedWidgetIndex=11; addWidget = true;">
+                        {{'::LABEL_AddWidget' | abpLocalization}}
+                      </a>
+                    </div>
+                    <app-widget-container
+                      *ngIf="findWidgetBySeq(11)"
+                      [widget]="findWidgetBySeq(11)"
+                      [index]="11"
+                      [selectedIndex]="selectedIndex"
+                      [layoutClass]="layoutClass"
+                      [queryId]="!enableEdit"
+                      [homePage]="homepage"
+                      [haveAccessTreeNode]="haveAccessTreeNode"
+                      [selectedDataTier]="selectedDataTier"
+                      [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                      [defaultDataTierLevel]="selectedDashboard.extraProperties?.dataTierLevel"
+                      (widgetUpdate)="widgetUpdate($event)"
+                      (expandChange)="expandChange($event)">
+                    </app-widget-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <!-- area huddle end -->
+          } @else if (selectedDashboard.layout === 'siteHuddleDaily') {
+          <!-- site huddle daily start -->
+            <app-site-huddle-daily [hasHeader]="!queryId && !homepage"
+              [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+              [widgets]="widgets" [selectedIndex]="selectedIndex"
+              (widgetUpdate)="widgetUpdate($event)"
+              (addWidgetChange)="this.selectedWidgetIndex = $event; addWidget = true;"
+              [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+            </app-site-huddle-daily>
+          <!-- site huddle daily end -->
+          } @else if (selectedDashboard.layout === 'siteHuddleMonthly') {
+          <!-- site huddle monthly start -->
+            <!-- <app-site-huddle-monthly [hasHeader]="!queryId && !homepage"
+              [queryId]="!enableEdit" [selectedDataTier]="selectedDataTier"
+              [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+            </app-site-huddle-monthly> -->
+            <app-site-huddle-monthly-view [hasHeader]="!queryId && !homepage"
+            [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+            (widgetUpdate)="widgetUpdate($event)" [widgets]="widgets"
+            (addWidgetChange)="this.selectedWidgetIndex = $event; addWidget = true;"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+            </app-site-huddle-monthly-view>
+          <!-- site huddle monthly end -->
+          } @else if (selectedDashboard.layout === 'productionReviewBoard') {
+            <app-production-review-board
+              [queryId]="!enableEdit"
+              [homePage]="homepage"
+              [haveAccessTreeNode]="haveAccessTreeNode"
+              [selectedDataTier]="selectedDataTier"
+              [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+              [widgets]="widgets"
+              (updateWidgetEvent)="widgetUpdate($event)"
+              (addWidgetEvent)="selectedWidgetIndex = $event; addWidget = true;">
+            </app-production-review-board>
+          } @else {
+          <!-- genaral layout start -->
+            @if (selectedDashboard.layout) {
+                <div class="add-widget mb-1" *ngFor="let widget of widgets; let idx = index"
+                  [ngClass]="[selectedIndex === -1 ? '' : (idx === selectedIndex ? 'expand' : 'collapsed'), layoutClass]">
+                  <div *ngIf="!widget?.widgetName" class="add-widget-content">
+                    <a href="javascript:void(0)" (click)="addWidget = true; selectedWidgetIndex = idx">{{'::LABEL_AddWidget' |
+                      abpLocalization}}</a>
+                  </div>
+                  <ng-container *ngIf="widget?.widgetName">
+                    <app-widget-container [widget]="widget" [index]="idx" [selectedIndex]="selectedIndex"
+                      [layoutClass]="layoutClass" [queryId]="!enableEdit"
+                      [homePage]="homepage" [haveAccessTreeNode]="haveAccessTreeNode"
+                      [selectedDataTier]="selectedDataTier" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                      (widgetUpdate)="widgetUpdate($event)" (expandChange)="expandChange($event)">
+                    </app-widget-container>
+                  </ng-container>
+              </div>
+            }
+          }
+          <!-- general layout end -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</abp-page>
+<abp-modal [(visible)]="createDashboard" class="new-dashboard-container">
+  <ng-template #abpHeader>
+    <h3>{{ (this.newDashboard?.id ? '::Edit' : '::LABEL_NewDashboard') | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <form #dashboardForm="ngForm">
+      <div class="form-group mb-2">
+
+        <label for="name" [title]="'::INFO_Name' | abpLocalization">{{'::Name' | abpLocalization}}</label><span> * </span>
+        <input type="text" id="name" required [readOnly]="newDashboard.id && newDashboard.name === homePageName"
+
+          [(ngModel)]="newDashboard.name" [ngModelOptions]="{standalone: true}" name="name" class="form-control">
+      </div>
+
+      <div class="form-group mb-2">
+
+        <label [title]="'::INFO_DataTierLevel' | abpLocalization">{{'::LABEL_DataTierLevel' | abpLocalization}}</label>
+
+        <select class="form-select" [(ngModel)]="newDashboard.dataTierLevel" [ngModelOptions]="{standalone: true}" name="dataTierLevel">
+          <option *ngFor="let dataTier of dashboardDataTierLevelOptions; let idx = index" [ngValue]="dataTier.value">{{dataTier.label | abpLocalization}}</option>
+        </select>
+      </div>
+
+      <!-- <div class="form-group mb-2">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="dataTier" [(ngModel)]="newDashboard.hasDateTier" [ngModelOptions]="{standalone: true}" (ngModelChange)="newDashboard.workCenterFilter = $event" />
+
+          <label for="dataTier" [title]="'::INFO_DataTier' | abpLocalization">{{'::LABEL_DataTier' | abpLocalization}}</label>
+        </div>
+      </div>
+
+      <div class="form-group mb-2">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="workCenterFilter" [disabled]="!newDashboard.hasDateTier" [(ngModel)]="newDashboard.workCenterFilter" [ngModelOptions]="{standalone: true}" />
+          <label for="workCenterFilter">{{'::Work Center Filter' | abpLocalization}}</label>
+        </div>
+      </div> -->
+
+      <div class="form-group mb-2">
+
+        <label [title]="'::INFO_Layout' | abpLocalization">{{'::LABEL_Layout' | abpLocalization}}</label>
+
+        <select class="form-select" [(ngModel)]="newDashboard.layout" [ngModelOptions]="{standalone: true}" name="layoutClass">
+          <option value="1X1">1X1</option>
+          <option value="1X2">1X2</option>
+          <option value="2X1">2X1</option>
+          <option value="2X2">2X2</option>
+          <option value="3X1">3X1</option>
+          <option value="3X3">3X3</option>
+          <option value="2X3">2X3</option>
+          <option value="CellHuddle">Cell Huddle</option>
+          <option value="AreaHuddle">Area Huddle</option>
+          <option value="siteHuddleDaily">Site Huddle Board-Daily View</option>
+          <option value="siteHuddleMonthly">Site Huddle Board-Monthly View</option>
+          <option value="productionReviewBoard">Production Review Board</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="showTenantDataTier"
+            [(ngModel)]="newDashboard.showTenantDataTier" [ngModelOptions]="{standalone: true}" name="showTenantDataTier" />
+          <label class="form-check-label" for="showTenantDataTier" [title]="'::INFO_ShowTenantDataTier' | abpLocalization">
+            {{'::LABEL_ShowTenantDataTier' | abpLocalization}}
+          </label>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>{{ '::Cancel' | abpLocalization}}</button>
+    <button type="button" class="btn btn-primary me-2" [disabled]="!newDashboard.name || !newDashboard.dataTierLevel" (click)="addDashboard()">{{
+      '::Save' | abpLocalization}}</button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="addWidget" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{'::LABEL_AddWidget' | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="row add-widget-container">
+      <div class="row">
+
+        <div class="col-2">
+          <ul class="nav nav-tabs flex-column" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="global-tab" data-bs-toggle="tab" data-bs-target="#global"
+                type="button" role="tab" aria-controls="global" aria-selected="true">
+                {{ '::LABEL_Global' | abpLocalization }}
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="local-tab" data-bs-toggle="tab" data-bs-target="#local" type="button"
+                role="tab" aria-controls="local" aria-selected="false">
+                {{ '::LABEL_Local' | abpLocalization }}
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="col-10 add-widget-modal-content">
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="global" role="tabpanel" aria-labelledby="global-tab">
+              <div class="row">
+                <div class="widget-card" *ngFor="let widget of allWidgets">
+                  <div class="card">
+                    <div class="card-body row">
+                      <div class="col-md-3">
+                        <img [src]="widget.img" />
+                      </div>
+                      <div class="col-md-7">
+                        <h5 class="card-title">{{widget.name | abpLocalization}}</h5>
+                        <p class="card-text">{{widget.description | abpLocalization}}</p>
+                      </div>
+                      <div class="col-md-2">
+                        <button href="javascript:void(0)" class="btn btn-primary btn-sm" [disabled]="widget.disabled"
+                          (click)="addWidget = false; addNewWidget(widget.type)">{{'::Add' | abpLocalization}}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="local" role="tabpanel" aria-labelledby="local-tab">
+              {{'::Local' | abpLocalization}}
+              <!-- <ngx-treeview></ngx-treeview> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalOpen">
+  <ng-template #abpHeader>
+    <h3>{{'::CopyInstance' | abpLocalization}}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <div>
+      <div class="form-group">
+        <label>{{ '::LABEL_NewDashboard'| abpLocalization}} {{'AbpIdentity::DisplayName:Name' | abpLocalization}}
+        </label><span> * </span>
+        <input type="text" class="form-control" [(ngModel)]="newData.name" />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <button class="btn btn-primary" [disabled]="!newData.name" (click)="isModalOpen=false;saveCopyData()">
+      <i class="fa fa-check"></i>
+      {{'AbpIdentity::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingDashboardData"
+    [objectType]="'Dashboards'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

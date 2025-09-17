@@ -1,0 +1,57 @@
+<div class="shift-comment-container mt-2">
+  @if (loading) {
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{'AbpUi::LoadingWithThreeDot' | abpLocalization}}
+  </div>
+  } @else {
+  <div class="w-100 position-relative">
+    <div class="text-center">
+      <h5>
+        {{ shiftInfo.productionDate | date: 'dd MMM yyyy' }} {{shiftInfo.shiftDisplayName}}
+        <span style="color: #1181AA;">{{shiftInfo?.isCurrent ? '(Current)' : ''}}</span>
+      </h5>
+    </div>
+    <span class="cursor-pointer position-absolute top-0 end-0" (click)="download()" *abpPermission="'Comment.Export'">
+      <i class="fa fa-cloud-download fa-lg"></i>
+    </span>
+  </div>
+  <div class="datatable-container">
+    
+      <ngx-datatable default [rows]="data.items" [count]="data.totalCount" [headerHeight]="0" [limit]="pageSize"
+      [reorderable]="true" [list]="list" #myTable [columnMode]="'force'" style="height: 100%;">
+        <ngx-datatable-column>
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div class="accordion">
+              <div class="accordion-item">
+                <div class="accordion-header">
+                  <div class="d-flex justify-content-between">
+                    <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse"
+                      [attr.data-bs-target]="'#' + row.id" aria-expanded="true" aria-controls="collapseOne">
+                      <span class="text-danger">{{row.productionDate | date: 'dd MMM yyyy'}}
+                        {{row.location}}</span>
+                    </button>
+                    <div class="d-flex text-nowrap">
+                       <div class="comment-meta small text-muted mb-1 " style="font-weight: bold; font-size: inherit;">
+                          <span class="comment-author" style=" color:black">{{ row.lastModifierName ? row.lastModifierName : row.creatorName }}</span>
+                          <span>,</span> 
+                           <span class="comment-date" style=" color:black;">{{ getBrowserLocalTime(row.lastModificationTime ? row.lastModificationTime : row.creationTime) }}</span>
+                        </div>
+                      <span style="margin: 0 4px;"></span> 
+                      <div class="action-button" (click)="editOrDelete(row.id, row.commentText, 'edit')">{{ 'AbpUi::Edit' | abpLocalization }} ·</div>
+                      <div class="ms-1 action-button" (click)="editOrDelete(row.id, row.commentText, 'delete')">{{ 'AbpUi::Delete' | abpLocalization }} ·</div>
+                    </div>
+                  </div>
+                </div>
+                <div [id]="row.id" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                  <div class="accordion-body">
+                    {{row.commentText}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+  </div>
+}
+</div>

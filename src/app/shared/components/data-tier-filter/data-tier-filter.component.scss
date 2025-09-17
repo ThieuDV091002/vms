@@ -1,0 +1,34 @@
+:host form.data-tier-filter {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    > div.filter-bar {
+        margin: 0!important;
+        display: flex;
+        > label, div {
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+        .col-form-label {
+            padding-top: .4rem!important;
+            padding-bottom: .4rem!important;
+        }
+        select.form-select {
+            line-height: 1.1!important;
+            font-size: .8rem!important;
+            padding: 0.7rem 2rem 0.7rem .5rem!important;
+        }
+        .ng-select ::ng-deep {
+            .ng-select-container {
+                font-size: .8rem!important;
+                padding: 0!important;
+                height: 37px!important;
+                min-width: 140px!important;
+                div[role="combobox"] {
+                    width: 0px!important;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+}

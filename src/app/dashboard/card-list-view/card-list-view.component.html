@@ -1,0 +1,150 @@
+<abp-page class="widget-page">
+  <div class="row entry-row h-100">
+    <div class="activity-card">
+      <ngx-datatable default [rows]="data?.activityCardList" [count]="data?.activityCardList.length"
+        [headerHeight]="40" [reorderable]="true" #myTable style="height: 100%;" [limit]="30">
+        <ngx-datatable-column [width]="25" [sortable]="false" [canAutoResize]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div ngbDropdown container="body" class="d-inline-block">
+              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 25px;" data-toggle="dropdown"
+                aria-haspopup="true" ngbDropdownToggle></i>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                @if (row.currentStateName === 'Completed') {
+                  <button ngbDropdownItem *abpPermission="'ActivityCard.Edit'" (click)="archiveCard(row)">
+                    {{ '::LABEL_Archive' | abpLocalization }}
+                  </button>
+                }
+                @if (row.currentStateName !== 'Completed' && row.currentStateName !== 'Cancelled' && row.currentStateName !== 'Archived') {
+                  <button ngbDropdownItem *abpPermission="'ActivityCard.Edit'" (click)="cancelCard(row)">
+                    {{ 'AbpUi::Cancel' | abpLocalization }}
+                  </button>
+                }
+                @if(row.currentStateName === 'Cancelled' || row.currentStateName === 'Archived') {
+                  <button ngbDropdownItem *abpPermission="'ActivityCard.Edit'" (click)="restoreCard(row)">
+                    {{ '::LABEL_Restore' | abpLocalization }}
+                  </button>
+                }
+                @if (row.currentStateName !== 'Completed' && row.currentStateName !== 'Cancelled' && row.currentStateName !== 'Archived') {
+                  <button ngbDropdownItem *abpPermission="'ActivityCard.Edit'" (click)="requestUpdateForCardOwner(row)">
+                    {{ '::LABEL_RequestUpdateForCard' | abpLocalization }}
+                  </button>
+                  @if (showRequestUpdateForTaskOwner(row)) {
+                    <button ngbDropdownItem *abpPermission="'ActivityCard.Edit'" (click)="requestUpdateForAllTaskOwners(row)">
+                      {{ '::LABEL_RequestUpdateForTaskOwner' | abpLocalization }}
+                    </button>
+                  }
+                }
+                <button ngbDropdownItem  (click)="viewHistory(row)">
+                  {{ '::ViewHistory' | abpLocalization }}
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_TierDetails' | abpLocalization" [width]="150" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              {{ row.dataTierName | abpLocalization }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Owners' | abpLocalization" [width]="100" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              <span [tooltip]="('::LABEL_OwnerEmail' | abpLocalization) + ': ' + row.assignedOwnerEmail + '\n' + ('::LABEL_CardCreatedBy' | abpLocalization) + ': ' + row.createByName + '(' + row.createByEmail + ')' " 
+                placement="bottom" [adaptivePosition]="false" container="body" containerClass="card-list-tooltip">
+                {{ row.assignedOwnerName }}
+              </span>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Type' | abpLocalization" [width]="100" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              {{ row.cardTypeName | abpLocalization }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::Category' | abpLocalization" [width]="180" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              <span [ngStyle]="categoryColorMap[row.id]" class="p-1 rounded">
+                {{ row.categoryName | abpLocalization }}
+              </span>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_ShortDescription' | abpLocalization" [maxWidth]="650" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              <a class="icon-link cursor-pointer" (click)="edit(row)" [tooltip]="row.longInstruction" placement="bottom" [adaptivePosition]="false" container="body">
+                {{ row.instructions | abpLocalization }}
+              </a>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_CreatedDate' | abpLocalization" [width]="120" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              {{ getLocalDate(row.creationTime) | date: 'dd MMM yyyy' }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_DaysOpen' | abpLocalization" [width]="100" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              {{ row.noOfDaysOpen }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Priority' | abpLocalization" [width]="100" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              <span [ngStyle]="priorityColorMap[row.id]" class="p-1 rounded">
+                {{ row.priorityName | abpLocalization }}
+              </span>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Status' | abpLocalization" [width]="120" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              <span [ngStyle]="statusColorMap[row.id]" class="p-1 rounded">
+                {{ row.currentStateName | abpLocalization }}
+              </span>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_DueDate' | abpLocalization" [width]="120" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div [style.background-color]="row.dueDateColor" class="rounded">
+              <span class="p-1" [class.text-white]="row.dueDateColor" [tooltip]="row.orignalDueDate ? (('::LABEL_ActivityCardTaskOriginalDueDate' | abpLocalization)  + ': ' + (row.orignalDueDate | date: 'dd-MMM-yyyy')) : ''" placement="bottom" [adaptivePosition]="false" container="body">
+                {{ row.dueDate | date: 'dd MMM yyyy' }}
+              </span>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_CompletedDate' | abpLocalization" [width]="130" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              {{ getLocalDate(row.completedDate) | date: 'dd MMM yyyy' }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LastUpdateTime' | abpLocalization" [width]="220" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              {{ formatDate(row.lastModificationTime) | date: 'dd MMM yyyy hh:mm:ss a'}}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</abp-page>
+
+ <app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>

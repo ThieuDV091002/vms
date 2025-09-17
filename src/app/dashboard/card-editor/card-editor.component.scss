@@ -1,0 +1,451 @@
+.card-header {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0.5rem !important;
+
+  .card-title {
+    max-width: calc(100% - 15rem);
+  }
+}
+
+// scroll bar style
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.card-body.card-content {
+  .overall-section {
+    padding: 0 1.25rem .5rem;
+  }
+}
+
+.accordion.accordion-flush {
+  max-height: calc(100vh - 20.6rem) !important;
+  overflow-y: auto;
+  margin-right: -20px !important;
+  padding-right: 12px !important;
+
+  &.assessment {
+    max-height: calc(100vh - 25.5rem) !important;
+  }
+}
+
+.root-cause-container {
+  .root-cause-item-content {
+    position: relative;
+    flex: auto;
+
+    .root-cause-type {
+      position: absolute;
+      top: 0;
+      left: 2.5rem;
+
+      select {
+        border: none;
+        background-color: var(--lpx-content-bg);
+        color: var(--lpx-dark);
+      }
+    }
+
+    textarea.form-control {
+      padding-top: 1.2rem !important;
+    }
+  }
+}
+
+.card .card-footer {
+  padding-bottom: 0rem;
+}
+
+// .accordion-button {
+//     &.general {
+//         color: #d33c48!important;
+//     }
+//     &.rootCauseAnalysis {
+//         color: #0a57db!important;
+//     }
+//     &.task {
+//         color: #49a300!important;
+//     }
+//     &.comment {
+//         color: #ffd43b!important;
+//     }
+//     &.results {
+//         color: #116e52!important;
+//     }
+// }
+.card-tools span {
+  display: inline-block;
+  font-size: 1.2rem;
+  // color: var(--lpx-brand);
+  cursor: pointer;
+}
+
+.team-memebers-list {
+  list-style: none !important;
+  padding: 0 !important;
+  border: 1px solid var(--lpx-border-color);
+  border-radius: 5px;
+  background-color: var(--lpx-content-bg);
+
+  li {
+    &.no-member {
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        white-space: nowrap;
+      }
+    }
+
+    display: flex;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--lpx-border-color);
+    }
+
+    padding: .4rem .2rem;
+
+    .member-name {
+      max-width: calc(100% - 1rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .remove-member {
+      display: inline-block;
+      cursor: pointer;
+    }
+  }
+}
+
+.root-cause-action {
+  position: relative;
+  z-index: 9999;
+  margin-bottom: -2rem;
+}
+
+.root-cause-item-header {
+  font-weight: bold;
+  text-align: right;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+#task {
+
+  ul.task-list,
+  ul.task-list li {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  ul.task-list {
+    li {
+      display: flex;
+      flex-direction: row;
+      gap: .25rem;
+      border-bottom: 1px solid var(--lpx-border-color);
+      padding: .4rem 0;
+
+      div {
+        flex: 1;
+
+        &.task-title {
+          .task-input {
+            position: relative;
+
+            .task-cancelled {
+              text-decoration: line-through;
+              opacity: .6;
+            }
+
+            .task-status-icon {
+              position: absolute;
+              left: .3rem;
+              top: .7rem;
+              padding: 0 .1rem;
+
+              .fa.fa-check {
+                color: green;
+              }
+
+              .fa.fa-ban {
+                color: red;
+              }
+            }
+
+            input[type="text"] {
+              width: 100%;
+              padding-left: 1.5rem;
+            }
+          }
+        }
+
+        &.task-action {
+          width: 15px;
+          flex: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &.task-support {
+          width: 55px;
+          flex: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &.task-owner {
+          width: 250px;
+          flex: none;
+          display: flex;
+          align-items: center;
+        }
+
+        &.task-due-date {
+          width: 150px;
+          flex: none;
+        }
+
+        &.task-original-date,
+        &.task-completed-date {
+          width: 130px;
+          flex: none;
+        }
+      }
+    }
+  }
+
+  ngx-datatable {
+    .dropdown-toggle:after {
+      content: none;
+    }
+
+  }
+}
+
+.add-button {
+  cursor: pointer;
+  color: var(--lpx-brand);
+  border: 1px solid var(--lpx-brand);
+  width: 1.3rem;
+  height: 1.3rem;
+  text-align: center;
+  line-height: 1.3rem;
+  border-radius: 1rem;
+}
+
+.attachment-content {
+  width: 100%;
+  height: 200px;
+  border: 1px solid #eee;
+  margin-top: 1rem;
+  border-radius: .5rem;
+  padding: .5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .attachment-title {
+    button {
+      border: none !important;
+      padding: 0 !important;
+      background-color: transparent !important;
+    }
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  .dropdown-toggle:after {
+    content: none;
+  }
+
+  .attchment-contains>div.row {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .camera-upload,
+  .photo-upload {
+    cursor: pointer;
+  }
+
+  .img-container {
+    height: 160px;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 1px solid transparent;
+
+    &.selected {
+      border: 1px solid var(--lpx-border-color);
+    }
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    input[type="checkbox"] {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+    }
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.attachment-preview img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.created-info {
+  font-size: .75rem;
+}
+
+:host ngx-datatable ::ng-deep .datatable-body-cell {
+  ng-select {
+    line-height: 1.5 !important;
+  }
+}
+
+// comment
+.comment-container {
+  padding: 1rem;
+  border: 1px solid var(--lpx-border-color);
+  border-radius: 5px;
+
+  .comment-list {
+    height: 300px;
+    overflow-y: auto;
+
+    .comment-item {
+      width: 80%;
+
+      &.current-user {
+        margin-left: 17%;
+
+        .comment-header {
+          text-align: right;
+        }
+
+        .comment-content {
+          p {
+            margin-left: auto;
+          }
+        }
+      }
+
+      .comment-avartar-img {
+        width: 1rem;
+        height: 1rem;
+        border-radius: .5rem;
+        margin-right: .5rem;
+      }
+
+      .comment-avartar {
+        width: 1.5rem;
+        height: 1.5rem;
+        text-align: center;
+        line-height: 1.5rem;
+        color: #000000;
+        font-size: .7rem;
+        // background-color: #0077B5;
+        margin-right: .5rem;
+        display: inline-block;
+        border-radius: 50%;
+        text-transform: capitalize;
+      }
+
+      .comment-content {
+        display: flex;
+
+        p {
+          padding: .5rem 1rem;
+          // background-color: #E6F7FF;
+          color: #000000;
+          border-radius: 5px;
+          white-space: pre-wrap;
+          margin-bottom: 0 !important;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+
+  .comment-input {
+    display: flex;
+    align-items: center;
+
+    .comment-input-field {
+      display: inline-block;
+      width: calc(100% - 2rem);
+      resize: none;
+      border: 1px solid var(--lpx-border-color);
+      border-radius: 5px;
+      padding: .5rem;
+    }
+
+    .comment-send {
+      display: inline-block;
+      padding: .5rem;
+      cursor: pointer;
+      color: var(--lpx-primary)
+    }
+  }
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+// quill editor
+
+quill-editor {
+  width: 100%;
+  height: 120px;
+}
+
+.close-button {
+  font-size: 1.2rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+}
+
+::ng-deep .my-tooltip-class {
+    z-index: 99999999999 !important;
+    max-width: none;
+    white-space: nowrap;
+}

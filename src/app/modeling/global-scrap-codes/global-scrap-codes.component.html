@@ -1,0 +1,73 @@
+<app-modeling-template [title]="'::MENU_GlobalScrapCode'" [data]="data" [objectType]="'GlobalScrapCodes'"
+    [permissions]="{create: 'GlobalScrapCode.Create', edit: 'GlobalScrapCode.Edit', delete: 'GlobalScrapCode.Delete', copy: 'GlobalScrapCode.Copy', import: 'GlobalScrapCode.Import', export: 'GlobalScrapCode.Export'}"
+    [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()" [copyPrefix]="'::LABEL_NewGlobalScrapCode'"
+    (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+    (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+    (copyData)="copy($event, edit.bind(this))" [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+            <div class="form-group mb-2">
+                <label for="global-scrap-code-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                <input type="text" id="global-scrap-code-name" class="form-control" formControlName="name" autofocus
+                    (input)="form.controls['displayName'].setValue($event.target.value)"/>
+            </div>
+
+            <div class="form-group mb-2">
+                <label for="global-scrap-code-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> * </span>
+                <input type="text" id="global-scrap-code-displayName" class="form-control"
+                    formControlName="displayName" />
+            </div>
+
+            <div class="form-group mb-2">
+                <label for="global-scrap-code-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                <textarea type="text" id="global-scrap-code-description" class="form-control"
+                    formControlName="description"></textarea>
+            </div>
+
+        </form>
+        <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'GlobalScrapCodes'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

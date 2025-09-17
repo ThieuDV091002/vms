@@ -1,0 +1,32 @@
+<div class="h-100 ps-1 pe-1 widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <div class="d-flex justify-content-end align-items-center position-relative" style="height: 15px;">
+        <div class="position-absolute start-50 translate-middle" style="top: 12px;">
+                @if (type === 'Quality') {
+                <h5 class="mb-0">{{ (isFPY ? '::LABEL_FPYPercentage' : '::LABEL_SPPM') | abpLocalization}} </h5>
+                } @else if(type === 'Performance') {
+                <h5 class="mb-0">{{ (isUPPH ? '::LABEL_UPPH' : '::LABEL_Efficiency') | abpLocalization}} </h5>
+                } @else {
+                <h5 class="mb-0">{{ '::LABEL_UnplannedDT' | abpLocalization}} </h5>
+                }
+        </div>
+        <div class="text-end mt-1 widget-toolbar">
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+        </div>
+    </div>
+    <div class="cell-chart-container">
+        <abp-chart #cellHuddleChart [data]="chartOptions.data" [options]="chartOptions.options" [width]="'100%'"
+            height="100%">
+        </abp-chart>
+    </div>
+</div>

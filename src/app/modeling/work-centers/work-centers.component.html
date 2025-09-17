@@ -1,0 +1,208 @@
+<app-modeling-template [title]="'::WorkCenters'" [data]="data" [objectType]="'WorkCenter'"
+  [copyPrefix]="'::LABEL_NewWorkCenter'"
+  [permissions]="{create: 'WorkCenter.Create', edit: 'WorkCenter.Edit', delete: 'WorkCenter.Delete', copy: 'WorkCenter.Copy', import: 'WorkCenter.Import', export: 'WorkCenter.Export'}"
+  [columns]="[{displayKey:'::Name', field: 'name'},{displayKey:'::Description', field: 'description'},{displayKey:'::DisplayName', field: 'displayName'},{displayKey:'::Cell', field: 'cell', altField: 'cellName'}]"
+  [toolbarButtons]="{move: true}" [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))"
+  (multiDelete)="multiDelete($event)" (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)"
+  (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)" (dataViewHistory)="viewHistory($event)" (moveData)="move($event)"
+  (filterChange)="searchByfilter($event)" filterType="Master" [showAdvancendFilter]="true" [filterSearchHasValue]="filterSearchHasValue" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+  <div id="advanced-filter" >
+      <div class="overflow-hidden">
+        <div class="row" [formGroup]="filterForm">
+          <div class="col">
+            <div class="form-group text-start">
+              <label for="filter-area">{{ '::Area'|abpLocalization }}</label>
+              <ng-select
+                id="filter-area"
+                [items]="areaData"
+                appendTo="body"
+                bindValue="id"
+                formControlName="area"
+                bindLabel="displayName"
+                [typeahead]="areaInput$">
+                <ng-template ng-option-tmp let-item="item">
+                  {{ item.displayName }}
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">
+                  {{ item.displayName }}
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group text-start">
+              <label for="filter-cell">{{ '::Cell'|abpLocalization }}</label>
+              <select class="form-select" formControlName="cell" id="filter-cell">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let cell of cellOptinons" [ngValue]="cell.id">
+                    {{ cell.displayName }}
+                </option>
+            </select>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group text-start">
+              <label for="">{{ '::LABEL_CreationDate'|abpLocalization }}</label>
+              <div class="input-group">
+                <input type="text" class="form-control" bsDaterangepicker
+                  [bsConfig]="{ adaptivePosition: true, containerClass: 'theme-dark-blue', rangeInputFormat: 'DD MMM YYYY' }" formControlName="creationDate">
+                <label class="input-group-text">
+                  <i class="bi bi-calendar-fill"></i>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group text-start">
+              <label for="">{{ '::LABEL_ModificationDate'|abpLocalization }}</label>
+              <div class="input-group">
+                <input type="text" class="form-control" bsDaterangepicker
+                  [bsConfig]="{ adaptivePosition: true, containerClass: 'theme-dark-blue', rangeInputFormat: 'DD MMM YYYY' }"
+                  formControlName="modificationDate">
+                <span class="input-group-text">
+                  <i class="bi bi-calendar-fill"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex pt-2 justify-content-end">
+        <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="clearAdvancedFilter()">
+          {{ 'AbpUi::Clear' | abpLocalization }}
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="filterSearch()">
+          {{ 'AbpUi::PagerSearch' | abpLocalization }}
+        </button>
+      </div>
+  </div>
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div class="form-group mb-2">
+            <label for="workCenter-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+            <input type="text" id="workCenter-name" class="form-control" formControlName="name" autofocus
+              (input)="form.controls['displayName'].setValue($event.target.value)" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="workCenter-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> * </span>
+            <input type="text" id="workCenter-displayName" class="form-control" formControlName="displayName" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="workCenter-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+            <input type="text" id="workCenter-description" class="form-control" formControlName="description" />
+          </div>
+          <div class="form-group">
+            <label for="workcenter-cell" [title]="'::INFO_Cell' | abpLocalization">{{ '::Cell'|abpLocalization}}</label><span> * </span>
+            <ng-select
+              id="workcenter-cell"
+              [items]="cellData"
+              appendTo="body"
+              bindValue="id"
+              formControlName="cell"
+              bindLabel="displayName"
+              [typeahead]="cellInput$">
+              <ng-template ng-option-tmp let-item="item">
+                {{ item.displayName  }}
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                {{ item.displayName }}
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isMoveModalVisible" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ '::Move' | abpLocalization }} {{ '::Cell' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div>
+      {{ selectedWorkCenterIdList.length }} {{ '::Label_MoveToCell' | abpLocalization }}
+    </div>
+    <div class="form-group pt-2">
+      <label for="cell">{{'::LABEL_NewCell'|abpLocalization}}</label>
+      <!-- <select class="form-control form-select" id="cell" title="cell" [(ngModel)]="moveToCell">
+        <option [ngValue]="null"></option>
+        <option [ngValue]="cell.id" *ngFor="let cell of cellData">
+          {{ cell.displayName || cell.name }}
+        </option>
+      </select> -->
+      <ng-select
+        id="workcenter-cell"
+        [items]="cellData"
+        appendTo="body"
+        bindValue="id"
+        [(ngModel)]="moveToCell"
+        bindLabel="displayName"
+        [typeahead]="cellInput$">
+        <ng-template ng-option-tmp let-item="item">
+          {{ item.displayName  }}
+        </ng-template>
+        <ng-template ng-label-tmp let-item="item">
+          {{ item.displayName  }}
+        </ng-template>
+      </ng-select>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, ''].includes(moveToCell)" (click)="moveToNewCell()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+      <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Close' | abpLocalization }}
+      </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'WorkCenter'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

@@ -1,0 +1,80 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
+    "paths": {
+      "@proxy": [
+        "src/app/proxy/index.ts"
+      ],
+      "@proxy/*": [
+        "src/app/proxy/*"
+      ],
+      "@apis/corporate": [
+        "src/apis/corporate/src/proxy/index.ts"
+      ],
+      "@apis/corporate/*": [
+        "src/apis/corporate/src/proxy/*"
+      ],
+      "@apis/ticket": [
+        "src/apis/ticket/src/proxy/index.ts"
+      ],
+      "@apis/ticket/*": [
+        "src/apis/ticket/src/proxy/*"
+      ],
+      "@apis/dashboard": [
+        "src/apis/dashboard/src/proxy/index.ts"
+      ],
+      "@apis/dashboard/*": [
+        "src/apis/dashboard/src/proxy/*"
+      ],
+      "@apis/notification": [
+        "src/apis/notification/src/proxy/index.ts"
+      ],
+      "@apis/notification/*": [
+        "src/apis/notification/src/proxy/*"
+      ],
+      "@apis/general": [
+        "src/apis/general/src/proxy/index.ts"
+      ],
+      "@apis/general/*": [
+        "src/apis/general/src/proxy/*"
+      ],
+      "@apis/scheduler": [
+        "src/apis/scheduler/src/proxy/index.ts"
+      ],
+      "@apis/scheduler/*": [
+        "src/apis/scheduler/src/proxy/*"
+      ],
+      "@apis/report": [
+        "src/apis/report/src/proxy/index.ts"
+      ],
+      "@apis/report/*": [
+        "src/apis/report/src/proxy/*"
+      ],
+      "@apis/vms": [
+        "src/apis/vms/src/proxy/index.ts"
+      ],
+      "@apis/vms/*": [
+        "src/apis/vms/src/proxy/*"
+      ]
+    },
+    "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false
+  }
+}

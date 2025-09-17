@@ -1,0 +1,74 @@
+<lpx-context-menu #menu>
+  <ul class="list-group">
+    <li class="list-group-item header-item">
+      {{"::Notification"|abpLocalization}}
+    </li>
+    <li class="list-group-item body-item" *ngFor="let item of unReadData.items">
+      <div class="P-0 d-flex align-items-center  osahan-post-header" (click)="onClick(item)">
+        <div class="font-weight-bold mr-3 body-item-content">
+          <div class="text-truncate">{{item.fromUser?.userName +' : '}}{{item.title | truncate:10}}</div>
+          <div class="small">{{item.content | truncate:20}}</div>
+        </div>
+        <div class="ml-auto mb-auto body-item-end">
+          <span class="fa fa-check-circle mt-1"></span>
+          <div class="text-right text-muted pt-1">{{getTimeDifference(item.creationTime)}}</div>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <!-- Show More -->
+  <div class="text-center">
+    <a class="dropdown-item text-center small text-gray-500" href="javascript:void(0)" [routerLink]="['/modeling/private-messages']">
+      {{"::LABEL_ShowMore"|abpLocalization}}
+    </a>
+  </div>
+</lpx-context-menu>
+
+<span class="fa fa-bell  nav-item nav-item" (click)="show()"
+  [title]="'::UserMessages'|abpLocalization"
+  [ngStyle]="{'color': isActive ? 'var(--lpx-brand)' : 'var(--lpx-navbar-text-color)'}">
+  <span
+    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+    *ngIf="totalMessages>0">
+    {{totalMessages}}
+  </span>
+</span>
+
+<abp-modal [(visible)]="isInboxReadModalOpen" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_PrivateMessage' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-name">{{'::LABEL_From'|abpLocalization}}</label>
+      <input type="text" id="private-message-name" class="form-control"
+        [(ngModel)]="curentMessage.fromUser.userName" readonly />
+    </div>
+    <div class="form-group mb-2">
+      <label for="private-message-to">{{'::LABEL_To'|abpLocalization}}</label>
+      <input type="text" id="private-message-to" class="form-control"
+        [(ngModel)]="curentMessage.toUser.userName" readonly />
+    </div>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-time">{{'::LABEL_SendingTime'|abpLocalization}}</label>
+      <input type="text" id="private-message-time" class="form-control"
+        [(ngModel)]="formattedCreationTime" readonly />
+    </div>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-title">{{'::LABEL_Title'|abpLocalization}}</label>
+      <div id="private-message-title" class="form-control"
+        [innerHTML]="curentMessage.title"></div>
+    </div>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-content">{{'::LABEL_Content'|abpLocalization}}</label>
+      <div id="private-message-content" class="form-control"
+        [innerHTML]="curentMessage.content"></div>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+  </ng-template>
+</abp-modal>

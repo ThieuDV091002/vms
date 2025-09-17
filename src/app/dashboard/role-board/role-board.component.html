@@ -1,0 +1,55 @@
+<abp-page>
+  <div class="row entry-row fixed-header">
+    <div class="col-auto content-header w-100 d-flex">
+      <h1 class="content-header-title">{{'::RoleBoard' | abpLocalization}}</h1>
+      <!-- <div class="d-flex align-items-center">
+        <span class="filter-btn me-2 cursor" (click)="showDtatTierFilter = !showDtatTierFilter;">
+            <i class="fa fa-filter"></i> {{'::LABEL_DataTier' | abpLocalization}}
+        </span>
+      </div> -->
+      <div class="filter-bar ms-2">
+        <app-data-tier-filter  [multiple]="true" (areaChange)="dataTierChange($event)" (cellChange)="dataTierChange($event)"
+          (workCenterChange)="dataTierChange($event)" dataTierLevel="WorkCenter">
+        </app-data-tier-filter>
+      </div>
+    </div>
+  </div>
+  <div class="role-board-content card">
+    <div class="col-6 content-left" [class.col-12]="expandItem && expandItem !== 'getIncomingTasks'">
+      <div class="col-12" [ngClass]="getExpandClass('getUrgentTasks')">
+        <div>
+          <app-role-board-task [roles]="roles" [apiName]="'getUrgentTasks'" [selectedDataTier]="selectedDataTier"
+            [title]="'::TITLE_UrgentTasks'" (expandChange)="expandChange($event)" [responsiveRowCount]="true"></app-role-board-task>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 content-right" [class.col-12]="expandItem && expandItem === 'getIncomingTasks'">
+      <div class="col-12" [ngClass]="getExpandClass('getIncomingTasks')">
+        <div class="chart">
+          <app-role-board-task [roles]="roles" [apiName]="'getIncomingTasks'" [selectedDataTier]="selectedDataTier"
+            [title]="'::TITLE_IncomingTasks'" (expandChange)="expandChange($event)"></app-role-board-task>
+        </div>
+      </div>
+      <div class="col-12" [ngClass]="getExpandClass('stoppage')">
+        <div class="chart">
+          <div class="action-bar">
+            <span class="cursor" (click)="expand('stoppage')"><i class="fa fa-expand me-1 cursor"
+                [ngClass]="expandItem && expandItem === 'stoppage' ? 'fa-compress' : 'fa-expand'"></i></span>
+          </div>
+          <abp-chart [data]="minorStoppageData.data" [options]="minorStoppageData.options" [width]="'100%'"
+            [height]="'100%'"></abp-chart>
+        </div>
+      </div>
+      <div class="col-12" [ngClass]="getExpandClass('stoppagetrends')">
+        <div class="chart">
+          <div class="action-bar">
+            <span class="cursor" (click)="expand('stoppagetrends')"><i class="fa fa-expand me-1 cursor"
+                [ngClass]="expandItem && expandItem === 'stoppagetrends' ? 'fa-compress' : 'fa-expand'"></i></span>
+          </div>
+          <abp-chart type="line" [data]="minorStoppageTrendsData.data" [options]="minorStoppageTrendsData.options"
+            [width]="'100%'" [height]="'100%'"></abp-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</abp-page>

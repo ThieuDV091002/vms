@@ -1,0 +1,195 @@
+stages:
+  - build
+  - build image
+  - deploy to k8s and add tag
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  DOCKER_IMAGE: "registry.gitlab.com/molex/coc/dt/da/ufe/apps/ufe-vms-app:${CI_COMMIT_REF_NAME}"
+  # Buildah configuration
+  BUILDAH_ISOLATION: chroot
+  STORAGE_DRIVER: vfs
+
+build:
+  tags:
+    - saas-linux-large-amd64
+  stage: build
+  image: node:21
+  before_script:
+    - echo "Start build only, skip tag/version calculation"
+  script:
+    - export NX_SKIP_BINARY_INSTALLATION=true
+    - export NX_PREFER_UNIVERSAL_PACKAGES=true
+    - npm install -g @angular/cli
+    - npm install @nx/nx-linux-x64-gnu
+    - npm install
+    - |
+      # Replace AppVersion, sourceVersion, and buildTime
+      sed -i 's/AppVersion:1.0.0/AppVersion:$version/g' src/app/app.component.ts
+      sed -i "s/sourceVersion: \"\"/sourceVersion: \"${CI_COMMIT_SHA}\"/g" src/environments/environment.prod.ts
+      sed -i 's/buildTime: ""/buildTime: "'$(date -Is)'"/g' src/environments/environment.prod.ts
+    - |
+      # Replace version information in Dockerfile
+      sed -i 's/Version=1.0.0/Version=$version/g' Dockerfile
+      sed -i '/Version=/a ENV SourceVersion=${CI_COMMIT_SHA}' Dockerfile
+      sed -i '/Version=/a ENV BuildTime='$(date -Is)'' Dockerfile
+    - |
+      # Remove package-lock.json
+      rm -f package-lock.json
+    - |
+      # Build Angular application
+      npm run build:prod
+  artifacts:
+    paths:
+      - dist/UFE/
+      - replace_env.sh
+      - Dockerfile
+      - version.txt
+
+build image:
+  tags:
+    - saas-linux-large-amd64
+  stage: build image
+  image: quay.io/buildah/stable:latest
+  needs:
+    - build
+  artifacts:
+    paths:
+      - version.txt  
+  before_script:
+    # Initialize Buildah storage
+    - buildah version
+    - |
+      # Calculate incremental version number in build image stage
+      export ReleaseNumber=${ReleaseNumber:-2508}
+      # Fetch latest tags from remote to ensure we have the most up-to-date tag list
+      echo "Fetching latest tags from remote..."
+      git fetch --tags || echo "Warning: Could not fetch tags from remote"
+      # Debug: Show what tags we have
+      echo "All tags found:"
+      git tag -l | sort -V | tail -10
+      # Check if we have tags with the expected ReleaseNumber pattern (新格式: ${ReleaseNumber}.*.0)
+      expected_pattern_tags=$(git tag -l "${ReleaseNumber}.*.0" | wc -l)
+      echo "Tags matching expected pattern ${ReleaseNumber}.*.0: $expected_pattern_tags"
+      if [ "$expected_pattern_tags" -eq 0 ]; then
+        # not found ReleaseNumber.*.0 tag，use ${ReleaseNumber}.001.0
+        echo "No tags found with expected pattern ${ReleaseNumber}.*.0, using ${ReleaseNumber}.001.0 as version."
+        export version="${ReleaseNumber}.001.0"
+      else
+        # Use the expected ReleaseNumber pattern
+        echo "Looking for existing tags with pattern: $ReleaseNumber.*.0"
+        highest_build_number=$(git tag -l "${ReleaseNumber}.*.0" | sed -E "s/${ReleaseNumber}\.([0-9]+)\.0/\1/" | sort -n | tail -1)
+        if [ -z "$highest_build_number" ] || [ "$highest_build_number" = "" ]; then
+          buildNumber=1
+        else
+          buildNumber=$((highest_build_number + 1))
+        fi
+        if [ $buildNumber -gt 999 ]; then
+          echo "Error: Build number $buildNumber exceeds limit (999)"
+          exit 1
+        fi
+        export buildNumber=$(printf "%03d" $buildNumber)
+        export version="$ReleaseNumber.$buildNumber.0"
+        echo "Using calculated version number for image tag: $version"
+      fi
+      # Save version to file for next stages
+      echo "version=$version" > version.txt
+  script:
+    - buildah login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - |
+      # Get version from version.txt file
+      if [ -f version.txt ]; then
+        source version.txt
+        echo "Using version from build stage: $version"
+      else
+        echo "Warning: version.txt not found, using default version"
+        version="1.0.0"
+      fi
+    - |
+      # Print debug information
+      echo "Version: $version"
+      echo "Commit SHA: ${CI_COMMIT_SHA}"
+      echo "Build Time: $(date -Is)"
+      cp replace_env.sh dist/UFE/
+      # Build with version arguments, using dist/UFE/ as context
+      buildah bud --file Dockerfile.artifacts \
+        --build-arg "VERSION=$version" \
+        --build-arg "SOURCE_VERSION=${CI_COMMIT_SHA}" \
+        --build-arg "BUILD_TIME=$(date -Is)" \
+        --tag $CI_REGISTRY_IMAGE:$version \
+        --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME \
+        dist/UFE/
+    - |
+      # Verify the image was built with correct environment variables
+      echo "Verifying image environment variables:"
+      buildah run $(buildah from $CI_REGISTRY_IMAGE:$version) env | grep -E "Version|SourceVersion|BuildTime"
+    - buildah push $CI_REGISTRY_IMAGE:$version
+    - buildah push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  only:
+    - develop
+
+tag:
+  tags:
+    - ufe
+  stage: deploy to k8s and add tag
+  image: alpine/git:latest
+  needs:
+    - build image
+  script:
+    - |
+      # Use version from version.txt file
+      if [ -f version.txt ]; then
+        source version.txt
+        echo "Using version from build stage: $version"
+      else
+        echo "Error: version.txt not found. The build image stage must run successfully first."
+        exit 1
+      fi
+    # Create and push git tag
+    - git config --global user.email "ufe-devops@molex.com"
+    - git config --global user.name "gitlab+deploy-token-devops"
+    - |
+      echo "Processing tag: $version"
+      
+      if [ -n "$GitUser" ] && [ -n "$GitPassword" ]; then
+        echo "Setting up Git credentials for push"
+        git remote remove gitlab-push 2>/dev/null || true
+        git remote add gitlab-push https://${GitUser}:${GitPassword}@gitlab.com/${CI_PROJECT_PATH}.git
+        
+        if git rev-parse "$version" >/dev/null 2>&1; then
+          echo "Tag $version exists locally, attempting to push to remote"
+          git push gitlab-push "$version" || echo "Failed to push existing tag, but continuing..."
+        else
+          echo "Creating new tag $version"
+          git tag -a "$version" -m "Release $version - BuildTime $(date -Is)"
+          echo "Pushing new tag to remote"
+          git push gitlab-push "$version" || echo "Failed to push new tag, but continuing..."
+        fi
+        
+        echo "Verifying tag on remote..."
+        git ls-remote --tags gitlab-push | grep "$version" && echo "Tag $version confirmed on remote" || echo "Tag $version not found on remote"
+      else
+        if git rev-parse "$version" >/dev/null 2>&1; then
+          echo "Tag $version already exists locally"
+        else
+          echo "Creating local tag $version (no push credentials available)"
+          git tag -a "$version" -m "Release $version - BuildTime $(date -Is)"
+        fi
+        echo "Tag $version created locally only (push skipped due to missing credentials)"
+      fi
+      
+      echo "Tag processing completed for version: $version"
+    
+    # Update deployment if needed
+    - |
+      if [ -n "$updateImageURL" ] && [ -n "$AccessKey" ]; then
+        echo "Updating deployment with version: $version"
+        curl -X PUT \
+          -H "content-type: application/json" \
+          -H "Cookie: KuboardUsername=admin; KuboardAccessKey=$AccessKey" \
+          -d "{\"kind\":\"deployments\",\"namespace\":\"ufedev\",\"name\":\"ufe-vms-app\",\"images\":{\"registry.gitlab.com/molex/coc/dt/da/ufe/ufe-vms-app\":\"registry.gitlab.com/molex/coc/dt/da/ufe/ufe-vms-app:$version\"}}" \
+          "$updateImageURL"
+      else
+        echo "Deployment update skipped - missing updateImageURL or AccessKey"
+      fi

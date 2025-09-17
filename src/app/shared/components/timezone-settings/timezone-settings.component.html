@@ -1,0 +1,18 @@
+<div class="row">
+    <div class="form-group col col-12">
+        <label for="area" [title]="'::INFO_TimeZone' | abpLocalization">{{ '::SettingManagement:TimeZone' | abpLocalization }}</label>
+        <search-select id="area" [items]="timeZoneOptions" displayName="name" valueName="value"
+            (change)="selectChange($event)" [value]="selectedTimeZone">
+        </search-select>
+    </div>
+</div>
+<div class="row">
+    <div class="col col-12">
+        <hr />
+    </div>
+</div>
+<div>
+    <abp-button iconClass="fa-regular fa-floppy-disk" (click)="save()">
+        {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+</div>

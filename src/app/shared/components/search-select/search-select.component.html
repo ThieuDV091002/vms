@@ -1,0 +1,7 @@
+<ng-select #select [appendTo]="'body'" [items]="items" [searchable]="false" [(ngModel)]="value" [bindLabel]="displayName" [clearable]="value"
+    [bindValue]="valueName" (change)="changeClick($event)">
+    <ng-template ng-header-tmp>
+        <input #search type="search" (input)="select.filter($event.target.value)" [placeholder]="placeholder"/>
+
+    </ng-template>
+</ng-select>

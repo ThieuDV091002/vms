@@ -1,0 +1,128 @@
+<lpx-context-menu #menu>
+
+  <div class="accordion" id="accordion">
+    <div class="accordion-item">
+      <div
+        class="d-flex justify-content-between align-items-center accordion-button collapsed"
+        id="link-title">
+        <span>Links</span>
+        <i class="fas fa-expand-arrows-alt" (click)="goToLinksWidget()"></i>
+      </div>
+    </div>
+    <div class="accordion-item" *ngFor="let link of links; let i=index">
+      <h2 class="accordion-header" [id]="'heading-'+link.name">
+        <button class="accordion-button pe-2"
+          [class]="link.name==='Favorites' ? '' :'collapsed'" type="button"
+          data-bs-toggle="collapse"
+          [attr.data-bs-target]="'#collapse-'+link.name" aria-expanded="true"
+          [attr.aria-controls]="'collapse-'+link.name">
+          <!-- <span [class]="link.icon">
+                    </span> -->
+          <span
+            class="accordion-header-title">{{link.displayName|abpLocalization}}</span>
+        </button>
+      </h2>
+      <div [id]="'collapse-'+link.name" class="accordion-collapse collapse"
+        [class]="link.name==='Favorites' ? 'show' :''"
+        [attr.aria-labelledby]="'heading-'+link.name"
+        data-bs-parent="#accordion">
+        <div class="accordion-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"
+              *ngFor="let item of link.children; let i=index">
+              <div>
+                <span>
+                  @if (link.name==='Favorites') {
+                  <i class="fas fa-star favoriteColor"
+                    (click)="addOrRemoveFavorite(item.id, true)">
+                  </i>
+                  } @else {
+                  <i
+                    [class]="item.isFavorite ? 'fas fa-star favoriteColor' : 'fa fa-star-o'"
+                    (click)="addOrRemoveFavorite(item.id, item.isFavorite)">
+                  </i>
+                  }
+                </span>
+                <a href="{{item.url}}"
+                  target="_blank">{{item.displayName|abpLocalization}}</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</lpx-context-menu>
+
+<span class="fa fa-link nav-item nav-item"
+      (click)="show()"
+      [title]="'::Links'|abpLocalization"
+      [ngStyle]="{'color': isActive ? 'var(--lpx-brand)' : 'var(--lpx-navbar-text-color)'}">
+</span>
+
+<abp-modal [(visible)]="isModalVisible"
+  [options]="{ centered: true, size: 'xl', modalDialogClass: 'link-modal' }">
+  <ng-template #abpHeader>
+    <h3>{{ '::Links' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="card px-3 m-0 h-100">
+      <div id="data-tables-table-filter" class="data-tables-filter pb-1">
+        <div class="input-group">
+          <input #searchInput type="search" class="form-control"
+            [placeholder]="'Search by Category / Name / Target Readers'"
+            title="search"
+            (change)="searchKeyword = $event.target.value; hookToQuery()"
+            (keydown.enter)="searchKeyword = $event.target.value; hookToQuery()" />
+          <button class="btn btn-primary" type="button"
+            (click)="searchKeyword = $event.target.value; hookToQuery()">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <div class="datatable-container">
+        <ngx-datatable default [rows]="data?.items" [count]="data.totalCount"
+          [headerHeight]="40" [limit]="pageSize"
+          [reorderable]="true" [list]="list" [scrollbarV]="true"
+          [scrollbarH]="false" #myTable [columnMode]="'force'">
+          <ngx-datatable-column [sortable]="false" [maxWidth]="50">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <div class="custom-table-cell d-flex justify-content-center align-items-center" style="height: 100%;">
+                <i
+                  [class]="row.isFavorite ? 'fas fa-star favoriteColor' : 'fa fa-star-o'"
+                  (click)="addOrRemoveFavorite(row.id, row.isFavorite)"></i>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::Category' | abpLocalization"
+            prop="linkCategoryName" [maxWidth]="120">
+
+          </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::LABEL_Name' | abpLocalization"
+            prop="displayName" [maxWidth]="200">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <div>
+                <a href="{{row.url}}" target="_blank"
+                  [tooltip]="row.description" placement="bottom"
+                  [adaptivePosition]="false" container="body">
+                  {{ row.displayName | abpLocalization }}
+                </a>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column
+            [name]="'::LABEL_TargetReaders' | abpLocalization"
+            [sortable]="false" [maxWidth]="900">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <span>{{ getTargetReaders(row.linkRoleDtos) }}</span>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::LABEL_Tags' | abpLocalization"
+            prop="tags" [maxWidth]="200">
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+    </div>
+  </ng-template>
+</abp-modal>

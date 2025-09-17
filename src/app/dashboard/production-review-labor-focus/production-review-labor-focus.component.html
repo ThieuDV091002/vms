@@ -1,0 +1,631 @@
+<abp-page>
+    <div class="row entry-row fixed-header">
+      <div class="col-auto content-header w-100 d-flex">
+        <h2 *ngIf="!settings.hideTitle" class="content-header-title">{{('::' + settings.name) | abpLocalization}}</h2>
+        <div class="filter-bar ms-2">
+          <app-data-tier-filter (areaChange)="dataTierChange($event)" (cellChange)="dataTierChange($event)"
+            (workCenterChange)="dataTierChange($event)" dataTierLevel="WorkCenter">
+          </app-data-tier-filter>
+        </div>
+      </div>
+    </div>
+    <div class="review-content card">
+        <div class="content-filter d-flex justify-content-between px-1">
+            <div class="quick-filter">
+                <span>{{'::LABEL_QuickFilters' | abpLocalization}}: </span>
+                <a [class.active]="!isYesterday" (click)="isYesterday = false;getStartTime()">{{'::Today' | abpLocalization}}</a>
+                <a [class.active]="isYesterday"(click)="isYesterday = true;getStartTime()">{{'::LABEL_Yesterday' | abpLocalization}}</a>
+            </div>
+            <div class="right-action d-flex">
+                <div>
+                    @if (updatedMins) {
+                        <span>{{'::Updated' | abpLocalization}}:</span>
+                        <span class="refresh-time me-2">{{updatedMins}} {{'::LABEL_MinutesAgo' | abpLocalization}}</span>
+                    }
+                    <span>{{(manualRefresh ? '::LABEL_ManualDataRefresh': '::LABEL_AutoDataRefresh') | abpLocalization}}</span>
+                </div>
+                <span class="me-1" (click)="refreshChange()"><i [ngClass]="['fa', manualRefresh ? 'text-danger fa-toggle-on': 'text-success fa-toggle-off']"></i></span>
+                <div><span>{{(settings.isProductSeries ? '::LABEL_ProductSerie': '::MENU_ProductFamily') | abpLocalization}}</span></div>
+                <span (click)="settings.isProductSeries = !settings.isProductSeries"><i [ngClass]="['fa', settings.isProductSeries ? 'fa-toggle-on': 'fa-toggle-off']"></i></span>
+                <span class="advanced-filter-icon"
+                  (click)="showAdvancedFilter = !showAdvancedFilter">
+                  <img [class.filter-show-full]="filterSearchHasValue"
+                    [class.filter-show-empty]="!filterSearchHasValue"
+                    [ngClass]="showAdvancedFilter ? 'd-none' : ''" alt="Filter Show" />
+                  <img [class.filter-hidden-full]="filterSearchHasValue"
+                    [class.filter-hidden-empty]="!filterSearchHasValue"
+                    [ngClass]="showAdvancedFilter ? '' : 'd-none'"
+                    alt="Filter Hidden" />
+                </span>
+                <span class="icon-combine" (click)="showComments()">
+                    <span class="base-icon"><i class="fas fa-message"></i></span>
+                    <span class="cover-icon"><i class="fa fa-eye"></i></span>
+                </span>
+                <span class="icon-combine" (click)="addComment()" *abpPermission="'Comment.Create'">
+                    <span class="base-icon"><i class="fas fa-message"></i></span>
+                    <span class="cover-icon"><i class="fa fa-plus"></i></span>
+                </span>
+                <span title="Create Card" (click)="createCard()"
+                    *abpPermission="'ActivityCard.Create'">
+                    <i class="fas fa-plus fa-lg"></i>
+                </span>
+                <!-- <span><i class="fa fa-expand"></i></span> -->
+                <span (click)="openEditSettings()"><i class="fa fa-cog"></i></span>
+            </div>
+        </div>
+        <div *ngIf="showAdvancedFilter" class="advanced-filter d-flex px-1 pb-1 flex-wrap">
+            <div class="col-12 col-md-6 d-flex flex-wrap">
+                <div class="form-group col-12 col-md-6">
+                    @if (settings.isProductSeries) {
+                        <label for="">{{'::LABEL_ProductSerie' | abpLocalization}}</label>
+                        <ng-select
+                            appendTo="body"
+                            bindLabel="displayName"
+                            bindValue="id"
+                            [multiple]="true"
+                            [closeOnSelect]="false"
+                            [(ngModel)]="settings.productSeries"
+                            (change)="saveSettings()"
+                            [items]="productSeries">
+                            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item">
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                        </ng-select>
+                    } @else {
+                        <label for="">{{'::MENU_ProductFamily' | abpLocalization}}</label>
+                        <ng-select
+                            appendTo="body"
+                            bindLabel="displayName"
+                            bindValue="id"
+                            [multiple]="true"
+                            [closeOnSelect]="false"
+                            [(ngModel)]="settings.productFamilies"
+                            [items]="productFamilies">
+                            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item">
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                        </ng-select>}
+                </div>
+                <div class="form-group col-12 col-md-6">
+                    <label for="">{{'::MENU_Product' | abpLocalization}}</label>
+                    <ng-select
+                        appendTo="body"
+                        bindLabel="displayName"
+                        bindValue="id"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [(ngModel)]="settings.products"
+                        [items]="products">
+                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                            <span>{{item.displayName || item.name}}</span>
+                        </ng-template>
+                        <ng-template ng-option-tmp let-item="item">
+                            <span>{{item.displayName || item.name}}</span>
+                        </ng-template>
+                    </ng-select>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" (click)="clearFilters()">{{'::Clear' | abpLocalization}}</button>
+                <button type="button" class="btn btn-sm btn-primary" (click)="applyFilters()">{{'::Search' | abpLocalization}}</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="row mx-0">
+                <div class="report-chart scrap-chart col col-12 col-md-4 px-1" [class.advanced-filter-active]="showAdvancedFilter">
+                    <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+                        <app-top-scrap-reasons-chart
+                        [areaIds]="selectedAreas"
+                        [cellIds]="selectedCells"
+                        [workCenterIds]="selectedWorkCenters"
+                        [productFamilyIds]="selectedProductFamilies"
+                        [productSerieIds]="selectedProductSeries"
+                        [productIds]="selectedProducts"
+                        [startDate]="startTime"
+                        [endDate]="endTime">
+                        </app-top-scrap-reasons-chart>
+                    </div>
+                </div>
+                <div class="report-chart downtime-reason-chart col col-12 col-md-4 px-1" [class.advanced-filter-active]="showAdvancedFilter">
+                    <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+                        <app-top-downtime-reasons-chart
+                        [areaIds]="selectedAreas"
+                        [cellIds]="selectedCells"
+                        [workCenterIds]="selectedWorkCenters"
+                        [productFamilyIds]="selectedProductFamilies"
+                        [productSerieIds]="selectedProductSeries"
+                        [productIds]="selectedProducts"
+                        [startDate]="startTime"
+                        [endDate]="endTime">
+                        </app-top-downtime-reasons-chart>
+                    </div>
+                </div>
+                <div class="report-chart performance-part-number-chart col col-12 col-md-4 px-1" [class.advanced-filter-active]="showAdvancedFilter">
+                    <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+                        <app-top-performance-products-chart
+                        [areaIds]="selectedAreas"
+                        [cellIds]="selectedCells"
+                        [workCenterIds]="selectedWorkCenters"
+                        [productFamilyIds]="selectedProductFamilies"
+                        [productSerieIds]="selectedProductSeries"
+                        [productIds]="selectedProducts"
+                        [startDate]="startTime"
+                        [endDate]="endTime">
+                        </app-top-performance-products-chart>
+                    </div>
+                </div>
+            </div>
+            <div class="labor-table-l1 px-1">
+                <ngx-datatable #myTable [rows]="laborFocusData" [limit]="10" [count]="laborFocusData.length"
+                    [summaryRow]="true" [summaryPosition]="'bottom'" default>
+                    <!-- First Level -->
+                    <ngx-datatable-column [name]="'::LABEL_StartTime' | abpLocalization" prop="incrementStartTime" [sortable]="false" [width]="106" [canAutoResize]="false" [summaryTemplate]="totalTemplate">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.incrementStartTime.split(' ').slice(1).join(' ')}}
+                        </ng-template>
+                        <ng-template #totalTemplate>
+                            <span>{{'::Total' | abpLocalization}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_EndTime' | abpLocalization" prop="incrementEndTime" [sortable]="false" [width]="106" [canAutoResize]="false" [canAutoResize]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.incrementEndTime.split(' ').slice(1).join(' ')}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_Shift' | abpLocalization" prop="shiftDisplayName" [sortable]="false" [width]="106" [canAutoResize]="false" [canAutoResize]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.shiftDisplayName}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="('::'+ (settings.isProductSeries ? 'LABEL_ProductSerie' : 'LABEL_ProductFamily')) | abpLocalization" prop="productGroupingName" [sortable]="false" [width]="106" [canAutoResize]="false">
+                        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                            <span class="cursor-pointer" (click)="toggleExpandRow(row, expanded, myTable)">{{row.productGroupingName}}</span>
+                            <a *ngIf="!row.isShiftInfoOnly"
+                                href="javascript:void(0)"
+                                class="expand-icon"
+                                [class.datatable-icon-right]="!expanded"
+                                [class.datatable-icon-down]="expanded"
+                                title="Expand/Collapse Row"
+                                (click)="toggleExpandRow(row, expanded, myTable)"
+                            >
+                            </a>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::Label_StaffNeeded' | abpLocalization" prop="staffNeeded" [sortable]="false" [width]="138" [canAutoResize]="false"  [summaryTemplate]="summaryStaffNeeded">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.staffNeeded | number : '1.0-1'}}
+                        </ng-template>
+                        <ng-template #summaryStaffNeeded>
+                            <span>{{laborFocusSummaryData?.staffNeeded | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::Label_StaffActual' | abpLocalization" prop="staffActual" [sortable]="false" [width]="138" [canAutoResize]="false" [summaryTemplate]="summaryStaffActual">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.staffActual | number : '1.0-1'}}
+                        </ng-template>
+                        <ng-template #summaryStaffActual>
+                            <span>{{laborFocusSummaryData?.staffActual | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <!-- product detail start -->
+                    <ngx-datatable-row-detail [rowHeight]="'auto'">
+                        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                        <div class="data-detail">
+                            <ngx-datatable #myProductTable [id]="row.productGroupingId" [rows]="row?.products" [footerHeight]="0" default>
+                                <!-- workcenter detail start -->
+                                <ngx-datatable-row-detail id="workcenterDetail" [rowHeight]="'auto'">
+                                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                                    <div class="data-detail">
+                                        <!-- Third Level -->
+                                        <ngx-datatable [rows]="row?.workcenters" [footerHeight]="0" default>
+                                            <ngx-datatable-column [name]="'::LABEL_WorkCenter' | abpLocalization" prop="workCenterName" [sortable]="false" [width]="414" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.workCenterDisplayName}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::Label_StaffNeeded' | abpLocalization" prop="staffNeeded" [sortable]="false" [width]="138" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    {{row.staffNeeded | number : '1.0-1'}}
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::Label_StaffActual' | abpLocalization" prop="staffActual" [sortable]="false" [width]="138" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    {{row.staffActual | number : '1.0-1'}}
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_Plan' | abpLocalization" prop="plannedQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.plannedQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_Actual' | abpLocalization" prop="producedQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.producedQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_Diff' | abpLocalization" prop="differenceQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.differenceQty)" [class.alert-color]="row.differenceQty < 0">{{row.differenceQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_CumDiff' | abpLocalization" prop="cumulativeDifferenceQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.cumulativeDifferenceQty)" [class.alert-color]="row.cumulativeDifferenceQty < 0">{{row.cumulativeDifferenceQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_ScrapQty' | abpLocalization" prop="scrapQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.scrapQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::Label_ReworkQty' | abpLocalization" prop="reworkQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.reworkQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_PlannedDowntimeMinutes' | abpLocalization" prop="plannedDowntimeMinutes" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.plannedDowntimeMinutes | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_UnplannedDowntimeMinutes' | abpLocalization" prop="unplannedDowntimeMinutes" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.unplannedDowntimeMinutes)" [ngClass]="{'alert-bg': row.unplannedDowntimeKpi == 3, 'warning-bg': row.unplannedDowntimeKpi == 2}">{{row.unplannedDowntimeMinutes | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="" [sortable]="false" [width]="90" [canAutoResize]="false"> </ngx-datatable-column>
+                                        </ngx-datatable>
+                                    </div>
+                                    </ng-template>
+                                </ngx-datatable-row-detail>
+                                <!-- workcenter detail end -->
+                                <!-- Second Level -->
+                                <ngx-datatable-column [name]="'::LABEL_Product' | abpLocalization" prop="productName" [sortable]="false" [width]="140" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.productName}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::Label_WorkOrder' | abpLocalization" prop="workOrder" [sortable]="false" [width]="140" [canAutoResize]="false">
+                                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                                        <span class="cursor-pointer" (click)="toggleExpandProductRow(row, expanded, myProductTable)">{{row.workOrder}}</span>
+                                        <a
+                                            href="javascript:void(0)"
+                                            class="expand-icon"
+                                            [class.datatable-icon-right]="!expanded"
+                                            [class.datatable-icon-down]="expanded"
+                                            title="Expand/Collapse Row"
+                                            (click)="toggleExpandProductRow(row, expanded, myProductTable)"
+                                        >
+                                        </a>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_Operation' | abpLocalization" prop="operation" [sortable]="false" [width]="140" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.operation}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::Label_StaffNeeded' | abpLocalization" prop="staffNeeded" [sortable]="false" [width]="138" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        {{row.staffNeeded | number : '1.0-1'}}
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::Label_StaffActual' | abpLocalization" prop="staffActual" [sortable]="false" [width]="138" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        {{row.staffActual | number : '1.0-1'}}
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_Plan' | abpLocalization" prop="plannedQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.plannedQty | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_Actual' | abpLocalization" prop="producedQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.producedQty | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_Diff' | abpLocalization" prop="differenceQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.differenceQty)" [class.alert-color]="row.differenceQty < 0">{{row.differenceQty | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_CumDiff' | abpLocalization" prop="cumulativeDifferenceQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.cumulativeDifferenceQty)" [class.alert-color]="row.cumulativeDifferenceQty < 0">{{row.cumulativeDifferenceQty | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_ScrapQty' | abpLocalization" prop="scrapQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.scrapQty | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::Label_ReworkQty' | abpLocalization" prop="reworkQty" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.reworkQty | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_PlannedDowntimeMinutes' | abpLocalization" prop="plannedDowntimeMinutes" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.plannedDowntimeMinutes | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_UnplannedDowntimeMinutes' | abpLocalization" prop="unplannedDowntimeMinutes" [sortable]="false" [width]="90" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.unplannedDowntimeMinutes)" [ngClass]="{'alert-bg': row.unplannedDowntimeKpi == 3, 'warning-bg': row.unplannedDowntimeKpi == 2}">{{row.unplannedDowntimeMinutes | number : '1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column name="" [sortable]="false" [width]="90" [canAutoResize]="false"> </ngx-datatable-column>
+                            </ngx-datatable>
+                        </div>
+                        </ng-template>
+                    </ngx-datatable-row-detail>
+                    <!-- product detail end -->
+                    <ngx-datatable-column [name]="'::LABEL_Plan' | abpLocalization" prop="plannedQty" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="summaryPlannedQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.plannedQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryPlannedQty>
+                            <span>{{laborFocusSummaryData?.plannedQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_Actual' | abpLocalization" prop="producedQty" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="producedQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.producedQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #producedQty>
+                            <span>{{laborFocusSummaryData?.producedQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_Diff' | abpLocalization" prop="differenceQty" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="differenceQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.differenceQty)" [class.alert-color]="row.differenceQty < 0">{{row.differenceQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #differenceQty>
+                            <span *ngIf="isValidValue(laborFocusSummaryData?.differenceQty)" [class.alert-color]="laborFocusSummaryData?.differenceQty < 0">{{laborFocusSummaryData?.differenceQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_CumDiff' | abpLocalization" prop="cumulativeDifferenceQty" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="summaryCumulativeDifferenceQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.cumulativeDifferenceQty)" [class.alert-color]="row.cumulativeDifferenceQty < 0">{{row.cumulativeDifferenceQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryCumulativeDifferenceQty>
+                            <span *ngIf="isValidValue(laborFocusSummaryData?.cumulativeDifferenceQty)" [class.alert-color]="laborFocusSummaryData?.cumulativeDifferenceQty < 0">{{laborFocusSummaryData?.cumulativeDifferenceQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_ScrapQty' | abpLocalization" prop="scrapQty" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="summaryScrapQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.scrapQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryScrapQty>
+                            <span>{{laborFocusSummaryData?.scrapQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::Label_ReworkQty' | abpLocalization" prop="reworkQty" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="summaryReworkQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.reworkQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryReworkQty>
+                            <span>{{laborFocusSummaryData?.reworkQty | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_PlannedDowntimeMinutes' | abpLocalization" prop="plannedDowntimeMinutes" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="summaryPlannedDowntimeMinutes">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.plannedDowntimeMinutes | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryPlannedDowntimeMinutes>
+                            <span>{{laborFocusSummaryData?.plannedDowntimeMinutes | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_UnplannedDowntimeMinutes' | abpLocalization" prop="unplannedDowntimeMinutes" [sortable]="false" [width]="90" [canAutoResize]="false" [summaryTemplate]="summaryUnplannedDowntimeMinutes">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.unplannedDowntimeMinutes)" [ngClass]="{'alert-bg': row.unplannedDowntimeKpi == 3, 'warning-bg': row.unplannedDowntimeKpi == 2}">{{row.unplannedDowntimeMinutes | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryUnplannedDowntimeMinutes>
+                            <span *ngIf="isValidValue(laborFocusSummaryData.unplannedDowntimeMinutes)" [ngClass]="{'alert-bg': laborFocusSummaryData.unplannedDowntimeKpi == 3, 'warning-bg': laborFocusSummaryData.unplannedDowntimeKpi == 2}">{{laborFocusSummaryData?.unplannedDowntimeMinutes | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_UPPH' | abpLocalization" prop="upph" [sortable]="false" [width]="90" [summaryTemplate]="summaryUPPH">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.upph)" [ngClass]="{'alert-bg': row.upphKpi == 3, 'warning-bg': row.upphKpi == 2}">{{row.upph | number : '1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryUPPH>
+                            <span *ngIf="isValidValue(laborFocusSummaryData.upph)" [ngClass]="{'alert-bg': laborFocusSummaryData.upphKpi == 3, 'warning-bg': laborFocusSummaryData.upphKpi == 2}">{{laborFocusSummaryData?.upph | number : '1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>
+            </div>
+
+        </div>
+        <div class="footer d-flex justify-content-between">
+            <div class="color-tips">
+                <div class="not-meet-warning"><span class="color-item me-1"></span><span>{{'::LABEL_NotMeetWithinGap' | abpLocalization}}</span></div>
+                <div class="not-meet-alert"><span class="color-item me-1"></span><span>{{'::LABEL_NotMeetOverGap' | abpLocalization}}</span></div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.WorkOrder)"><i class="fa fa-plus"></i> {{'::LABEL_OrderInfo' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.Labor)"><i class="fa fa-plus"></i> {{'::LABEL_Labor' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.BreakTime)"><i class="fa fa-plus"></i> {{'::LABEL_BreakTime' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.Downtime)"><i class="fa fa-plus"></i> {{'::Label_Dwontime' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ProductQty)"><i class="fa fa-plus"></i> {{'::LABEL_ProductQty' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ScrapQty)"><i class="fa fa-plus"></i> {{'::LABEL_ScrapQty' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ReworkQty)"><i class="fa fa-plus"></i> {{'::Label_ReworkQty' | abpLocalization}}</button>
+            </div>
+        </div>
+    </div>
+  </abp-page>
+@if (openAddData) {
+    @if (addDataType === DataType.WorkOrder) {
+        <app-work-order-data
+            [openAddWorkOrderData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-work-order-data>
+    }
+    @else if(addDataType === DataType.Labor) {
+        <app-labor-data
+            [openAddLaborData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-labor-data>
+    }
+    @else if(addDataType === DataType.BreakTime) {
+        <app-breaktime-data
+            [openAddBreaktimeData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-breaktime-data>
+    }
+    @else if(addDataType === DataType.Downtime) {
+        <app-downtime-data
+            [openAddDowntimeData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-downtime-data>
+    }
+    @else if(addDataType === DataType.ProductQty) {
+        <app-production-qty-data
+            [openAddProductionData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-production-qty-data>
+    }
+    @else if(addDataType === DataType.ScrapQty) {
+        <app-scrap-qty-data
+            [openAddScrapData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-scrap-qty-data>
+    }
+    @else if(addDataType === DataType.ReworkQty) {
+        <app-rework-qty-data
+            [openAddReworkQtyData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-rework-qty-data>
+    }
+}
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group">
+            <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="editSettings.name"/>
+        </div>
+        <div class="form-group">
+            <div class="d-flex">
+                <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+                    {{ '::Label_HideTitle' | abpLocalization }}
+                </label>
+                <div class="col-form-label ms-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="hide-title"
+                            [(ngModel)]="editSettings.hideTitle" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mb-2">
+            <label for="refresh-rate" [title]="'::INFO_RefreshRateMin' | abpLocalization">{{'::LABEL_RefreshRateMin'|abpLocalization}}</label>
+            <input type="text" id="refresh-rate" class="form-control" [(ngModel)]="editSettings.refreshRate" />
+        </div>
+        <div class="form-group mb-2">
+            <label for="auto-reset-idle-time" [title]="'::INFO_AutoResetIdleTime' | abpLocalization">{{'::LABEL_AutoResetIdleTime'|abpLocalization}}</label>
+            <input type="text" id="auto-reset-idle-time" class="form-control" [(ngModel)]="editSettings.autoResetIdleTime" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="!settings?.name" (click)="saveSettings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl', windowClass: 'card-editor-modal'}">
+    <ng-template #abpBody>
+        <app-card-editor [card]="card" (cardClose)="isModalVisible=false"></app-card-editor>
+    </ng-template>
+</abp-modal>
+
+<app-add-comment-data
+    *ngIf="isAddCommentModalVisible"
+    [selectedComment]="selectedComment"
+    [areaData]="areaData"
+    [currentShift]="currentShift"
+    [showInterval]="true"
+    [openModal]="isAddCommentModalVisible"
+    (closeEvent)="isAddCommentModalVisible = false">
+</app-add-comment-data>
+<abp-modal [(visible)]="isViewCommentVisible" [options]="{size: 'xl', windowClass: 'comment-modal'}">
+    <ng-template #abpHeader>
+        <h3>{{ commentViewType === 'commentPage' ? 'Comment' : '::Shift Comment' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div *ngIf="commentViewType === 'commentPage'" style="height: 700px;">
+            <app-comment-display-widget
+                [selected]="{widgetName: 'commentPage', extraProperties: {hideTitle: true, pageSize: 10}}"
+                [index]="0"
+                [dataTierTreeNode]="haveAccessTreeNode"
+                [selectedDataTier]="selectedDataTier"
+                [currentShift]="currentShift"
+                [queryId]="1"
+                (updateChange)="handleCommentWidgetUpdate($event)">
+            </app-comment-display-widget>
+        </div>
+        <div *ngIf="commentViewType === 'shiftComment'" style="height: 700px;">
+            <app-comment-entry-widget
+                [selected]="{widgetName: 'shiftComment', extraProperties: {hideTitle: true, pageSize: 20}}"
+                [index]="0"
+                [dataTierTreeNode]="haveAccessTreeNode"
+                [selectedDataTier]="selectedDataTier"
+                [currentShift]="currentShift"
+                [queryId]="1"
+                (updateChange)="handleCommentWidgetUpdate($event)">
+            </app-comment-entry-widget>
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>

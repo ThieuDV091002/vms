@@ -1,0 +1,10 @@
+app-standard-single ::ng-deep .standard-title-container {
+    .text-end {
+        display: none;
+    }
+}
+.card {
+    height: calc(100vh - 0.5rem);
+    justify-content: center;
+    margin: 0;
+}

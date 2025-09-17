@@ -1,0 +1,57 @@
+<abp-page [title]="selected.title && !selected.hideTitle ? selected.title : ''">
+    <abp-page-toolbar-container class="col">
+        <div class="text-end">
+            <button class="btn btn-sm btn-primary mx-2" (click)="expand()">
+                @if (expandChart) {
+                    <i class="fa fa-compress"></i>
+                } @else {
+                    <i class="fa fa-expand"></i>
+                }   
+            </button>
+            <div ngbDropdown class="d-inline-block" [placement]="'bottom-end'">
+                <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-haspopup="true" ngbDropdownToggle>
+                    <i class="fa fa-cog me-1" aria-hidden="true"></i>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdown">
+                    <button ngbDropdownItem (click)="edit=true">
+                        {{ '::Edit' | abpLocalization }}
+                        </button>
+                    <button ngbDropdownItem (click)="delete()">
+                        {{ '::Delete' | abpLocalization }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </abp-page-toolbar-container>
+
+    <div class="card">
+        <div class="card-body">
+            <form [formGroup]="form" [hidden]="!edit && !selected.initial">
+                <div class="row">
+                    <label for="role-name" class="col-sm-2 col-form-label">{{'::Title' | abpLocalization}}</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="role-title" class="form-control" formControlName="title" autofocus />
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-sm-2 col-form-label" for="role-hide-title">
+                        {{ '::Label_HideTitle' | abpLocalization }}   
+                    </label>
+                    <div  class="col-sm-10 col-form-label">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="role-hide-title" formControlName="hideTitle" />
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end mt-2">
+                    <button class="btn btn-primary me-2" [disabled]="!form?.valid" (click)="save()">{{'::Ok' | abpLocalization}}</button>
+                    <button class="btn btn-outline-primary" (click)="cancel()">{{ '::Cancel' | abpLocalization}}</button>
+                </div>
+            </form>
+            @if (!edit) {
+                <div>Widget template</div>
+            }
+        </div>
+    </div>
+</abp-page>

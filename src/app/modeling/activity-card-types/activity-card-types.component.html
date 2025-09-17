@@ -1,0 +1,259 @@
+<app-modeling-template [title]="'::MENU_ActivityCardType'" [data]="data" [objectType]="'ActivityCardType'"
+  [copyPrefix]="'::LABEL_NewActivityCardType'"
+  [permissions]="{create: 'ActivityCardType.Create', edit: 'ActivityCardType.Edit', delete: 'ActivityCardType.Delete', copy: 'ActivityCardType.Copy', import: 'ActivityCardType.Import', export: 'ActivityCardType.Export'}"
+  [columns]="columns" [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))" (multiDelete)="multiDelete($event)"
+  (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)"
+  (import)="import($event)" (dataViewHistory)="viewHistory($event)" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{size: 'md'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (activityCardTypeForm) {
+    <form [formGroup]="activityCardTypeForm" (ngSubmit)="save()">
+      <div class="accordion accordion-flush">
+        <!-- genaral start -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" class="accordion-collapse collapse"  [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="form-group mb-2">
+                <label for="activity-card-type-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                <input type="text" id="activity-card-type-name" class="form-control" formControlName="name" autofocus
+                  (input)="activityCardTypeForm.controls['displayName'].setValue($event.target.value)"/>
+              </div>
+              <div class="form-group mb-2">
+                <label for="activity-card-type-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> *</span>
+                <input type="text" id="activity-card-type-displayName" class="form-control" formControlName="displayName" />
+              </div>
+              <div class="form-group mb-2">
+                <label for="activity-card-type-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                <input type="text" id="activity-card-type-description" class="form-control" formControlName="description" />
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="activity-card-type-state-model" [title]="'::INFO_StateModel' | abpLocalization">{{'::LABEL_StateModel'|abpLocalization}}</label>
+                    <ng-select appendTo="body" [items]="stateModels" bindValue="id" bindLabel="name"
+                      formControlName="stateModelId"></ng-select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="state" [title]="'::INFO_InitialStatus' | abpLocalization">{{ '::LABEL_InitialStatus'|abpLocalization}}</label>
+                    <ng-select [items]="states" appendTo="body" bindValue="id" bindLabel="displayName"
+                      formControlName="initialStatusId"></ng-select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="activity-card-type-card-color" [title]="'::INFO_CardColor' | abpLocalization">{{'::LABEL_CardColor' | abpLocalization}}</label>
+                    <div class="color-picker">
+                      <input type="text" id="activity-card-type-card-color" class="form-control"
+                        formControlName="cardColor" />
+                      <input type="color" class="color-selector" [value]="selectedCardColor"
+                        (input)="updateColor($event.target.value, 'cardColor')" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- To Delete when settins ready start -->
+              <!-- <div class="form-check mb-2">
+                <input type="checkbox" id="AbpIdentity-RequiredReason" class="form-check-input"
+                  formControlName="requiredReason" (click)="readonly ? $event.preventDefault() : null" />
+                <label class="form-check-label" [title]="'::INFO_RequiredReason' | abpLocalization">{{ '::LABEL_RequiredReason' | abpLocalization }}</label>
+              </div>
+              <div class="form-check mb-2">
+                <input type="checkbox" id="AbpIdentity-RequiredIncidentDate" class="form-check-input"
+                  formControlName="requiredIncidentDate" (click)="readonly ? $event.preventDefault() : null" />
+                <label class="form-check-label" [title]="'::INFO_RequiredIncidentDate' | abpLocalization">{{ '::LABEL_RequiredIncidentDate' | abpLocalization }}</label>
+              </div>
+              <div class="form-check mb-2">
+                <input type="checkbox" id="AbpIdentity-RequiredEscalation" class="form-check-input"
+                  formControlName="requiredEscalation" (click)="readonly ? $event.preventDefault() : null" />
+                <label class="form-check-label" [title]="'::INFO_RequiredEscalation' | abpLocalization">{{ '::LABEL_RequiredEscalation' | abpLocalization }}</label>
+              </div>
+              <div class="form-check mb-2">
+                <input type="checkbox" id="AbpIdentity-RequiredValueRealization" class="form-check-input"
+                  formControlName="requiredValueRealization" (click)="readonly ? $event.preventDefault() : null" />
+                <label class="form-check-label" [title]="'::INFO_RequiredValueRealization' | abpLocalization">{{ '::LABEL_RequiredValueRealization' | abpLocalization }}</label>
+              </div> -->
+              <!-- To Delete when settins ready end -->
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#fields-settings" type="button"
+              aria-controls="fields-settings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_ActivityCardFieldsSetting' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="fields-settings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <ul>
+                <li>
+                  <div class="field-name">{{'::FieldName' | abpLocalization}}</div>
+                  <div class="field-required">{{'::LABEL_Required' | abpLocalization}}</div>
+                  <div class="field-optional">{{'::LABEL_Optional' | abpLocalization}}</div>
+                  <div class="filed-hidden">{{'::LABEL_Hidden' | abpLocalization}}</div>
+                </li>
+                @for (field of fieldsSetting; track field) {
+                  <li *ngIf="!field.parentType || (field.parentType && activityCardTypeForm.get(field.parentType).value) !== 'Hidden'">
+                    <div class="field-name">
+                      {{'::' + field.name | abpLocalization}}
+                    </div>
+                    <div class="field-required form-check">
+                      <input type="checkbox" (change)="onCheckboxChange($event, field.type, 'Required')" [checked]="activityCardTypeForm.get(field.type).value === 'Required'" class="form-check-input"/>
+                    </div>
+                    <div class="field-optional form-check">
+                      <input type="checkbox" (change)="onCheckboxChange($event, field.type, 'Optional')" [checked]="activityCardTypeForm.get(field.type).value === 'Optional'" class="form-check-input"/>
+                    </div>
+                    <div class="filed-hidden form-check">
+                      <input type="checkbox" (change)="onCheckboxChange($event, field.type, 'Hidden')" [checked]="activityCardTypeForm.get(field.type).value === 'Hidden'" class="form-check-input"/>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button"
+            role="tab" aria-controls="general" aria-selected="true">
+            {{ '::General' | abpLocalization }}
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div class="form-group mb-2">
+            <label for="activity-card-type-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+            <input type="text" id="activity-card-type-name" class="form-control" formControlName="name" autofocus
+              (change)="activityCardTypeForm.controls['displayName'].value === '' ? activityCardTypeForm.controls['displayName'].setValue($event.target.value) : null" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="activity-card-type-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> *</span>
+            <input type="text" id="activity-card-type-displayName" class="form-control" formControlName="displayName" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="activity-card-type-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+            <input type="text" id="activity-card-type-description" class="form-control" formControlName="description" />
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <div class="form-group">
+                <label for="activity-card-type-state-model" [title]="'::INFO_StateModel' | abpLocalization">{{'::LABEL_StateModel'|abpLocalization}}</label>
+                <ng-select appendTo="body" [items]="stateModels" bindValue="id" bindLabel="name"
+                  formControlName="stateModelId"></ng-select>
+              </div>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+              <div class="form-group">
+                <label for="state" [title]="'::INFO_InitialStatus' | abpLocalization">{{ '::LABEL_InitialStatus'|abpLocalization}}</label>
+                <ng-select [items]="states" appendTo="body" bindValue="id" bindLabel="name"
+                  formControlName="initialStatusId"></ng-select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <div class="form-group">
+                <label for="activity-card-type-card-color" [title]="'::INFO_CardColor' | abpLocalization">{{'::LABEL_CardColor' | abpLocalization}}</label>
+                <div class="color-picker">
+                  <input type="text" id="activity-card-type-card-color" class="form-control"
+                    formControlName="cardColor" />
+                  <input type="color" class="color-selector" [value]="selectedCardColor"
+                    (input)="updateColor($event.target.value, 'cardColor')" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mt-2">
+            <div class="form-check mb-2">
+              <input type="checkbox" id="AbpIdentity-RequiredReason" class="form-check-input"
+                formControlName="requiredReason" (click)="readonly ? $event.preventDefault() : null" />
+              <label class="form-check-label" [title]="'::INFO_RequiredReason' | abpLocalization">{{ '::LABEL_RequiredReason' | abpLocalization }}</label>
+            </div>
+            <div class="form-check mb-2">
+              <input type="checkbox" id="AbpIdentity-RequiredIncidentDate" class="form-check-input"
+                formControlName="requiredIncidentDate" (click)="readonly ? $event.preventDefault() : null" />
+              <label class="form-check-label" [title]="'::INFO_RequiredIncidentDate' | abpLocalization">{{ '::LABEL_RequiredIncidentDate' | abpLocalization }}</label>
+            </div>
+            <div class="form-check mb-2">
+              <input type="checkbox" id="AbpIdentity-RequiredEscalation" class="form-check-input"
+                formControlName="requiredEscalation" (click)="readonly ? $event.preventDefault() : null" />
+              <label class="form-check-label" [title]="'::INFO_RequiredEscalation' | abpLocalization">{{ '::LABEL_RequiredEscalation' | abpLocalization }}</label>
+            </div>
+            <div class="form-check mb-2">
+              <input type="checkbox" id="AbpIdentity-RequiredValueRealization" class="form-check-input"
+                formControlName="requiredValueRealization" (click)="readonly ? $event.preventDefault() : null" />
+              <label class="form-check-label" [title]="'::INFO_RequiredValueRealization' | abpLocalization">{{ '::LABEL_RequiredValueRealization' | abpLocalization }}</label>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="activityCardTypeForm?.invalid" (click)="save()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'ActivityCardType'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

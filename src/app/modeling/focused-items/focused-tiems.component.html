@@ -1,0 +1,195 @@
+<abp-page [title]="'::MENU_FocusedItem' | abpLocalization" [toolbar]="data.items">
+  <abp-page-toolbar-container class="col">
+    <div class="text-end pt-2">
+      <!-- tooltip -->
+      <div ngbDropdown  class="d-inline-block">
+        <button *abpPermission="'FocusedItem.Import'" class="btn btn-outline-primary btn-sm mx-2"
+        type="button" (click)="selectImportFile.value='';selectImportFile.click()">
+          <i class="fa fa-file-import me-1" aria-hidden="true"></i>
+          {{ '::Import' | abpLocalization }}
+        </button>
+        <input type="file" #selectImportFile class="d-none" (change)="onFileChange($event)"
+          [accept]="acceptFileType[FileType.Json] + ',' + acceptFileType[FileType.Excel]" />
+      </div>
+      @if(selectedItems.length === 0) {
+        <div ngbDropdown  *abpPermission="'FocusedItem.Export'" class="d-inline-block">
+          <button class="btn btn-outline-primary btn-sm me-2 dropdown-toggle" type="button" data-toggle="dropdown"
+            aria-haspopup="true" ngbDropdownToggle>
+            <i class="fa fa-download me-1" aria-hidden="true"></i>
+            {{ '::ExportAll' | abpLocalization }}
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdown">
+            <button ngbDropdownItem (click)="exportAllClick(FileType.Json)">
+              {{ '::ToJson' | abpLocalization }}
+            </button>
+            <button ngbDropdownItem (click)="exportAllClick(FileType.Excel)">
+              {{ '::ToExcel' | abpLocalization }}
+            </button>
+          </div>
+        </div>
+      }
+      @if(selectedItems.length === 0){
+        <button *abpPermission="'FocusedItem.Export'" [disabled]="workCenterLoading" class="btn btn-outline-primary btn-sm" type="button"
+          (click)="isTableHovered=!isTableHovered">
+          <i class="fa fas fa-check me-1" aria-hidden="true"></i>
+          {{ '::Select' | abpLocalization }}
+        </button>
+      }
+      @if(selectedItems.length > 0) {
+        <div ngbDropdown  *abpPermission="'FocusedItem.Export'" class="d-inline-block">
+          <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+            aria-haspopup="true" ngbDropdownToggle [disabled]="exportDisabled()">
+            <i class="fa fa-download me-1" aria-hidden="true"></i>
+            {{ '::Export' | abpLocalization }}
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdown">
+            <button ngbDropdownItem (click)="exportClick(FileType.Json)">
+              {{ '::ToJson' | abpLocalization }}
+            </button>
+            <button ngbDropdownItem (click)="exportClick(FileType.Excel)">
+              {{ '::ToExcel' | abpLocalization }}
+            </button>
+          </div>
+        </div>
+      }
+      <!-- tooltip -->
+      <button *abpPermission="'FocusedItem.Create'" [disabled]="workCenterLoading" placement="bottom" class="btn btn-primary btn-sm mx-2" type="button"
+        (click)="add()">
+        <i class="fa fa-plus me-1" aria-hidden="true"></i>
+        {{ 'AbpIdentity::Permission:Create' | abpLocalization }}
+      </button>
+
+      @if (selectedItems.length > 0) {
+        <button *abpPermission="'FocusedItem.Delete'" class="btn btn-danger btn-sm" type="button"
+          (click)="multiDelete()" [disabled]="selectedItems.length === 0">
+          <i class="fa fa-trash me-1" aria-hidden="true"></i>
+          {{ '::Delete' | abpLocalization }}
+        </button>
+      }
+
+    </div>
+  </abp-page-toolbar-container>
+
+  <div class="card">
+    <div class="card-body">
+      <div id="data-tables-table-filter" class="data-tables-filter mb-3">
+        <div class="input-group">
+          <input #searchInput type="search" class="form-control" [placeholder]="'::LABEL_WorkCenterSearch' | abpLocalization"
+            title="search"
+            (change)="list.filter = $event.target.value"
+            (keydown.enter)="list.filter = $event.target.value" />
+          <button class="btn btn-primary" type="button"
+            (click)="list.get()">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <ngx-datatable [rows]="data.items" [count]="data.totalCount" [displayCheck]="displayCheck"
+        [selectionType]="'checkbox'" [selected]="getSelectedItemsForCurrentPage()" [list]="list" (select)="onSelect($event)" default
+        [limit]="pageSize" [scrollbarV]="pageSize === 10 ? false : true" scrollbarH="false">
+        <ngx-datatable-column name="" [checkboxable]="true" [headerCheckboxable]="data.items.length" [width]="30" [canAutoResize]="false"
+          [sortable]="false" [headerClass]="getCheckboxClass()" [cellClass]="getCheckboxClass()" ></ngx-datatable-column>
+        <ngx-datatable-column [name]="'::WorkCenter' | abpLocalization" [width]="220" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <ng-select [appendTo]="'body'" [readonly]="workCenterLoading" (input)="filterOptions($event.target.value)" (change)="resetOptions($event, row)" [items]="filterWorkCenters" bindLabel="displayName" bindValue="id" [(ngModel)]="row.workCenterId"></ng-select>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_FocusedItemPartNumber' | abpLocalization" [sortable]="false" [prop]="'partNumber'">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <input type="text" class="form-control" [(ngModel)]="row.partNumber"/>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Priority' | abpLocalization" [width]="100" [sortable]="false" [prop]="'priority'">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+              <div class="input-group">
+                <input appInputNumber class="form-control" min="1" (change)="priorityChange($event, row)" [(ngModel)]="row.priority"/>
+              </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LastUpdateBy' | abpLocalization" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ userMap[row.lastModifierId ? row.lastModifierId : row.creatorId] }}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LastUpdateTime' | abpLocalization" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{formatDate(row.lastModificationTime ? row.lastModificationTime : row.creationTime) | date: 'dd MMM yyyy hh:mm:ss a'}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column *abpPermission="'FocusedItem.Create'" [width]="100" [canAutoResize]="false" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button class="btn btn-sm btn-primary me-2" type="button" [disabled]="isSaveButtonDisabled(row)" [title]="'::Save' | abpLocalization"
+            (click)="save(row)">
+            <i class="fa fa-check" aria-hidden="true"></i>
+          </button>
+           <button class="btn btn-sm btn-primary" type="button" [title]="'::ViewHistory' | abpLocalization" [disabled]="!row.id"
+              (click)="viewHistory(row)">
+              <i class="fa fa-history" aria-hidden="true"></i>
+           </button>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-footer>
+          <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+            let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+            <app-datatable-footer [rowCount]="rowCount" [pageSize]="pageSize" [offset]="offset" [list]="list"
+              [selectedCount]="Object.keys(allSelectedMap).length" (page)="pageChange($event)" (click)="showSelectedItems($event)" [adjustPageSize]="false">
+            </app-datatable-footer>
+          </ng-template>
+        </ngx-datatable-footer>
+      </ngx-datatable>
+    </div>
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'FocusedItems'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>
+
+<abp-modal [(visible)]="isSelectedItemsModalOpen" [busy]="false">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_SelectedItems' | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <div class="selected-items-modal">
+      @if(Object.keys(allSelectedMap).length === 0) {
+        <div class="no-data-message">
+          {{ '::LABEL_NoSelectedItems' | abpLocalization }}
+        </div>
+      } @else {
+        <div class="selected-item" *ngFor="let item of getSelectedItems()">
+          {{item.partNumber}}
+        </div>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-primary" (click)="isSelectedItemsModalOpen = false">
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

@@ -1,0 +1,13 @@
+.user-group-manage datatable-body-cell.datatable-body-cell {
+  display: flex!important;
+  align-items: center!important;
+  .datatable-body-cell-label {
+    width: 100%;
+  }
+}
+
+.my-tooltip-class {
+    z-index: 999999999999999 !important;
+    max-width: none;
+    white-space: nowrap;
+}

@@ -1,0 +1,32 @@
+<div class="error-container">
+  <div class="error-header">
+    <i class="icon bi bi-x-circle"></i>
+  </div>
+<div class="error-body">
+  <div class="error-message">
+    <div class="message" [innerHTML]="formatErrorMessage(data, nextAction)"></div>
+  </div>
+</div>
+  <div class="error-footer">
+    <div>
+      <a class="link-offset-1 ms-1" href="javascript:void(0);" (click)="isShowDetails=!isShowDetails">[{{
+        '::LABEL_ViewDetails' | abpLocalization
+      }}]</a>
+      <a
+        class="link-offset-1 ms-3"
+        href="https://kochprod.service-now.com/compass?id=sc_cat_item&table=sc_cat_item&sys_id=e8ea73f483f8e610bd0f40426daad33a"
+        target="_blank"
+        rel="noopener"
+        >[{{ '::LABEL_ReportIssue' | abpLocalization }}]</a
+      >
+    </div>
+    <div>
+      <button class="btn close-btn" (click)="close()">{{'AbpAccount::Close' | abpLocalization }}</button>
+    </div>
+  </div>
+  <div class="error-details" *ngIf="isShowDetails">
+    <div class="error-details-content">
+      <p [innerHTML]="details"></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,432 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+  <abp-page-title-container class="col text-start" style="margin-left: 7px;">
+    <h5>{{ selectedWidget.name | abpLocalization }}</h5>
+  </abp-page-title-container>
+  <abp-page-toolbar-container class="col widget-toolbar">
+    <div class="text-end" style="height: 20px;">
+      @if(selected.length > 0) {
+      <span class="cursor-pointer me-2" (click)="assignUser()" [ngbTooltip]="assignUserTipContent"
+        *abpPermission="'ToDoTask.Assign'">
+        <i class="far fa-user" style="font-size: 18px; vertical-align: middle;"></i>
+      </span>
+      <ng-template #assignUserTipContent>
+        {{ '::LABEL_AssignedUsers' | abpLocalization }}
+      </ng-template>
+      <span class="cursor-pointer me-2" (click)="setStatusCancelled()"  [ngbTooltip]="cancelTipContent"
+        *abpPermission="'ToDoTask.Cancel'">
+        <i class="far fa-times-circle" style="font-size: 18px; vertical-align: middle;"></i>
+      </span>
+      <ng-template #cancelTipContent>Cancel</ng-template>
+      <span class="cursor-pointer me-2" (click)="restoreTask()"  [ngbTooltip]="restoreTipContent"
+        *abpPermission="'ToDoTask.Restore'">
+        <i class="fas fa-trash-restore" alt="Restore"
+          style="font-size: 16px; height: 14px; vertical-align: middle;"></i>
+      </span>
+      <ng-template #restoreTipContent>{{ '::LABEL_Restore' | abpLocalization }}</ng-template>
+      }
+      <span class="cursor-pointer me-2" (click)="select()"  *abpPermission="'ToDoListSetup.Edit'">
+        <i class="fas fa-hand-pointer" alt="Select Task" [ngbTooltip]="selectTipContent"
+          style="font-size: 16px; height: 14px; vertical-align: middle;"></i>
+      </span>
+      <ng-template #selectTipContent>{{ '::Select' | abpLocalization }}</ng-template>
+      @if (!queryId) {
+      <span class="me-2 cursor-pointer" (click)="deleteLinksWidget()" *abpPermission="'Dashboard.Update'">
+        <i class="fa fa-trash fa-lg" style="font-size: 20px; vertical-align: middle;"></i>
+      </span>
+      <span class="me-2 cursor-pointer" (click)="expand()">
+        @if (expandChart) {
+        <i class="fa fa-compress fa-lg" style="font-size: 20px; vertical-align: middle;"></i>
+        } @else {
+        <i class="fa fa-expand fa-lg" style="font-size: 20px; vertical-align: middle;"></i>
+        }
+      </span>
+      }
+      <span class="cursor-pointer me-2" (click)="openSettings()" *abpPermission="'ToDoListSetup.Edit'">
+        <i class="fa fa-cog fa-lg" style="font-size: 20px; vertical-align: middle;" aria-hidden="true"></i>
+      </span>
+    </div>
+  </abp-page-toolbar-container>
+
+  <div class="card px-1 m-0 h-100">
+    <div id="data-tables-table-filter" class="data-tables-filter pb-2">
+      <div class="input-group">
+        <span class="advanced-filter-icon me-2" (click)="showAdvancedFilter = !showAdvancedFilter">
+          <img [class.filter-show-full]="filterSearchHasValue" [class.filter-show-empty]="!filterSearchHasValue"
+            [ngClass]="showAdvancedFilter ? 'd-none' : ''" alt="Filter Show" />
+          <img [class.filter-hidden-full]="filterSearchHasValue" [class.filter-hidden-empty]="!filterSearchHasValue"
+            [ngClass]="showAdvancedFilter ? '' : 'd-none'" alt="Filter Hidden" />
+        </span>
+        <input #searchInput type="search" class="form-control form-control-sm"
+          [placeholder]="'::LABEL_ToDoListSearch' | abpLocalization" title="search"
+          (change)="searchTodoTask(searchInput.value)" (keydown.enter)="searchTodoTask(searchInput.value)" />
+        <button class="btn btn-sm btn-primary" type="button" (click)="searchTodoTask(searchInput.value)">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+      <div [ngClass]="showAdvancedFilter ? '' : 'd-none'">
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group text-start">
+              <label for="shiftList">{{ '::LABEL_Shift' | abpLocalization
+                }}</label>
+              <multiple-select id="shiftList" [items]="shiftList" displayName="displayName" valueName="id"
+                (change)="selectedChanges($event, 'shift')" [values]="selectedShift">
+              </multiple-select>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group text-start">
+              <label for="todoListSetupList">{{ '::LABEL_ToDoListSetup' |
+                abpLocalization }}</label>
+              <multiple-select id="todoListSetupList" [items]="todoListSetupList" displayName="displayName"
+                valueName="id" (change)="selectedChanges($event, 'todoListSetup')" [values]="selectedTodoListSetup">
+              </multiple-select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group text-start">
+              <label for="userList">{{ '::LABEL_Assignee' | abpLocalization
+                }}</label>
+              <ng-select id="userList" [items]="userList" [appendTo]="'body'" bindValue="id" bindLabel="name"
+                [typeahead]="input$" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true"
+                [(ngModel)]="selectedUser">
+                <ng-template ng-option-tmp let-item="item">
+                  <ng-template #tipContent>{{ item.email }}</ng-template>
+                  <span [ngbTooltip]="tipContent" placement="right" container="body" tooltipClass="my-tooltip-class">
+                    {{ item.name }}
+                  </span>
+                </ng-template>
+                <ng-template ng-label-tmp let-item="item">
+                  {{ item.name }}
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group text-start">
+              <label for="stateList">{{ '::LABEL_Status' | abpLocalization
+                }}</label>
+              <multiple-select id="stateList" [items]="stateList" displayName="displayName" valueName="id"
+                (change)="selectedChanges($event, 'state')" [values]="selectedState">
+              </multiple-select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group text-start">
+              <label for="taskDateFrom">{{ '::LABEL_TaskDateFrom' | abpLocalization }}</label>
+              <input type="text" id="taskDateFrom" class="form-control" [(ngModel)]="taskDateFrom"
+                (ngModelChange)="onTaskDateFromChange($event)" bsDatepicker [bsConfig]="{
+                  containerClass: 'theme-dark-blue',
+                  adaptivePosition: true,
+                  withTimepicker: false,
+                  dateInputFormat: 'DD MMM YYYY'
+                }" />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group text-start">
+              <label for="taskDateTo">{{ '::LABEL_TaskDateTo' | abpLocalization }}</label>
+              <input type="text" id="taskDateTo" class="form-control" [(ngModel)]="taskDateTo"
+                (ngModelChange)="onTaskDateToChange($event)" bsDatepicker [bsConfig]="{
+                  containerClass: 'theme-dark-blue',
+                  adaptivePosition: true,
+                  withTimepicker: false,
+                  dateInputFormat: 'DD MMM YYYY'
+                }" />
+            </div>
+          </div>
+        </div>
+        <div class="d-flex pt-1 justify-content-end">
+          <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="clearAdvancedFilter()">
+            {{ 'AbpUi::Clear' | abpLocalization }}
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="filterData()">
+            {{ 'AbpUi::PagerSearch' | abpLocalization }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="quick-filter">
+      <span>{{'::LABEL_QuickFilters' | abpLocalization}}:</span>
+      [<a (click)="quickFilterMyTodoList()" [class.active]="quickFilterMyTodoListHasValue">{{
+        '::LABEL_ToDoListQuickFilters' | abpLocalization}}</a>]
+      [
+      <a *ngFor="let shift of shiftList" (click)="selectShift(shift.id)"
+        [class.active]="selectedShift.includes(shift.id)">
+        {{ shift.displayName || shift.name }}
+      </a>
+      ]
+    </div>
+    <div class="to-do-list-table-container" [class.show-advanced-filter]="showAdvancedFilter">
+      <ngx-datatable default #myTable [rows]="data?.items" [count]="data.totalCount" [headerHeight]="40" [list]="list"
+        [limit]="20" [selectionType]="'checkbox'" [selected]="selected" (select)="onSelect($event)"
+        [trackByProp]="'id'">
+        <ngx-datatable-column [checkboxable]="true" [headerCheckboxable]="true" *ngIf="isCheckBoxShown" [width]="25"
+          [sortable]="false" [canAutoResize]="false"></ngx-datatable-column>
+        <ngx-datatable-column [width]="40" [sortable]="false" [canAutoResize]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div ngbDropdown container="body" class="d-inline-block">
+              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 30px;" data-toggle="dropdown"
+                aria-haspopup="true" ngbDropdownToggle></i>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                @if(row.currentStatusName !== 'Cancelled') {
+                <button ngbDropdownItem (click)="cancelCurrentTask(row)" *abpPermission="'ToDoTask.Cancel'">
+                  {{ '::Cancel' | abpLocalization }}
+                </button>
+                }
+                @if(row.currentStatusName === 'Cancelled') {
+                <button ngbDropdownItem (click)="restoreCurrentTask(row)" *abpPermission="'ToDoTask.Restore'">
+                  {{ '::LABEL_Restore' | abpLocalization }}
+                </button>
+                }
+                <button ngbDropdownItem (click)="viewStandards(row)" *abpPermission="'ToDoTask'">
+                  {{ '::LABEL_ViewInfoCenter' | abpLocalization }}
+                </button>
+                <button ngbDropdownItem (click)="viewLinks(row)" *abpPermission="'ToDoTask'">
+                  {{ '::LABEL_ViewLinks' | abpLocalization }}
+                </button>
+                <button ngbDropdownItem (click)="addEditComment(row)" *abpPermission="'ToDoTask.Create'">
+                  @if(row.comments?.length > 0) {
+                  {{ '::LABEL_EditComment' | abpLocalization }}
+                  } @else {
+                  {{ '::LABEL_AddComment' | abpLocalization }}
+                  }
+                </button>
+                <button ngbDropdownItem (click)="addEditCard(row)" *abpPermission="'ToDoTask.Create'">
+                  @if(row.assignedCardId) {
+                  {{ '::LABEL_EditCard' | abpLocalization }}
+                  } @else {
+                  {{ '::LABEL_AddCard' | abpLocalization }}
+                  }
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Status' | abpLocalization" [width]="120" [sortable]="false"
+          [canAutoResize]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <app-task-status-switcher [currentStatus]="row.currentStatusName" [todoTaskId]="row.id"
+              (statusChangeRequested)="handleStatusChange($event)">
+            </app-task-status-switcher>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Shift' | abpLocalization" prop="shiftDisplayName" [width]="80">
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_ToDo' | abpLocalization" prop="taskInfo" [width]="400"> </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Assignee' | abpLocalization" prop="assigneeName"> </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_DataTier' | abpLocalization" prop="dataTierName"> </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_ToDoSetups' | abpLocalization" prop="toDoListSetupName"> </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_TaskDate' | abpLocalization" prop="taskDate">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            {{ row.taskDate | date: 'dd MMM yyyy' }}
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isAssignUserModalOpen" [options]="{size: 'lg', centered: true}" id="assignUserModal">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_AssignedUsers' | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <button type="button" class="btn btn-outline-primary btn-sm mb-1" (click)="addAssigneeUserRows()">
+      {{ '::Add' | abpLocalization }}
+    </button>
+    <ngx-datatable [rows]="assigneeUserRows" [count]="assigneeUserRows.length" [limit]="5" default>
+      <ngx-datatable-column [name]="'::LABEL_User' | abpLocalization" prop="assignUser">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div class="form-group">
+            <ng-select class="assign-user-select" [items]="userList" appendTo="body" bindValue="id" bindLabel="name"
+              [(ngModel)]="row.assignUserId" [searchable]="false" [clearable]="row.assignUserId">
+              <ng-template ng-header-tmp>
+                <input type="search" (input)="filterUsers($event.target.value)" class="form-control"
+                  style="padding: 0.15rem 1.25rem;" [placeholder]="'::LABEL_UserSearch' | abpLocalization" />
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item">
+                <ng-template #tipContent>{{ item.email }}</ng-template>
+                <span [ngbTooltip]="tipContent" placement="right" container="body" tooltipClass="my-tooltip-class">
+                  {{ item.name }}
+                </span>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                {{ item.name }}
+              </ng-template>
+            </ng-select>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_ExpiryDateAndTime' | abpLocalization" prop="expiryDateAndTime">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div class="form-group input-expiryDateAndTime">
+            <input type="text" id="expiry-date-time" class="form-control" [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="row.expiryDateAndTime" bsDatepicker [bsConfig]="{
+                adaptivePosition: true,
+                containerClass: 'theme-dark-blue',
+                withTimepicker: true,
+                keepDatepickerOpened: true,
+                dateInputFormat: 'DD MMM YYYY hh:mm a'
+                }" />
+            <i class="fas fa-calendar icon"></i>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization}}
+    </button>
+    <button type="button" class="btn btn-primary me-2" (click)="assignUserSave()">
+      {{'::Save' | abpLocalization}}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isViewStandardsModalOpen"
+  [options]="{size: 'xl', centered: true, modalDialogClass: 'view-standard-modal', backdrop: true}">
+  <ng-template #abpBody>
+    <div class="d-flex justify-content-between align-items-center my-2">
+      <h5>{{ '::LABEL_ViewInfoCenter' | abpLocalization }}</h5>
+      <div class="d-flex align-items-center mb-1">
+        <label for="layoutSelect" class="me-1">{{ '::LABEL_Layout' |
+          abpLocalization }}</label>
+        <select id="layoutSelect" [(ngModel)]="selectedLayout" class="form-select p-1" style="width: 100px;">
+          <option value="1x1">1x1</option>
+          <option value="1x2">1x2</option>
+          <option value="2x2">2x2</option>
+        </select>
+      </div>
+    </div>
+    <div class="d-flex align-items-center my-2">
+      <i class="fa fa-chevron-left page-icon large-icon" [class.disabled]="currentIndex === 0"
+        (click)="navigateToPrevious()"></i>
+      <div class="container">
+        <div class="row">
+          <div *ngFor="let index of getLayoutArray()" class="col" [ngClass]="getColClass()">
+            <ng-container *ngIf="viewStandardsData[currentIndex + index] as standardDto">
+              <app-view-standards [selected]="standardDto"></app-view-standards>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <i class="fa fa-chevron-right page-icon large-icon"
+        [class.disabled]="currentIndex + getLayoutArray().length >= viewStandardsData.length"
+        (click)="navigateToNext()"></i>
+    </div>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isViewLinksModalOpen" [options]="{size: 'lg', centered: true}">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_URLs' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="container mb-3" style="max-height: 400px; overflow-y: auto;">
+      <div class="row">
+        <div class="col-md-4 mb-3" *ngFor="let link of currentTodoData.links">
+          <div class="card">
+            <div class="card-body">
+              <a [href]="link.url" class="card-link" target="_blank">{{
+                link.displayName }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isAddEditCardModalOpen" [options]="{size: 'xl', windowClass: 'card-editor-modal'}">
+  <ng-template #abpBody>
+    <app-card-editor [card]="card" (cardClose)="isAddEditCardModalOpen=false"
+      (cardIdChange)="onCardIdChange($event)" [filter]="currentTodoData?.dataTierType === 'Cell'
+        ? { cell: [currentTodoData.dataTierId] }
+        : currentTodoData?.dataTierType === 'Area'
+          ? { area: [currentTodoData.dataTierId] }
+          : { site: currentTodoData.dataTierId }
+      "></app-card-editor>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isAddEditCommentModalOpen"
+  [options]="{size: 'lg', centered: true, modalDialogClass: 'comment-modal'}">
+  <ng-template #abpHeader>
+    @if(currentTodoData?.comments?.length === 0) {
+    <h3>
+      {{ '::LABEL_AddComment' | abpLocalization }}
+    </h3>
+    } @else {
+    <h3>
+      {{ '::LABEL_EditComment' | abpLocalization }}
+    </h3>
+    }
+  </ng-template>
+  <ng-template #abpBody>
+    <quill-editor [modules]="editorConfig" [(ngModel)]="comment" style="width: 100%; height: 50vh;">
+    </quill-editor>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="saveComment()">
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isChangeToIncompleteShouldCommentModalOpen"
+  [options]="{size: 'lg', centered: true, modalDialogClass: 'custom-modal-height'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_Comments' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="mb-2">
+      {{ '::LABEL_WhyIncompleteCommentPrompt' | abpLocalization }}
+    </div>
+    <quill-editor [modules]="editorConfig" [(ngModel)]="comment" style="width: 100%; height: 50vh;">
+    </quill-editor>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="saveWhyIncompleteComment()" [disabled]="!comment">
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+      <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+    </div>
+    <div class="form-group">
+      <label for="cells-displayName"
+        [title]="'::INFO_DisplayRowCount' | abpLocalization">{{'::LABEL_DisplayRowCount'|abpLocalization}}</label>
+      <input type="number" id="cells-displayName" class="form-control" [(ngModel)]="pageSize" />
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+      (click)="saveSettiings()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>

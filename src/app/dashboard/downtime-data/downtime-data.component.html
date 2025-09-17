@@ -1,0 +1,102 @@
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{ centered: true, size: 'xl' }"
+    (visibleChange)="close($event)">
+    <ng-template #abpHeader>
+        <h3>{{ '::Create' | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (form) {
+        <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
+            <div class="row">
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="area" [title]="'::INFO_Area' | abpLocalization">{{ '::Area' | abpLocalization }}</label><span> * </span>
+                    <search-select id="area" [items]="areaData" displayName="displayName" valueName="id"
+                        (change)="selectChange($event, 'area')" [value]="this.form.controls['area'].value">
+                    </search-select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="cell" [title]="'::INFO_Cell' | abpLocalization">{{ '::Cell' | abpLocalization }}</label><span> * </span>
+                    <search-select id="cell" [items]="cellData" displayName="displayName" valueName="id"
+                        (change)="selectChange($event, 'cell')" [value]="this.form.controls['cell'].value">
+                    </search-select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="workCenter" [title]="'::INFO_WorkCenter' | abpLocalization">{{ '::WorkCenter' | abpLocalization }}</label><span> * </span>
+                    <search-select id="workCenter" [items]="workCenterData" displayName="displayName" valueName="id"
+                        (change)="selectChange($event, 'workCenter')" [value]="this.form.controls['workCenter'].value">
+                    </search-select>
+                </div>
+
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="work-order" [title]="'::INFO_WorkOrder' | abpLocalization">{{'::Label_WorkOrder'|abpLocalization}}</label><span> * </span>
+                    <input type="text" id="work-order" class="form-control" formControlName="workOrder" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="work-order-qty" [title]="'::INFO_WorkOrderQty' | abpLocalization">{{'::Label_WorkOrderQty'|abpLocalization}}</label><span> * </span>
+                    <input appInputNumber [min]="0" id="work-order-qty" class="form-control" formControlName="workOrderQty" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="product" [title]="'::INFO_Product' | abpLocalization">{{ '::LABEL_Product' | abpLocalization }}</label><span> * </span>
+                    <ng-select
+                    id="product"
+                    [items]="productData"
+                    appendTo="body"
+                    bindValue="id"
+                    bindLabel="displayName"
+                    [typeahead]="productInput$"
+                    [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+                    formControlName="product">
+                    <ng-template ng-option-tmp let-item="item">
+                      {{item.displayName}}
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                      {{ item.displayName}}
+                    </ng-template>
+                    </ng-select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="downtime-start" [title]="'::INFO_DowntimeStart' | abpLocalization">{{ '::Label_DowntimeStart'|abpLocalization }}</label>
+                    <span> * </span>
+                    <input type="text" id="downtime-start" class="form-control" formControlName="downtimeStart"
+                        bsDatepicker
+                        [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY hh:mm:ss a'}" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="downtime-end" [title]="'::INFO_DowntimeEnd' | abpLocalization">{{ '::Label_DowntimeEnd'|abpLocalization }}</label>
+                    <span> * </span>
+                    <input type="text" id="downtime-end" class="form-control" formControlName="downtimeEnd" bsDatepicker
+                        [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY hh:mm:ss a'}" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="downtime-reason" [title]="'::INFO_DowntimeReason' | abpLocalization">{{ '::Label_DowntimeReason' | abpLocalization }}</label><span> * </span>
+                    <select class="form-control form-select" id="downtime-reason" formControlName="downtimeReason">
+                        <option [ngValue]="reason.id" *ngFor="let reason of downtimeReasonData">
+                            {{ reason.displayName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <span [class]="recordedMins > 0 ? 'text-primary' : 'text-danger'">
+                        {{ '::LABEL_DowntimeToBeRecorded' | abpLocalization }} {{recordedMins}} {{ '::LABEL_mins' | abpLocalization}}
+                    </span>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="operation" [title]="'::INFO_Operation' | abpLocalization">{{'::LABEL_Operation'|abpLocalization}}</label>
+                    <input type="text" id="operation" class="form-control" formControlName="operation" />
+                </div>
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" (click)="close()">
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>

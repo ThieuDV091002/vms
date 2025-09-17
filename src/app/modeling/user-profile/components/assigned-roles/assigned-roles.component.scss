@@ -1,0 +1,17 @@
+
+ul {
+  list-style-type: none;
+  padding-left: 1rem;
+
+  li {
+    margin: 5px 0;
+
+    .expand-icon {
+      width: .5rem;
+    }
+  }
+}
+
+.role-badge {
+  font-size: 15px
+}

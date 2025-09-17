@@ -1,0 +1,627 @@
+:root .lpx-theme-dark,
+.lpx-theme-dim {
+  --lpx-logo: url('/assets/images/logo/logo-dark.png');
+  --lpx-logo-icon: url('/assets/images/logo/icon.png');
+  --lpx-navbar-text-color: #bbbbbb;
+  --overall-view-bg: #23272f;
+  --overall-view-value-color: #fff;
+}
+
+:root .lpx-theme-light {
+  --lpx-logo: url('/assets/images/logo/logo-light.png');
+  --lpx-logo-icon: url('/assets/images/logo/icon.png');
+  --lpx-navbar-text-color: #424242;
+  --lpx-navbar-active-text-color: #062a44;
+  --overall-view-bg: #f3f6f9;
+  --overall-view-value-color: #000;
+}
+
+.lpx-nav-menu .lpx-menu-item-link .lpx-menu-item-icon .lpx-icon {
+  opacity: 1;
+}
+/*color variable*/
+:root {
+  --ufe-color-blue: #006690;
+  --ufe-btn-color: #ac1a8a;
+  --ufe-btn-hover-color: #560c44;
+  --ufe-btn-disable-color: #c8cdd3;
+  --lpx-brand: #ac1a8a;
+}
+
+/* Importing Datepicker SCSS file. */
+@import 'node_modules/ngx-bootstrap/datepicker/bs-datepicker';
+
+:root .ufe-color-safety {
+  color: #ff0000;
+
+  .job-function-cell {
+    background-color: #ff0000;
+    color: white !important;
+  }
+}
+
+:root .ufe-color-quality {
+  color: #7030a0;
+
+  .job-function-cell {
+    background-color: #7030a0;
+    color: white !important;
+  }
+}
+
+:root .ufe-color-productivity {
+  color: #00bfff;
+
+  .job-function-cell {
+    background-color: #00bfff;
+    color: white !important;
+  }
+}
+
+:root .ufe-color-5S {
+  color: #ffd700;
+
+  .job-function-cell {
+    background-color: #ffd700;
+    color: white !important;
+  }
+}
+
+:root .ufe-color-dm {
+  color: #008000;
+
+  .job-function-cell {
+    background-color: #008000;
+    color: white !important;
+  }
+}
+
+:root .ufe-color-gemba {
+  color: #0000ff;
+
+  .job-function-cell {
+    background-color: #0000ff;
+    color: white !important;
+  }
+}
+
+// accordion style rewrite
+.accordion-header {
+  .accordion-button {
+    font-weight: bold;
+    padding: 15px 0;
+    &:not(.collapsed) {
+      color: var(--ufe-btn-color) !important;
+    }
+    &.collapsed {
+      color: var(--lpx-dark) !important;
+    }
+  }
+
+  button[aria-expanded='true'] {
+    border: none;
+    border-bottom: 1px 0 1px 0 solid var(--lpx-border-color) !important;
+  }
+}
+
+.accordion-item {
+  border: none;
+  border-top: 1px solid var(--lpx-border-color) !important;
+}
+
+.lpx-content-wrapper {
+  border: none !important;
+}
+
+// rewrite ng-select style
+ng-select .ng-select-container {
+  background-color: var(--lpx-content-bg) !important;
+  border-color: var(--lpx-content-bg) !important;
+  padding: 0.7rem !important;
+  height: auto !important;
+  border-radius: 0.5rem !important;
+
+  .ng-value-container {
+    padding-left: 0.5rem !important;
+
+    .ng-value {
+      font-weight: 500 !important;
+      color: var(--lpx-card-title-text-color) !important;
+    }
+
+    .ng-input {
+      top: 10px !important;
+
+      input {
+        color: var(--lpx-card-title-text-color) !important;
+        padding-left: 0.6rem !important;
+      }
+    }
+  }
+}
+
+ng-select.ng-select-multiple .ng-select-container {
+  padding: 0.45rem !important;
+
+  .ng-value {
+    background-color: var(--bs-modal-bg) !important;
+
+    .ng-value-icon.left:hover {
+      background-color: var(--lpx-content-bg) !important;
+    }
+  }
+}
+
+.ng-dropdown-panel {
+  z-index: 9999999 !important;
+
+  .ng-dropdown-panel-items .ng-option {
+    padding-left: 1.2rem !important;
+    background-color: var(--lpx-content-bg) !important;
+    color: var(--lpx-card-title-text-color) !important;
+
+    &:hover {
+      background: #355dff !important;
+      color: #fff !important;
+    }
+
+    &.ng-option-selected {
+      background: var(--ufe-btn-color) !important;
+      color: #fff !important;
+    }
+  }
+}
+
+#lpx-wrapper.hover-trigger .lpx-sidebar-container:not(:hover) {
+  #current-tenant {
+    display: none !important;
+  }
+}
+
+.lpx-topbar-container {
+  display: none;
+}
+
+.lpx-content {
+  min-height: calc(100vh - 32px);
+  padding: 0.25em 0.25em 0.25em !important;
+}
+
+.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell {
+  padding: 0.2rem 0.2rem !important;
+}
+
+.ngx-datatable.material .datatable-header .datatable-header-cell {
+  padding-left: 0.2em !important;
+  padding-right: 0.2em !important;
+  .datatable-header-cell-label {
+    color: var(--lpx-content-text) !important;
+    font-weight: 500;
+  }
+}
+input[readonly] {
+  cursor: not-allowed;
+}
+
+.lpx-toolbar-container .lpx-context-menu {
+  right: 62px;
+  margin: 15px;
+}
+
+.content-header-title {
+  margin-left: 0.5rem;
+}
+
+.bs-datepicker-container {
+  background-color: var(--lpx-content-bg) !important;
+
+  .is-other-month {
+    color: var(--bs-gray-500) !important;
+  }
+}
+//rewrite abp-modal style used for card editor which need always takes up most space
+.card-editor-modal.modal {
+  .modal-dialog {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+}
+
+:root .lpx-theme-dark {
+  --lpx-custome-border-color: #6d6e70;
+  --kanban-header-color: var(--ufe-color-blue);
+  --kanban-status-pool-color: #004d6c;
+  --kanban-column-border-color: #777;
+  // --kanban-status-pool-hover-color: #00354f;
+  --kanban-status-pool-hover-color: #000;
+  --kanban-tile-box-shadow: 0px 0px 2px rgba(255, 255, 255, 0.3),
+    0 4px 8px -2px rgba(255, 255, 255, 0.2);
+  --lpx-content-text: #bbbbbb;
+  --lpx-widget-border-color: #bfc9d1;
+  .accordion-header .accordion-button {
+    &.collapsed::after {
+      filter: brightness(2) !important;
+    }
+  }
+  .advanced-filter-icon img {
+    &.filter-show-empty {
+      content: url('assets/images/filter/filter-show-empty-dark.png');
+    }
+    &.filter-show-full {
+      content: url('assets/images/filter/filter-show-full-dark.png');
+    }
+    &.filter-hidden-empty {
+      content: url('assets/images/filter/filter-hidden-empty-dark.png');
+    }
+    &.filter-hidden-full {
+      content: url('assets/images/filter/filter-hidden-full-dark.png');
+    }
+  }
+  .ngx-datatable.material .datatable-body-row {
+    border-bottom: 1px solid var(--bs-gray-600);
+  }
+
+  .ngx-datatable.material .datatable-body-row:hover {
+    background-color: var(--bs-gray-800) !important;
+    .datatable-row-group {
+      background-color: var(--bs-gray-800) !important;
+    }
+  }
+  .ql-editor.ql-blank::before {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .ql-snow .ql-picker {
+    color: #bbb;
+  }
+  .ql-snow .ql-stroke {
+    stroke: #bbb;
+  }
+  .ql-snow .ql-fill {
+    fill: #bbb;
+  }
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='time']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  input.form-control {
+    &:hover {
+      box-shadow: 0px 0px 2px rgba(255, 255, 255, 0.2) !important;
+    }
+    &:focus {
+      box-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5) !important;
+    }
+  }
+}
+
+:root .lpx-theme-light,
+.lpx-theme-dim {
+  --lpx-custome-border-color: #c8cbce;
+  --kanban-header-color: var(--ufe-color-blue);
+  --kanban-status-pool-color: #ccebf7;
+  --kanban-column-border-color: #ccc;
+  // --kanban-status-pool-hover-color: #a9ddf2;
+  --kanban-status-pool-hover-color: #ebecf0;
+  --kanban-tile-box-shadow: 0px 0px 2px 0 rgba(9, 30, 66, 0.31),
+    0 2px 4px -1px rgba(9, 30, 66, 0.25);
+  --lpx-content-text: #424242;
+  --lpx-widget-bg-color: #f3f6f9;
+  --lpx-widget-border-color: #b0b8c1;
+  --lpx-standard-widget-bg: white;
+  --lpx-standard-widget-content-bg: #f5f5f5;
+  --lpx-standard-single-widget-bg: #FFFFFF;
+  .accordion-header .accordion-button {
+    &.collapsed::after {
+      filter: brightness(0) !important;
+    }
+  }
+  .advanced-filter-icon img {
+    &.filter-show-empty {
+      content: url('assets/images/filter/filter-show-empty-light.png');
+    }
+    &.filter-show-full {
+      content: url('assets/images/filter/filter-show-full-light.png');
+    }
+    &.filter-hidden-empty {
+      content: url('assets/images/filter/filter-hidden-empty-light.png');
+    }
+    &.filter-hidden-full {
+      content: url('assets/images/filter/filter-hidden-full-light.png');
+    }
+  }
+  input.form-control {
+    &:hover {
+      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2) !important;
+    }
+    &:focus {
+      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5) !important;
+    }
+  }
+}
+
+.confirmation .confirmation-dialog .content .message {
+  overflow-y: auto;
+  word-wrap: break-word;
+  max-height: 200px;
+}
+
+.confirmation .confirmation-dialog {
+  width: 50vw;
+  min-height: 210px !important;
+  .error {
+    font-size: 50px;
+  }
+  .content {
+    flex-grow: 0 !important;
+
+    .message {
+      overflow-y: auto;
+      word-wrap: break-word;
+      max-height: 200px;
+      padding: 0px 20px 15px;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    .title {
+      display: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-size: 0 !important;
+      font-weight: 0 !important;
+      text-align: initial !important;
+    }
+  }
+
+  .footer {
+    .btn-primary {
+      // background-color: var(--ufe-color-blue) !important;
+      // border-color: var(--ufe-color-blue) !important;
+      // color: #ffffff !important;
+      height: 30px;
+      line-height: 3px;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    .btn-outline-primary {
+      // border-color: var(--ufe-color-blue) !important;
+      // color: var(--ufe-color-blue) !important;
+      font-family: 'Helvetica Neue', sans-serif;
+      height: 30px;
+      width: 60px;
+      line-height: 10px;
+      position: relative;
+      overflow: hidden;
+      text-indent: -9999px;
+
+      &::after {
+        content: var(--label-no);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: inherit;
+        white-space: nowrap;
+        text-indent: 0;
+      }
+
+      // &:hover {
+      //   background-color: var(--ufe-color-blue) !important;
+      //   color: #ffffff !important;
+      // }
+    }
+
+    // :root .lpx-theme-dark & .btn-outline-primary {
+    //   border-color: #ffffff !important;
+    //   color: #ffffff !important;
+
+    //   &:hover {
+    //     border-color: var(--ufe-color-blue) !important;
+    //   }
+    // }
+  }
+
+  .icon-container {
+    padding: 25px 2px 10px !important;
+
+    &.warning .icon {
+      stroke: #fdb022 !important;
+      color: #fdb022 !important;
+      height: 80px !important;
+      font-size: 50px !important;
+    }
+    &.error .icon {
+      stroke: #ff0000 !important;
+      color: #ff0000 !important;
+      height: 80px !important;
+      font-size: 50px !important;
+    }
+  }
+}
+
+// overwrite toast style
+.abp-toast-container {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  .abp-toast {
+    border-radius: 12px !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    .abp-toast-icon .icon {
+      font-size: 26px !important;
+    }
+    &.abp-toast-warning {
+      color: #000 !important;
+    }
+  }
+}
+// overwrite button style
+.btn {
+  &.btn-primary {
+    background-color: var(--ufe-btn-color) !important;
+    border-color: var(--ufe-btn-color) !important;
+    color: #fff;
+    &:hover {
+      background-color: var(--ufe-btn-hover-color) !important;
+      border-color: var(--ufe-btn-hover-color) !important;
+    }
+  }
+  &.btn-outline-primary {
+    border-color: var(--ufe-btn-color) !important;
+    color: var(--ufe-btn-color) !important;
+    background-color: transparent !important;
+    &:hover {
+      border-color: var(--ufe-btn-hover-color) !important;
+      color: var(--ufe-btn-hover-color) !important;
+    }
+  }
+  &:disabled {
+    background-color: var(--ufe-btn-disable-color) !important;
+    border-color: var(--ufe-btn-disable-color) !important;
+    color: #000 !important;
+  }
+}
+.ngx-datatable.material .datatable-footer .datatable-pager li.active a {
+  background-color: var(--ufe-btn-color) !important;
+}
+.datatable-checkbox input[type='checkbox']:checked:before {
+  border-color: var(--ufe-btn-color) !important;
+}
+// left menu style
+.lpx-nav-menu .lpx-menu-item-link {
+  margin: 0 !important;
+  margin-right: -1px !important;
+}
+.lpx-sidebar .lpx-logo-container .menu-collapse-icon {
+  font-size: 0.8rem;
+}
+// .lpx-nav-menu .lpx-menu-item-link .lpx-menu-item-text, .lpx-nav-menu .lpx-menu-item-icon {
+//   color: var(--lpx-dark)!important;
+// }
+.lpx-nav-menu .lpx-menu-item-link:hover {
+  .lpx-menu-item-icon,
+  span.nav-item {
+    color: var(--ufe-btn-color) !important;
+  }
+}
+a.lpx-menu-item-link.selected,
+.lpx-menu-item-link.expanded {
+  border-right: 3px solid var(--ufe-btn-color) !important;
+}
+.lpx-menu-item-link.selected {
+  font-weight: bold;
+}
+.lpx-menu-item-link.expanded + .lpx-inner-menu {
+  border-right: 3px solid var(--ufe-btn-color) !important;
+}
+.lpx-nav-menu .lpx-menu-item-link.selected .lpx-menu-item-icon,
+.lpx-nav-menu .lpx-menu-item-link.selected .dd-icon,
+.lpx-nav-menu .lpx-menu-item-link.expanded .lpx-menu-item-icon,
+.lpx-nav-menu .lpx-menu-item-link.expanded .dd-icon {
+  color: var(--ufe-btn-color) !important;
+}
+// overwrite form style
+abp-extensible-form {
+  input {
+    width: 100% !important;
+    border-radius: 0.5rem !important;
+  }
+  button.btn.btn-secondary {
+    position: absolute !important;
+    right: 0;
+    top: 0;
+    background: transparent !important;
+    border: none !important;
+    color: var(--lpx-dark) !important;
+    &:focus,
+    &:active {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+.form-check-input:checked,
+.form-switch .form-check-input:checked,
+.form-check-input[type='checkbox']:indeterminate {
+  border-color: var(--ufe-btn-color) !important;
+  background-color: var(--ufe-btn-color) !important;
+}
+select.form-select option:checked,
+select.form-select option:focus,
+select.form-select option:active {
+  background: var(--ufe-btn-color) !important;
+}
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  color: var(--ufe-btn-color) !important;
+}
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--ufe-btn-color) !important;
+}
+.nav-tabs .nav-item .nav-link.active {
+  border-bottom: 3px solid var(--ufe-btn-color) !important;
+}
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  color: var(--ufe-btn-color) !important;
+}
+// right bar
+.lpx-settings .setting-icon:hover i,
+.lpx-settings .setting-icon:hover span,
+.lpx-settings .setting-icon:focus i,
+.lpx-settings .setting-icon:focus span {
+  color: var(--ufe-btn-color) !important;
+}
+.lpx-inner-menu-item.selected {
+  span {
+    color: var(--lpx-navbar-active-text-color) !important;
+    font-weight: bold !important;
+  }
+}
+// card text, icon color
+.card-body,
+.card {
+  color: var(--lpx-content-text) !important;
+}
+// modal color
+.modal-content {
+  color: var(--lpx-content-text) !important;
+}
+// accordion color
+.accordion-item {
+  color: var(--lpx-content-text) !important;
+}
+
+.toggle-button {
+  color: var(--ufe-btn-color);
+}
+
+.widget-toolbar {
+  display: none;
+}
+.widget-page:hover .widget-toolbar {
+  display: block;
+}
+
+.widget-fullscreen {
+  position: fixed !important;
+  top: 5px;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1050;
+  background-color: var(--bs-card-bg);
+  .fa-trash {
+    display: none;
+  }
+}
+
+.card-list-tooltip .tooltip-inner {
+  max-width: 1000px !important;
+  white-space: pre-line;
+  text-align: left;
+}
+
+.ngx-datatable.material .datatable-body .datatable-row-detail {
+  background:  var(--bs-card-bg) !important;
+  padding: 5px;
+}

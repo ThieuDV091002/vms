@@ -1,0 +1,141 @@
+<app-modeling-template [title]="'::LABEL_ActivityCardSettings'" [data]="data" [objectType]="'ActivityCardSettings'"
+  [copyPrefix]="'::LABEL_NewActivityCardSetting'"
+  [permissions]="{create: 'ActivityCardSettings.Create', edit: 'ActivityCardSettings.Edit', delete: 'ActivityCardSettings.Delete',copy: 'ActivityCardSettings.Copy', import: 'ActivityCardSettings.Import', export: 'ActivityCardSettings.Export'}"
+  [columns]="[{displayKey:'::Site', field: 'siteName'}, {displayKey: '::Area', field: 'areaName'}, {displayKey: '::Cell', field: 'cellName'}, {displayKey: '::LABEL_DefaultOwner', field: 'defaultOwnerName'},
+        {displayKey: '::LABEL_DefaultPriority', field: 'defaultPriorityName'}, {displayKey: '::LABEL_EscalationDurationDays', field: 'escalationDuration'}
+    ]" [list]="list" [hasLastUpdate]="true" (copyData)="copySetting($event)" (multiDelete)="multiDelete($event)"
+  (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)"
+  (copyModalOpen)="copyModalOpen($event)" (exportAll)="exportAll($event)" (import)="import($event)"
+  (dataViewHistory)="viewHistory($event)" [noNameCopy]="true" [noDisplayNameCopy]="true"
+  (filterChange)="searchByfilter($event)" filterType="Master"
+  [placeholder]="'::LABEL_CardSettingSearch' | abpLocalization">
+  <div class="form-group mb-2" id="copyCustomeField">
+    <div class="form-group mb-2">
+      <label for="site" [title]="'::INFO_Site' | abpLocalization">{{ '::Site' | abpLocalization }}</label><span> *
+      </span>
+      <search-select id="site" [items]="siteData" displayName="displayName" valueName="id"
+        (change)="copySelectChange($event, 'site')" [value]="copySelectedSiteData?.id">
+      </search-select>
+    </div>
+    <div class="form-group mb-2">
+      <label for="area" [title]="'::INFO_Area' | abpLocalization">{{ '::Area' | abpLocalization }}</label>
+      <search-select id="area" [items]="areaData" displayName="displayName" valueName="id"
+        (change)="copySelectChange($event, 'area')" [value]="copySelectedAreaData?.id">
+      </search-select>
+    </div>
+    <div class="form-group mb-2">
+      <label for="cell" [title]="'::INFO_Cell' | abpLocalization">{{ '::Cell' | abpLocalization }}</label>
+      <search-select id="cell" [items]="cellData" displayName="displayName" valueName="id"
+        (change)="copySelectChange($event, 'cell')" [value]="copySelectedCellData?.id">
+      </search-select>
+    </div>
+  </div>
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{centered: true, size: 'lg'}">
+  <ng-template #abpHeader>
+    <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div class="form-group mb-2">
+            <label for="site" [title]="'::INFO_Site' | abpLocalization">{{ '::Site' | abpLocalization }}</label><span> *
+            </span>
+            <search-select id="site" [items]="siteData" displayName="displayName" valueName="id"
+              (change)="selectChange($event, 'site')" [value]="this.form.controls['site'].value">
+            </search-select>
+          </div>
+          <div class="form-group mb-2">
+            <label for="area" [title]="'::INFO_Area' | abpLocalization">{{ '::Area' | abpLocalization }}</label>
+            <search-select id="area" [items]="areaData" displayName="displayName" valueName="id"
+              (change)="selectChange($event, 'area')" [value]="this.form.controls['area'].value">
+            </search-select>
+          </div>
+          <div class="form-group mb-2">
+            <label for="cell" [title]="'::INFO_Cell' | abpLocalization">{{ '::Cell' | abpLocalization }}</label>
+            <search-select id="cell" [items]="cellData" displayName="displayName" valueName="id"
+              (change)="selectChange($event, 'cell')" [value]="this.form.controls['cell'].value">
+            </search-select>
+          </div>
+          <div class="row">
+            <div class="col col-6">
+              <div class="form-group mb-2">
+                <label for="default-owner" [title]="'::INFO_DefaultOwner' | abpLocalization">{{ '::LABEL_DefaultOwner' |
+                  abpLocalization }}</label>
+                <ng-select id="assignees" [items]="userData" appendTo="body" bindLabel="userName" bindValue="id"
+                  [typeahead]="userSearchInput$" formControlName="defaultOwner">
+                  <ng-template ng-option-tmp let-item="item">
+                    <ng-template #tipContent>{{ item.email }}</ng-template>
+                    <span [ngbTooltip]="tipContent" placement="right" container="body" tooltipClass="my-tooltip-class">
+                      {{ getUserDisplayName(item) }}
+                    </span>
+                  </ng-template>
+                  <ng-template ng-label-tmp let-item="item">
+                    {{ getUserDisplayName(item) }}
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+            <div class="col col-6">
+              <div class="form-group mb-2">
+                <label for="default-priority" [title]="'::INFO_DefaultPriority' | abpLocalization">{{
+                  '::LABEL_DefaultPriority' | abpLocalization }}</label>
+                <search-select id="default-priority" [items]="activityCardPriorityData" displayName="displayName"
+                  valueName="id" (change)="selectChange($event, 'defaultPriority')"
+                  [value]="this.form.controls['defaultPriority'].value">
+                </search-select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-6">
+              <div class="form-group mb-2">
+                <label for="escalation-duration"
+                  [title]="'::INFO_EscalationDurationDays' | abpLocalization">{{'::LABEL_EscalationDurationDaysTips'|abpLocalization}}</label>
+                <input appInputNumber [min]="0" id="escalation-duration" class="form-control"
+                  formControlName="escalationDuration" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal *ngIf="isHistoryModalVisible" [(isHistoryModalVisible)]="isHistoryModalVisible"
+  [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm *ngIf="importConfirmVisible" [(importConfirmVisible)]="importConfirmVisible"
+  [existingData]="existingData" [objectType]="'ActivityCardSettings'" (customeImport)="customeImport($event)">
+</app-import-confirm>

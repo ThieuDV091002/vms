@@ -1,0 +1,215 @@
+<app-modeling-template [title]="'::LABEL_Schedule'" [data]="data" [objectType]="'SchedulerSettings'"
+    [copyPrefix]="'::LABEL_RoleBoardNewTaskType'"
+    [permissions]="{create: 'SchedulerSetting.Create', edit: 'SchedulerSetting.Edit', delete: 'SchedulerSetting.Delete', copy: 'SchedulerSetting.Copy', import: 'SchedulerSetting.Import', export: 'SchedulerSetting.Export'}"
+    [columns]="columns" [customAction]="" (customActionTrigger)="openPermissionsModal($event)" [list]="list"
+    (dataAdd)="add()" (dataEdit)="edit($event)"  (dataStart)="start($event)"  (dataStop)="stop($event)"  (dataViewExecutionHistory)="viewExecutionHistory($event)"  (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+    [noDisplayNameCopy]="true" (dataViewHistory)="viewHistory($event)" (export)="export($event)"
+    (exportAll)="exportAll($event)" (import)="import($event)" (copyData)="copy($event, edit.bind(this))"
+    [startDisabled]="false" [stopDisabled]="false" [executeHistoryDisabled]="false"
+    [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization"
+    [importAndExportOnlyJson]="true">
+</app-modeling-template>
+
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-execution-history-modal
+    *ngIf="isExecutionHistoryModalVisible"
+    [(isExecutionHistoryModalVisible)]="isExecutionHistoryModalVisible"
+    [executionHistorys]="executionHistorys">
+</app-execution-history-modal>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}" [busy]="modalBusy">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center header-width">
+            <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                    {{'::LABEL_ExpandAll' | abpLocalization}}
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                    {{'::LABEL_CollapseAll' | abpLocalization}}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+            <div class="accordion accordion-flush">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general"
+                            type="button" aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+                            {{ '::LABEL_General' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="scheduler-setting-name"
+                                            [title]="'::Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span>
+                                                * </span>
+                                        <input type="text" id="scheduler-setting-name" class="form-control"
+                                            formControlName="name" autofocus />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="scheduler-setting-description"
+                                            [title]="'::Description' | abpLocalization">{{'::Description'|abpLocalization}}
+                                        </label>
+                                        <input type="text" id="scheduler-setting-description" class="form-control"
+                                            formControlName="description" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="scheduler-setting-microservice"
+                                            [title]="'::LABEL_Microservice' | abpLocalization">{{'::LABEL_Microservice'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <ng-select id="scheduler-setting-microservice" appendTo="body"
+                                            [items]="microserviceSelectList" bindValue="name" bindLabel="name"
+                                            formControlName="microService" (change)="onMicroserviceChange($event)"
+                                            [clearable]="form.controls['microService'].value">
+                                        </ng-select>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="scheduler-setting-object"
+                                            [title]="'::LABEL_Object' | abpLocalization">{{'::LABEL_Object'|abpLocalization}}</label>
+                                        <span> * </span>
+                                        <ng-select id="scheduler-setting-object" appendTo="body"
+                                            [items]="objectSelectList" bindValue="name" bindLabel="name"
+                                            formControlName="object" (change)="onObjectChange($event)"
+                                            [clearable]="form.controls['object'].value">
+                                        </ng-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="scheduler-setting-action"
+                                            [title]="'::LABEL_Action' | abpLocalization">{{'::LABEL_Action'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <ng-select id="scheduler-setting-action" appendTo="body"
+                                            [items]="actionSelectList" bindValue="name" bindLabel="name"
+                                            formControlName="action" (change)="onActionChange($event)"
+                                            [clearable]="form.controls['action'].value">
+                                        </ng-select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                  <div class="form-group">
+                                      <label for="scheduler-setting-timeout"
+                                          [title]="'::LABEL_TimeOut' | abpLocalization">{{'::LABEL_TimeOut'|abpLocalization}}</label><span>
+                                          (s)* </span>
+                                          <input appInputNumber [min]="0" id="scheduler-setting-timeout" class="form-control" formControlName="timeout" />
+                                  </div>
+                              </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="scheduler-setting-api"
+                                            [title]="'::LABEL_API' | abpLocalization">{{'::LABEL_API'|abpLocalization}}</label>
+                                        <span> * </span>
+                                        <ng-select id="scheduler-setting-api" appendTo="body" [items]="apiSelectList"
+                                            bindValue="name" bindLabel="name" formControlName="api"
+                                            (change)="onApiChange($event)" [clearable]="form.controls['api'].value">
+                                        </ng-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label
+                                            for="scheduler-setting-username">{{'::UserName'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <input type="text" id="scheduler-setting-username" class="form-control"
+                                            formControlName="username" />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label
+                                            for="scheduler-setting-name">{{'::LABEL_Password'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <input type="password" id="scheduler-setting-password" class="form-control"
+                                            formControlName="password" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-12">
+                                  <div class="form-group">
+                                      <label
+                                          for="scheduler-setting-url">{{'::LABEL_Url'|abpLocalization}}</label><span>
+                                          * </span>
+                                      <input type="text" id="scheduler-setting-url" class="form-control"
+                                          formControlName="url" />
+                                  </div>
+                              </div>
+                          </div>
+                            <div class="row" *ngIf="form.value.action?.toLowerCase() !=='get'">
+                              <label for="scheduler-setting-payload"
+                              [title]="'::LABEL_Payload' | abpLocalization">{{'::LABEL_Payload'|abpLocalization}}</label>
+                              <textarea id="scheduler-setting-payload" class="form-control"
+                                            formControlName="payload"  rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#details"
+                            type="button" aria-controls="details" aria-expanded="true" [class.collapsed]="isCollapse">
+                            {{ '::LABEL_Schedule' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="details" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <bs5-quartz-cron formControlName="scheduleCron"
+                                [localization]="localization"></bs5-quartz-cron>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-import-confirm [(importConfirmVisible)]="importConfirmVisible" [existingData]="existingData"
+    [objectType]="'SchedulerSettings'" (customeImport)="customeImport($event)">
+</app-import-confirm>

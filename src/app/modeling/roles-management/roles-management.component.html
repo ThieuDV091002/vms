@@ -1,0 +1,109 @@
+<app-modeling-template [title]="'AbpIdentity::Roles'" [data]="data" [objectType]="'Roles'"
+  [permissions]="{create: 'AbpIdentity.Roles.Create', edit: 'AbpIdentity.Roles.Update', delete: 'AbpIdentity.Roles.Delete', copy: 'AbpIdentity.Roles.Copy', import: 'AbpIdentity.Roles.Import', export: 'AbpIdentity.Roles.Export'}"
+  [columns]="[{displayKey: '::Name', field: 'name'},{displayKey: '::LABEL_AccessLevel', field: 'accessLevel'},{displayKey: '::LABEL_User_Menu', field: 'menu'}]" [copyPrefix]="'AbpIdentity::NewRole'"
+  [customAction]="{displayKey: 'AbpPermissionManagement::Permissions', permission: 'AbpIdentity.Roles.ManagePermissions'}"
+  (customActionTrigger)="openPermissionsModal($event)" [list]="list" (dataAdd)="add()" (dataEdit)="edit($event)"
+  (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)" (dataViewHistory)="viewHistory($event)" [noDisplayNameCopy]="true"
+  (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)" (copyData)="copy($event)" [placeholder]="'::LABEL_SearchName' | abpLocalization" [isRoleModeling]="true" (getCopyRoleName)="onRoleNameChange($event)">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ (selected?.id ? 'AbpIdentity::Edit' : 'AbpIdentity::NewRole') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form [formGroup]="form" (ngSubmit)="save()" validateOnSubmit>
+      <!-- <abp-extensible-form [selectedRecord]="selected"></abp-extensible-form> -->
+      <div class="form-group mb-2">
+        <label for="role-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name' | abpLocalization}}</label><span> * </span>
+        <input type="text" id="role-name" class="form-control" formControlName="name" autofocus />
+      </div>
+      <div class="form-check">
+        <input class="form-check-input mb-2 mt-2" type="checkbox" id="role-isDefault" formControlName="isDefault" />
+        <label class="form-check-label mb-2 mt-2" for="role-isDefault" [title]="'::INFO_Default' | abpLocalization">
+          {{ 'AbpIdentity::DisplayName:IsDefault' | abpLocalization }}
+        </label>
+      </div>
+      <!-- <div class="form-check">
+        <label class="form-check-label mb-2" for="role-isPublic">
+          <input class="form-check-input" type="checkbox" id="role-isPublic" formControlName="isPublic" />
+          {{ 'AbpIdentity::DisplayName:IsPublic' | abpLocalization }}
+        </label>
+      </div> -->
+
+      <div class="form-group mb-2">
+        <label for="roles-access-level">{{ '::LABEL_AccessLevel' | abpLocalization }}</label>
+        <select class="form-control form-select" id="roles-access-level" formControlName="accessLevel">
+          <option
+            *ngFor="let option of accessLevelTypeOptions"
+            [ngValue]="option.value"
+            [title]="('::TOOLTIP_' + option.originalKey) | abpLocalization">
+            {{option.key}} {{ option.localizationKey | abpLocalization }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="roles-menu" [title]="'::INFO_UserMenu' | abpLocalization">{{ '::LABEL_User_Menu' | abpLocalization}}</label>
+        <select class="form-control form-select" id="roles-menuId" formControlName="menuId" title="menu">
+          <option [ngValue]="'00000000-0000-0000-0000-000000000000'"></option>
+          <option [ngValue]="menu.id" *ngFor="let menu of menus"
+            [selected]="menu.id===selected?.extraProperties?.MenuId">
+            {{ menu.name }}
+          </option>
+        </select>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<app-permission-management #abpPermissionManagement="abpPermissionManagement" *abpReplaceableTemplate="
+      {
+        inputs: {
+          providerName: { value: 'R' },
+          providerKey: { value: providerKey },
+          visible: { value: visiblePermissions, twoWay: true },
+          hideBadges: { value: true }
+        },
+        outputs: { visibleChange: onVisiblePermissionChange },
+        componentKey: permissionManagementKey
+      };
+      let init = initTemplate
+    " (abpInit)="init(abpPermissionManagement)">
+</app-permission-management>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+      <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Close' | abpLocalization }}
+      </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'Roles'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

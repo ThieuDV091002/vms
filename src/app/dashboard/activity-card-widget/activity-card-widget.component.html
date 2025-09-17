@@ -1,0 +1,116 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <abp-page-title-container class="col text-start">
+        <h5>{{ selectedWidget.name | abpLocalization }}</h5>
+    </abp-page-title-container>
+    <abp-page-toolbar-container class="col widget-toolbar">
+        <div class="text-end">
+            <span class="me-2 cursor-pointer add-card" title="Create Card" (click)="createCard()"
+                    *abpPermission="'ActivityCard.Create'">
+                    <i class="fas fa-plus fa-lg"></i>
+            </span>
+            <span class="me-2 cursor-pointer" *abpPermission="'Dashboard.Update'" (click)="deleteWidget()">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            <span class="me-2 cursor-pointer" *ngIf="data.length && getActivityCardExportPermission()" (click)="export()">
+                <i class="fa fa-cloud-download fa-lg"></i>
+            </span>
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'ActivityCard.Edit'">
+                <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+            </span>
+        </div>
+    </abp-page-toolbar-container>
+    <div class="card px-3 m-0 h-100">
+        <div class="quick-filter">
+            <span>{{'::LABEL_QuickFilters' | abpLocalization}}:</span>
+            <span class="ms-2">[</span>
+            @for (type of activityCardTypes; track type) {
+                <a (click)="filterCard('cardType', type.id)" [class.active]="quickFilterActive('cardType', type.id)">{{ type.name}}</a>
+            }
+            <span class="mx-2">]</span>
+            <span>[</span>
+            <a (click)="filterCard('ownerType', 'Card Owner')" [class.active]="quickFilterActive('ownerType', 'Card Owner')">{{ '::LABEL_CardOwner' | abpLocalization}}</a>
+            <a (click)="filterCard('ownerType', 'Task Owner')" [class.active]="quickFilterActive('ownerType', 'Task Owner')">{{ '::LABEL_TaskOwner' | abpLocalization}}</a>
+            <a (click)="filterCard('ownerType', 'Team Member')" [class.active]="quickFilterActive('ownerType', 'Team Member')">{{ '::LABEL_TeamMember' | abpLocalization}}</a>
+            <span>]</span>
+        </div>
+        <hr class="my-1"/>
+        <!-- <div> -->
+            <ngx-datatable [rows]="data" #myTable [limit]="+selectedWidget.extraProperties?.pageSize || 10" [count]="data.length" default>
+                <ngx-datatable-column [name]="'ID'" prop="code" [width]="100" [canAutoResize]="false"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_CardType' | abpLocalization" prop="cardTypeName" [width]="95" [canAutoResize]="false"></ngx-datatable-column>
+                <ngx-datatable-column [name]="''" [width]="30" [canAutoResize]="false" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <i class="cursor-pointer link-primary fa fa-edit" (click)="editCard(row)"></i>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_DataTierDetails' | abpLocalization" prop="dataTierDetail" [width]="140" [canAutoResize]="false"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_CardDescription' | abpLocalization" prop="instructions" [width]="300"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_CardOwnerType' | abpLocalization" prop="ownerType" [width]="125" [canAutoResize]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>
+                            @if (row.ownerType === 'Card Owner') {
+                                <i class="far fa-address-card"></i>
+                            } @else if (row.ownerType === 'Team Member') {
+                                <i class="fas fa-users"></i>
+                            } @else if (row.ownerType === 'Task Owner') {
+                                <span class="icon-combine position-relative">
+                                    <i class="far fa-rectangle-list base-icon"></i>
+                                    <i class="fas fa-user cover-icon"></i>
+                                </span>
+                            }
+                            {{ row.ownerType }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_ActivityCardTaskTaskDescription' | abpLocalization">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>{{ row.ownerType === "Task Owner" ? row.taskDescription: '' }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_ActivityCardTaskDueDate' | abpLocalization" [comparator]="dateComparator" prop="dueDate" [width]="105" [canAutoResize]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>{{ row.dueDate | date: 'dd MMM yyyy' }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_Priority' | abpLocalization" prop="priorityName" [comparator]="priorityComparator" [width]="85" [canAutoResize]="false"></ngx-datatable-column>
+            </ngx-datatable>
+        <!-- </div> -->
+    </div>
+</abp-page>
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group mb-2">
+            <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+        </div>
+        <div class="form-group">
+            <label for="cells-displayName" [title]="'::INFO_RowCount' | abpLocalization">{{'::LABEL_RowCount'|abpLocalization}}</label>
+            <input type="number" id="cells-displayName" class="form-control" [(ngModel)]="pageSize" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+            (click)="saveSettiings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl', windowClass: 'card-editor-modal'}">
+    <ng-template #abpBody>
+        <app-card-editor [card]="card" (cardChange)="cardChange()" (cardClose)="isModalVisible=false"></app-card-editor>
+        <!-- <app-card-editor class="d-none d-md-block" [card]="card" (cardChange)="cardChange()" (cardClose)="isModalVisible=false"></app-card-editor>
+        <app-mobile-card-creator class="d-block d-md-none"></app-mobile-card-creator> -->
+    </ng-template>
+</abp-modal>

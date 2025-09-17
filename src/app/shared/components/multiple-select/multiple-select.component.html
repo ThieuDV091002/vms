@@ -1,0 +1,14 @@
+
+<div class="multiple-select-wrapper" style="position: relative" (wheel)="onPanelWheel($event)">
+  <div style="overflow-y: auto; overflow-x: hidden">
+    <ng-select id="multiple-select" #select appendTo=".multiple-select-wrapper" [searchable]="false" [items]="items" [multiple]="true" [disabled]="isDisable" [closeOnSelect]="false"
+      [hideSelected]="true" [bindLabel]="displayName" [bindValue]="valueName" [(ngModel)]="values"
+      (change)="OnChanges($event)">
+      <ng-template ng-header-tmp>
+        <div>
+          <input #search type="search" (input)="select.filter($event.target.value)" />
+        </div>
+      </ng-template>
+    </ng-select>
+  </div>
+</div>

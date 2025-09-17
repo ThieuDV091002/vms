@@ -1,0 +1,260 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <abp-page-title-container class="col text-start" *ngIf="!selected?.extraProperties?.hideName">
+        <!-- <span class="cursor-pointer mx-1" (click)="filterShow=!filterShow">
+            <i [class]="'fas fa-arrow-' +(filterShow? 'up': 'down')+'-wide-short'"></i>
+        </span> -->
+        <h5 class="d-inline-block">{{(selected.name) | abpLocalization}}</h5>
+    </abp-page-title-container>
+    <abp-page-toolbar-container class="col widget-toolbar">
+        <div class="text-end">
+            <select class="form-select layout-select me-2 cursor-pointer" [(ngModel)]="items" (change)="layoutChange($event.target.value)" *abpPermission="'Standard.Update'">
+                <option value="1">1x1</option>
+                <option value="2">2x2</option>
+                <option value="3">3x3</option>
+            </select>
+
+                <span *abpPermission="'Standard.Create'" class="me-2 cursor-pointer" (click)="openAddStandardModal()">
+                    <i class="fa fa-plus fa-lg"></i>
+                </span>
+
+            @if (!queryId) {
+                <span class="me-2 cursor-pointer" (click)="deleteStandWidget()" *abpPermission="'Dashboard.Update'">
+                    <i class="fa fa-trash fa-lg"></i>
+                </span>
+            }
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                    <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                    <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            @if (!queryId) {
+                <span (click)="openEditWidgetModal()" class="cursor-pointer" *abpPermission="'Standard.Update'">
+                    <i class="fa fa-cog me-2 fa-lg" aria-hidden="true"></i>
+                </span>
+            }
+        </div>
+
+    </abp-page-toolbar-container>
+
+    <div class="row entry-row standard-content-container align-content-start">
+<div class="filter-bg-color">
+  <div class="standard-filter-container p-0" *ngIf="filterShow">
+    <div class="input-group">
+      <input #searchInput type="search" class="form-control form-control-sm"
+        [placeholder]="'AbpUi::PagerSearch' | abpLocalization" title="search"
+        (change)="search($event.target.value)"
+        (keydown.enter)="search($event.target.value)" />
+      <button class="btn btn-sm btn-primary" type="button"
+        (click)="search(searchInput.value)">
+          <i class="fa fa-search"></i>
+      </button>
+    </div>
+    <div class="category-filter mt-1">
+      <span>{{'::LABEL_QuickFilters' | abpLocalization}}:</span>
+      <span class="ms-1">[</span>
+      @for (category of categories; track category) {
+        <a (click)="filterByCategory(category.id)" [class.active]="categoryFilterActive(category.id)">{{category.displayName}}</a>
+      }
+      <span class="mx-1">]</span>
+    </div>
+  </div>
+</div>
+
+        @if (!standards.length && !loading) {
+            <div class="no-content">{{'::NoDataAvailableInDatatable' | abpLocalization}}</div>
+        } @else {
+            @for (standard of standards; track standard) {
+                <div class="standard-single" [class.filter-Show]="filterShow" [ngClass]="[selectedIndex === -1 ? '' : ($index === selectedIndex ? 'expand' : 'collapsed'), layoutClass]">
+                    <app-standard-single
+                        [dataTierTreeNode]="dataTierTreeNode"
+                        [currentUser]="currentUser"
+                        [selected]="standard" [index]="$index"
+                        [queryId]="queryId"
+                        [categories]="categories"
+                        (expandChange)="standExpandChange($event)"
+                        (deleteChange)="getStandards()">
+                    </app-standard-single>
+                </div>
+            }
+        }
+</div>
+    @if (selectedIndex === -1) {
+        <div class="previous page-button cursor-pointer" [class.filter-Show]="filterShow" *ngIf="pageButtonDisable()" (click)="getPagedData()"><span><i class="fa fa-chevron-left"></i></span></div>
+        <div class="next page-button cursor-pointer" [class.filter-Show]="filterShow" *ngIf="pageButtonDisable(true)" (click)="getPagedData(true)"><span><i class="fa fa-chevron-right"></i></span></div>
+    }
+</abp-page>
+
+<abp-modal [(visible)]="editStandardWidget">
+    <ng-template #abpHeader>
+        <h3>{{ '::Edit' | abpLocalization}}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+    <form  #dashboardForm="ngForm">
+      <div class="form-group mb-2">
+        <label for="name" [title]="'::INFO_Name' | abpLocalization">{{'::Name' | abpLocalization}}</label><span> * </span>
+        <input type="text" id="name" required [(ngModel)]="editStandardObj.name" name="name" class="form-control">
+      </div>
+      <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="hideName" [(ngModel)]="editStandardObj.extraProperties.hideName"/>
+            <label for="hideName">{{'::Hide Name' | abpLocalization}}</label>
+        </div>
+      </div>
+    </form>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>{{'::Cancel' | abpLocalization}}</button>
+        <button type="button" class="btn btn-primary me-2" [disabled]="!editStandardObj.name" (click)="saveWidget()">{{'::Save' | abpLocalization}}</button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="addStandardModal" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ '::LABEL_AddStandard' | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="accordion accordion-flush">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general-section" type="button"
+            aria-controls="general-section" aria-expanded="true" [class.collapsed]="isCollapse">
+            {{ '::LABEL_General' | abpLocalization }}
+          </button>
+        </h2>
+        <div id="general-section" class="accordion-collapse collapse" [class.show]="!isCollapse">
+          <div class="accordion-body pb-0">
+            <div class="row">
+              <div class="col-12 col-md-6 form-group mb-2">
+                <label for="name" class="col-form-label" [title]="'::INFO_Name' | abpLocalization">{{'::Name' | abpLocalization}}</label><span> * </span>
+                <input type="text" id="name" class="form-control" [(ngModel)]="newStandard.name"/>
+              </div>
+
+              <div class="col-12 col-md-6 form-group mb-2">
+                <label class="col-form-label" [title]="'::INFO_Category' | abpLocalization">Category</label><span>*</span>
+                <ng-select
+                  [items]="categories"
+                  [multiple]="true"
+                  bindLabel="displayName"
+                  [closeOnSelect]="false"
+                  [(ngModel)]="selectedCategories">
+                  <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                    <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.displayName }}
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label">Standard Medias</label>
+              <div class="media-container">
+
+                <div class="media" *ngFor="let standardMedia of editStandMediasObj; let idx=index">
+                  <div class="media-action">
+                    <a (click)="addMedia()" *ngIf="idx === editStandMediasObj.length-1 && editStandMediasObj.length < 3"><i class="fa fa-plus"></i></a>
+                    <a><i class="fa fa-trash" (click)="deleteMedia(idx)"></i></a>
+                  </div>
+                  <div class="media-header mb-1">
+                    <label class="col-form-label mx-1" [title]="'::INFO_HeaderNotes' | abpLocalization">Header Notes</label>
+                    <div>
+                      <input type="text" class="form-control" [(ngModel)]="standardMedia.headerNote"/>
+                    </div>
+                  </div>
+                  <div class="media-body mb-1">
+                    @if (selectedMediaIndex === idx && uploading) {
+                      <div><i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{'::LABEL_Uploading' | abpLocalization}}</div>
+                    } @else {
+                      <div class="media-body-action">
+                        <a class="me-1" (click)="addMediaContent(standardMedia, 'link')"><i class="fa fa-link"></i></a>
+                        <a class=" me-1" (click)="selectedMediaIndex=idx; addMediaContent(standardMedia, 'file')"><i class="fa fa-folder-open-o"></i></a>
+                        <a *ngIf="!isWeb"><i class="fa fa-camera"></i></a>
+                      </div>
+
+                      @if (standardMedia?.mediaType === 'link' && standardMedia?.mediaUrl) {
+                        <iframe [src]="standardMedia.safeUrl" class="media-content-frame"></iframe>
+                      } @else if (standardMedia?.mediaType === 'image' && standardMedia?.mediaUrl) {
+                        <img [src]="standardMedia.mediaUrl" alt="" class="media-content-image"/>
+                      } @else if (standardMedia?.mediaType === 'file' && standardMedia?.mediaAccessUrl){
+                        <img *ngIf="standardMedia.isImage" [src]="standardMedia.mediaAccessUrl" alt="Image" class="media-content-image"/>
+                        <a *ngIf="!standardMedia.isImage" [href]="standardMedia.mediaAccessUrl" [download]="standardMedia?.fileName">{{standardMedia?.fileName}}</a>
+                      }
+                    }
+                  </div>
+                  <div class="media-footer">
+                    <label class="col-form-label mx-1" [title]="'::INFO_FooterNotes' | abpLocalization">Footer Notes</label>
+                    <div>
+                      <input type="text" class="form-control" [(ngModel)]="standardMedia.footerNote"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#data-tier-section" type="button"
+            aria-controls="data-tier-section" aria-expanded="true" [class.collapsed]="isCollapse">
+            {{ '::LABEL_DataTier' | abpLocalization }}<span> *</span>
+          </button>
+        </h2>
+        <div id="data-tier-section" class="accordion-collapse collapse" [class.show]="!isCollapse">
+          <div class="accordion-body pb-0">
+            <app-tree-view [nodes]="dataTierTreeNode" (checkChange)="treeViewCheckChange()" [parent]="true">
+            </app-tree-view>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>{{'::Cancel' | abpLocalization}}</button>
+    <button type="button" class="btn btn-primary me-2"
+      [disabled]="!newStandard.name || selectedCategories.length === 0 || !hasAssignedDataTiers()"
+      (click)="addStandard()">{{'::Save' | abpLocalization}}</button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="addMediaModal">
+    <ng-template #abpHeader>
+      <h3>{{'::Add' | abpLocalization}}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+      @if (mediaType === 'link') {
+        <div class="form-group">
+            <label>{{'::LABEL_Link' | abpLocalization}} </label>
+            <input type="text" class="form-control" [(ngModel)]="mediaContent" [placeholder]="'::LABEL_Link' | abpLocalization"/>
+          </div>
+      } @else {
+        <div class="form-group">
+            <label>{{'::File' | abpLocalization}} </label>
+            <input type="file" class="form-control" (change)="onFileChange($event)"
+              accept="*" />
+          </div>
+      }
+      <div class="form-group mt-2" *ngIf="mediaType !== 'link' ">
+        <!-- <input type="checkbox" class="form-check-input" id="disclaimer" #disclaimer/> -->
+        <label for="disclaimer" class="form-label text-danger"><span class="fa fa-info-circle"></span> {{'::LABEL_UploadDisclaimer' | abpLocalization}} </label>
+      </div>
+    </ng-template>
+    <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+        {{ '::Cancel' | abpLocalization }}
+      </button>
+      <button class="btn btn-primary" (click)="saveMedia()">
+        <i class="fa fa-check"></i>
+        {{'::Save' | abpLocalization}}
+      </button>
+    </ng-template>
+</abp-modal>

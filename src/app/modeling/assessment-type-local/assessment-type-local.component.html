@@ -1,0 +1,330 @@
+<abp-page [title]="'::LABEL_AssessmentTypesLocal' | abpLocalization">
+  <div class="card" style="margin-bottom: 0px;">
+    <div class="card-body">
+      <div id="data-tables-table-filter" class="data-tables-filter mb-1">
+        <div class="input-group">
+          <input #searchInput
+            type="search"
+            class="form-control"
+            [placeholder]="'::LABEL_SearchName' | abpLocalization"
+            title="search"
+            (change)="search($event.target.value)"
+            (keydown.enter)="search($event.target.value)" />
+          <button
+            class="btn btn-primary"
+            type="button"
+            (click)="search(searchInput.value)">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <ngx-datatable
+      [rows]="data.items"
+      [count]="data.totalCount"
+      [selected]="selected"
+      [list]="list"
+      [limit]="pageSize"
+      [scrollbarV]="pageSize === 10 ? false : true"
+      [scrollbarH]="true"
+      default>
+      <ngx-datatable-column
+        [sortable]="false"
+        [canAutoResize]="false"
+        [width]="40">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div ngbDropdown container="body" class="d-inline-block">
+            <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 30px;" data-toggle="dropdown" aria-haspopup="true" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdown">
+              <button ngbDropdownItem (click)="edit(row)">
+                {{ '::Edit' | abpLocalization }}
+              </button>
+              <button ngbDropdownItem (click)="viewHistory(row)">
+                {{ '::ViewHistory' | abpLocalization }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="name" [width]="130">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::DisplayName' | abpLocalization" prop="displayName">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Description' | abpLocalization" prop="description">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::ActiveRevision' | abpLocalization" prop="activeRevision">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LastRevision' | abpLocalization" prop="lastRevision">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::GlobalActiveRevision' | abpLocalization" prop="globalActiveRevision" [width]="200">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <label class="me-2">{{ row.globalActiveRevision }}</label>
+          <i *ngIf="row.globalActiveRevision !== row.activeRevision"
+            class="fas fa-info-circle cursor-pointer"
+            style="color: red;"
+            [attr.title]="getTooltipMessage(row.globalActiveRevision, row.activeRevision)">
+          </i>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::ActivityCardType' | abpLocalization" prop="activityCardTypeName" [width]="160">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::ActivityCardCategory' | abpLocalization" prop="activityCardCategoryName" [width]="200">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LastUpdateTime' | abpLocalization" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ formatDate(row.lastModificationTime ? row.lastModificationTime : row.creationTime) | date: 'dd MMM yyyy hh:mm:ss a' }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LastUpdateBy' | abpLocalization" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.lastModifier }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LastPublishTime' | abpLocalization" prop="lastPublishTime">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ (row.lastPublishTime === '0001-01-01T00:00:00' ? '' : formatDate(row.lastPublishTime)) | date: 'dd MMM yyyy hh:mm:ss a' }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-footer>
+        <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+          let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+          <app-datatable-footer [rowCount]="rowCount" [pageSize]="pageSize" [offset]="offset" [list]="list" [selectedCount]="selected.length"
+             (page)="pageChange($event)">
+          </app-datatable-footer>
+        </ng-template>
+      </ngx-datatable-footer>
+    </ngx-datatable>
+    </div>
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{ centered: true, size: 'xl' }">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ '::Edit' | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="accordion" id="accordionExample">
+          <div class="accordion accordion-flush">
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                  aria-expanded="true" aria-controls="collapseOne" [class.collapsed]="isCollapse">
+                  {{ '::LABEL_General' | abpLocalization }}
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                <div class="accordion-body">
+                  <div class="row">
+                    <div class="col col-12">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-name">{{'::Name'|abpLocalization}}</label><span>
+                          * </span>
+                        <input type="text" id="assessment-type-name" class="form-control" [value]="currentAssessmentType.name" [readOnly]="true" />
+                      </div>
+                    </div>
+                    <div class="col col-12">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-displayName">{{'::DisplayName'|abpLocalization}}</label><span>
+                          * </span>
+                        <input type="text" id="assessment-type-displayName" class="form-control"[value]="currentAssessmentType.displayName" [readOnly]="true"/>
+                      </div>
+                    </div>
+                    <div class="col col-12">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-description">{{'::Description'|abpLocalization}}</label>
+                        <input type="text" id="assessment-type-description" class="form-control" [value]="currentAssessmentType.description" [readOnly]="true"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col col-3">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-card-type">{{'::LABEL_ActivityCardType'|abpLocalization}}</label>
+                        <input type="text" id="assessment-type-active-revision" class="form-control" [value]="currentAssessmentType.activityCardTypeName" [readOnly]="true" />
+                      </div>
+                    </div>
+                    <div class="col col-3">
+                      <div class="form-group mb-2">
+                        <label
+                          for="assessment-type-card-category">{{'::LABEL_ActivityCardCategory'|abpLocalization}}</label>
+                        <input type="text" id="assessment-type-active-revision" class="form-control" [value]="currentAssessmentType.activityCardCategoryName" [readOnly]="true" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col col-3">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-revision">{{'::LABEL_Revision'|abpLocalization}}</label><span> * </span>
+                        <ng-select 
+                        [items]="currentAssessmentType.revisions" 
+                        bindLabel="name" 
+                        bindValue="name" 
+                        formControlName="activeRevision"
+                        (change)="onRevisionChange($event)">
+                      </ng-select>
+                      </div>
+                    </div>
+                    <div class="col col-3">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-active-revision">{{'::LABEL_ActiveRevision'|abpLocalization}}</label>
+                        <input type="text" id="assessment-type-active-revision" class="form-control" [value]="currentAssessmentType.activeRevision" [readOnly]="true" />
+                      </div>
+                    </div>
+                    <div class="col col-3">
+                      <div class="form-group mb-2">
+                        <label for="assessment-type-global-active-revision">{{'::LABEL_GlobalActiveRevision'|abpLocalization}}</label>
+                        <input type="text" id="assessment-type-active-revision" class="form-control" [value]="currentAssessmentType.globalActiveRevision" [readOnly]="true" />
+                      </div>
+                    </div>
+                    <div class="col col-3">
+                      <div class="mt-3">
+                        <i *ngIf="currentAssessmentType.globalActiveRevision !== currentAssessmentType.activeRevision" class="fas fa-info-circle icon-red"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" tyanswerTypeOptionspe="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                  aria-expanded="true" aria-controls="collapseTwo" [class.collapsed]="isCollapse">
+                  {{ '::LABEL_AssessmentQuestionGuideline' | abpLocalization }}
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                <div class="accordion-body">
+                  <div class="row">
+                    <div class="form-group col col-12 col-md-12 mb-1">
+                      <ngx-datatable
+                        id="assessmentGuidelinDataTable"
+                        [rows]="guidelineList"
+                        [count]="guidelineList.length"
+                        [limit]="6"
+                        [scrollbarH]="false"
+                        default>
+                        <ngx-datatable-column [maxWidth]="25" [sortable]="false">
+                          <ng-template let-row="row" let-rowIndex="rowIndex" let-index ngx-datatable-cell-template>
+                            <div ngbDropdown container="body" class="d-inline-block">
+                              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" data-toggle="dropdown"
+                                aria-haspopup="true" ngbDropdownToggle></i>
+                              <div ngbDropdownMenu aria-labelledby="dropdown">
+                                <button ngbDropdownItem (click)="editGuideline(rowIndex)">
+                                  {{ 'AbpActions::Edit' | abpLocalization }}
+                                </button>
+                              </div>
+                            </div>
+                          </ng-template>
+                        </ngx-datatable-column>
+                        <ngx-datatable-column
+                          [name]="'::LABEL_AssessmentGlobalGuidelineQuestion' | abpLocalization"
+                          prop="question">
+                        </ngx-datatable-column>
+                        <ngx-datatable-column
+                          [name]="'::LABEL_AssessmentGlobalGuidelineLongDescription' | abpLocalization"
+                          prop="longDescription">
+                        </ngx-datatable-column>
+                        <ngx-datatable-column
+                          [name]="'::LABEL_AssessmentLocalGuidelineQuestion' | abpLocalization"
+                          prop="questionLocal">
+                        </ngx-datatable-column>
+                        <ngx-datatable-column
+                          [name]="'::LABEL_AssessmentLocalGuidelineLongDescription' | abpLocalization"
+                          prop="longDescriptionLocal">
+                        </ngx-datatable-column>
+                        <ngx-datatable-column
+                          [name]="'::LABEL_AssessmentGlobalGuidelineAnswerType' | abpLocalization"
+                          prop="answerType">
+                        </ngx-datatable-column>
+                      </ngx-datatable>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      } @else {
+      <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+      }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <div class="text-end">
+      <button type="button" class="btn btn-danger me-2" (click)="activeRevision()"
+        [disabled]="form.controls['activeRevision'].value === currentAssessmentType.activeRevision">
+        <i class="fa-solid fa-tower-broadcast me-1"></i>
+        {{ '::LABEL_Activate' | abpLocalization }}
+      </button>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+        {{ 'AbpIdentity::Cancel' | abpLocalization }}
+      </button>
+      <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()" class="ms-2">
+        {{ 'AbpIdentity::Save' | abpLocalization }}
+      </abp-button>
+    </div>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isGuidelineModalVisible" [options]="{ centered: true }">
+  <ng-template #abpHeader>
+    <h3>{{ '::Edit' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <form [formGroup]="guidelineForm" (ngSubmit)="saveGuideline()">
+      <div class="form-group mb-2">
+        <label for="guideline-question">{{ '::LABEL_AssessmentGlobalGuidelineQuestion' | abpLocalization }}</label><span> * </span>
+        <input type="text" id="guideline-question" class="form-control" formControlName="question" readonly/>
+      </div>
+      <div class="form-group mb-2">
+        <label for="guideline-long-description">{{ '::LABEL_AssessmentGlobalGuidelineLongDescription' | abpLocalization }}</label>
+        <input type="text" id="guideline-long-description" class="form-control" formControlName="longDescription" readonly>
+      </div>
+      <div class="form-group mb-2">
+        <label for="guideline-answer-type">{{ '::LABEL_AssessmentGlobalGuidelineAnswerType' | abpLocalization }}</label><span> * </span>
+        <input type="text" id="guideline-answerType" class="form-control" formControlName="answerType" readonly/>
+      </div>
+      <div class="form-group mb-2">
+        <label for="guideline-question"> {{'::LABEL_AssessmentLocalGuidelineQuestion' | abpLocalization}} </label><span> * </span>
+        <input type="text" id="guideline-question" class="form-control" formControlName="questionLocal"/>
+      </div>
+      <div class="form-group mb-2">
+        <label for="guideline-long-description"> {{'::LABEL_AssessmentLocalGuidelineLongDescription' | abpLocalization}} </label>
+        <textarea type="text" id="guideline-long-description" class="form-control" formControlName="longDescriptionLocal"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="guideline-long-description"> {{'::LABEL_AssessmentLocalGuidelineStandards' | abpLocalization }} </label>
+        <multiple-select [items]="standardList" displayName="name" valueName="id" (change)="selectedStandardChanges($event)"
+        [values]="guidelineForm.controls['standards'].value">
+        </multiple-select>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="guidelineForm?.invalid" (click)="saveGuideline()">
+      {{ '::LABEL_Update' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>

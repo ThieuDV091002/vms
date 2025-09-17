@@ -1,0 +1,66 @@
+app-custom-error {
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .error-header {
+    flex: 0 0 auto;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .error-header .icon {
+    color: red;
+    font-size: 50px;
+  }
+
+  .error-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 10px;
+    text-align: center;
+    max-height: 80vh; /* Adjust based on header and footer height */
+  }
+
+  .error-footer {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .error-message {
+    white-space: pre-wrap;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .close-btn {
+      background-color: #ac1a8a!important;
+      border-color: #ac1a8a!important;
+      color: #ffffff !important;
+      height: 30px;
+      line-height: 3px;
+      font-family: "Helvetica Neue", sans-serif;
+      &:hover {
+        background-color: #560c44!important;
+        border-color: #560c44!important;
+      }
+  }
+
+  .error-details {
+    padding: 10px;
+  }
+
+  .error-message {
+    text-align: left;
+    
+    strong {
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+  }
+}

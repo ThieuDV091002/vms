@@ -1,0 +1,268 @@
+<abp-page [title]="currentTitle | abpLocalization">
+  <abp-page-toolbar-container class="col">
+    <div class="text-end pt-1">
+      <button class="btn btn-outline-primary btn-sm action-button me-1"
+        type="button" (click)="changeBox()">
+        <i class="fas fa-inbox me-1"></i>
+        <span>{{ anotherTitle | abpLocalization }}</span>
+      </button>
+      <button class="btn btn-primary btn-sm action-button me-1" type="button"
+        (click)="writeMessage()">
+        <i class="fas fa-edit me-1"></i>
+        <span>{{ '::LABEL_WriteMessage' | abpLocalization }}</span>
+      </button>
+    </div>
+  </abp-page-toolbar-container>
+
+  <div class="card" style="margin-top: 0px;">
+    <div class="card-body">
+      <ngx-datatable *ngIf="currentTitle === '::LABEL_InBox'"
+        [rows]="inboxData?.items" [count]="inboxData?.totalCount"
+        [displayCheck]="displayCheck"
+        [selectionType]="'checkbox'" [selected]="selected" [list]="inboxlist"
+        (select)="onSelect($event)"
+        [limit]="pageSize" [scrollbarV]="pageSize === 10 ? false : true"
+        scrollbarH="false" default>
+        <ngx-datatable-column
+          name [checkboxable]="true"
+          [headerCheckboxable]="inboxData?.items.length"
+          [width]="30"
+          [headerClass]="getCheckboxClass()"
+          [cellClass]="getCheckboxClass()"
+          [sortable]="false"
+          [canAutoResize]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column [width]="40" [sortable]="false"
+          [canAutoResize]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div ngbDropdown container="body" class="d-inline-block">
+              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer"
+                style="width: 30px;" data-toggle="dropdown" aria-haspopup="true"
+                ngbDropdownToggle></i>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                <button ngbDropdownItem (click)="readInboxMessage(row)">
+                  {{ '::LABEL_Read' | abpLocalization }}
+                </button>
+                <button ngbDropdownItem (click)="deleteMessage(row)">
+                  {{ '::Delete' | abpLocalization }}
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_From' | abpLocalization"
+          [sortable]="true">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div [ngClass]="{'font-weight-bold': isUnRead(row)}"
+              (click)="readInboxMessage(row)" style="cursor: pointer;">
+              {{ getUserDisplayName(row.fromUser) }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Title' | abpLocalization"
+          prop="title" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div [ngClass]="{'font-weight-bold': isUnRead(row)}"
+              (click)="readInboxMessage(row)" style="cursor: pointer;">
+              {{ row.title }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_SendingTime' | abpLocalization"
+          [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div [ngClass]="{'font-weight-bold': isUnRead(row)}"
+              (click)="readInboxMessage(row)" style="cursor: pointer;">
+              {{ formatDate(row.creationTime) | date: 'dd MMM yyyy hh:mm:ss a' }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-footer>
+          <ng-template ngx-datatable-footer-template let-rowCount="rowCount"
+            let-pageSize="pageSize"
+            let-selectedCount="selectedCount" let-curPage="curPage"
+            let-offset="offset">
+            <app-datatable-footer [rowCount]="rowCount" [pageSize]="pageSize"
+              [offset]="offset" [list]="inboxlist"
+              [selectedCount]="selected.length" (page)="pageChange($event)">
+            </app-datatable-footer>
+          </ng-template>
+        </ngx-datatable-footer>
+      </ngx-datatable>
+
+      <ngx-datatable *ngIf="currentTitle === '::LABEL_OutBox'"
+        [rows]="outboxData?.items" [count]="outboxData?.totalCount"
+        [displayCheck]="displayCheck"
+        [selectionType]="'checkbox'" [selected]="outboxSelected"
+        [list]="outboxlist"
+        (select)="onSelectOutbox($event)"
+        [limit]="pageSize" [scrollbarV]="pageSize === 10 ? false : true"
+        scrollbarH="false" default>
+        <ngx-datatable-column
+          name [checkboxable]="true"
+          [headerCheckboxable]="outboxData?.items.length"
+          [width]="30"
+          [headerClass]="getCheckboxClass()"
+          [cellClass]="getCheckboxClass()"
+          [sortable]="false"
+          [canAutoResize]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column [width]="40" [sortable]="false"
+          [canAutoResize]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div ngbDropdown container="body" class="d-inline-block">
+              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer"
+                style="width: 30px;" data-toggle="dropdown" aria-haspopup="true"
+                ngbDropdownToggle></i>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                <button ngbDropdownItem (click)="readOutboxMessage(row)">
+                  {{ '::LABEL_Read' | abpLocalization }}
+                </button>
+                <!-- <button ngbDropdownItem (click)="deleteMessage(row)">
+                  {{ '::Delete' | abpLocalization }}
+                </button> -->
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_To' | abpLocalization"
+         [sortable]="true">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div (click)="readOutboxMessage(row)" style="cursor: pointer;">
+              {{ getUserDisplayName(row.toUser)  }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_Title' | abpLocalization"
+          prop="title" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div (click)="readOutboxMessage(row)" style="cursor: pointer;">
+              {{ row.title }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_SendingTime' | abpLocalization"
+          [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div (click)="readOutboxMessage(row)" style="cursor: pointer;">
+              {{ formatDate(row.creationTime) | date: 'dd MMM yyyy hh:mm:ss a' }}
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-footer>
+          <ng-template ngx-datatable-footer-template let-rowCount="rowCount"
+            let-pageSize="pageSize"
+            let-selectedCount="selectedCount" let-curPage="curPage"
+            let-offset="offset">
+            <app-datatable-footer [rowCount]="rowCount" [pageSize]="pageSize"
+              [offset]="offset" [list]="outboxlist"
+              [selectedCount]="outboxSelected.length"
+              (page)="pageChange($event)">
+            </app-datatable-footer>
+          </ng-template>
+        </ngx-datatable-footer>
+      </ngx-datatable>
+    </div>
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isInboxReadModalOpen" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_PrivateMessage' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-name">{{'::LABEL_From'|abpLocalization}}</label>
+      <input type="text" id="private-message-name" class="form-control"
+        [value]="curentInboxMessage.fromUser.extraProperties['FromUserInfo']"  readonly />
+    </div>
+    <div class="form-group mb-2">
+      <label for="private-message-to">{{'::LABEL_To'|abpLocalization}}</label>
+      <input type="text" id="private-message-to" class="form-control"
+         [value]="curentInboxMessage.toUser.extraProperties['ToUserInfo']"  readonly />
+    </div>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-time">{{'::LABEL_SendingTime'|abpLocalization}}</label>
+      <input type="text" id="private-message-time" class="form-control"
+        [(ngModel)]="formattedCreationTime" readonly />
+    </div>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-title">{{'::LABEL_Title'|abpLocalization}}</label>
+      <div id="private-message-title" class="form-control"
+        [innerHTML]="curentInboxMessage.title"></div>
+    </div>
+    <div class="form-group mb-2">
+      <label
+        for="private-message-content">{{'::LABEL_Content'|abpLocalization}}</label>
+      <div id="private-message-content" class="form-control"
+        [innerHTML]="curentInboxMessage.content"></div>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <!-- <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button> -->
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_WriteMessage' | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="mb-2">
+        <label for="write-private-message-userList">{{ '::LABEL_Receiver' |
+          abpLocalization }}</label><span> * </span>
+        <ng-select id="write-private-message-userList" [items]="userList"
+          appendTo="body" bindValue="id" bindLabel="name"
+          formControlName="toUserId" (change)="receiverSelectChange($event)"
+          [clearable]="false" [searchable]="false">
+          <ng-template ng-header-tmp>
+            <input type="search" (input)="filterUsers($event.target.value)"
+              class="form-control" style="padding: 0.15rem 1.25rem;"
+              [placeholder]="'::LABEL_UserSearch' | abpLocalization" />
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+              <ng-template #tipContent>{{ item.email }}</ng-template>
+              <span [ngbTooltip]="tipContent" placement="right" container="body" tooltipClass="my-tooltip-class">
+                  {{ item.name }}
+              </span>
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+              {{ item.name }}
+          </ng-template>
+        </ng-select>
+      </div>
+      <div class="mb-2">
+        <label
+          for="write-private-message-title">{{'::LABEL_Title'|abpLocalization}}</label><span>
+          * </span>
+        <input type="text" id="write-private-message-title" class="form-control"
+          formControlName="title" />
+      </div>
+      <div class="mb-2">
+        <label
+          for="write-private-message-content">{{'::LABEL_Content'|abpLocalization}}</label><span>
+          * </span>
+        <textarea id="write-private-message-content" class="form-control"
+          formControlName="content" rows="8"></textarea>
+      </div>
+    </form>
+    <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner"
+        aria-hidden="true"></i></div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid"
+      (click)="save()">{{ 'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>

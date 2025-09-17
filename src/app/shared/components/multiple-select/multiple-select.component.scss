@@ -1,0 +1,65 @@
+  #multiple-select.ng-select .ng-select-container {
+    font-size: 1em;
+    background: var(--lpx-navbar-active-bg-color);
+    border-radius: var(--lpx-radius);
+    border: 1px solid rgba(var(--lpx-navbar-active-text-color-rgb), 0.05);
+    color: var(--lpx-navbar-active-text-color);
+  }
+
+  #multiple-select.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    background: var(--lpx-navbar-color);
+    color: var(--lpx-navbar-text-color);
+  }
+
+  #multiple-select.ng-select.ng-select-opened>.ng-select-container {
+    background: var(--lpx-navbar-color);
+    color: var(--lpx-navbar-text-color);
+  }
+
+  #multiple-select.ng-dropdown-panel {
+    background: var(--lpx-navbar-color);
+    color: var(--lpx-navbar-text-color);
+  }
+
+  #multiple-select.ng-dropdown-panel .ng-dropdown-header {
+    background: var(--lpx-navbar-color);
+    color: var(--lpx-navbar-text-color);
+
+    input {
+      background: var(--lpx-navbar-active-bg-color);
+      color: var(--lpx-navbar-active-text-color);
+      //border-radius: var(--lpx-radius);
+      border: 1px solid rgba(var(--lpx-navbar-active-text-color-rgb), 0.05);
+      width: 100%;
+    }
+  }
+.multiple-select-wrapper .ng-dropdown-panel,
+.multiple-select-wrapper .ng-dropdown-panel .scroll-host {
+  overscroll-behavior: contain; 
+}
+  #multiple-select.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+    background: var(--lpx-navbar-active-bg-color);
+    color: var(--lpx-navbar-active-text-color);
+  }
+
+  #multiple-select.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
+  #multiple-select.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
+    background: var(--lpx-brand);
+    color: white;
+  }
+
+  #multiple-select.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
+    font-size: var(--bs-body-font-size);
+  }
+
+  #multiple-selectng-dropdown-panel {
+    z-index: 9999999 !important;
+  }
+input[type=search]{
+  width: 100%;
+  background: var(--lpx-navbar-active-bg-color);
+  color: var(--lpx-navbar-active-text-color);
+  border-radius: var(--lpx-radius);
+  border: 1px solid rgba(var(--lpx-navbar-active-text-color-rgb), 0.05);
+  padding: 0.675rem 1.25rem;
+}

@@ -1,0 +1,179 @@
+:host {
+    height: 100%;
+
+    .not-meet-color {
+        color: #FF0000 !important;
+    }
+
+    app-broadcast-message-view ::ng-deep {
+
+        .fa.fa-trash,
+        .fa.fa-expand {
+            display: none;
+        }
+    }
+
+    .safety-container {
+        font-weight: 500;
+        height: calc(100% - 100px);
+
+        // use ::after to clear the floats
+        &::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        .safety-content {
+            float: left;
+            width: 200px;
+            height: 100%;
+            gap: 5px;
+
+            .safety-tile {
+                flex: auto;
+                background: #ffd1b6;
+                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                .safety-icon {
+                    display: inline-block;
+                    width: 3rem;
+                    height: 3rem;
+                    background-color: #ff7425;
+                    border-radius: 50%;
+                    color: #ffffff;
+                    text-align: center;
+                    font-size: 1.5rem;
+                    line-height: 3rem;
+                }
+
+                .safety-num {
+                    font-size: 2.5rem;
+                    line-height: 2.5rem;
+                    font-weight: bold;
+                    text-align: center;
+                    flex: 1 1 auto !important;
+                    color: #424242;
+                }
+
+                .safety-no-incident {
+                    font-size: 1rem;
+                    line-height: 1rem;
+                    font-weight: bold;
+                    text-align: center;
+                    flex: 1 1 auto !important;
+                    color: #424242;
+                }
+
+                .safety-tips {
+                    margin-top: 10px;
+                    color: #424242;
+                }
+            }
+        }
+
+        .safety-details {
+            float: left;
+            height: 100%;
+            width: calc(100% - 550px);
+
+            .incident-data {
+                display: block;
+                font-size: 2rem;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+
+            .no-target {
+                display: block;
+                font-size: 1rem;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+
+            .safety-incident {
+                height: 50%;
+                padding: 5px;
+
+                .safety-incident-summary {
+                    width: 130px;
+                    text-align: center;
+
+                    >div {
+                        padding: 5px;
+                        border: 1px solid var( --lpx-widget-border-color);
+                    }
+                }
+
+                .safety-incident-chart {
+                    width: calc(100% - 130px);
+                }
+            }
+
+            .safety-near-miss {
+                height: 50%;
+                padding: 5px;
+
+                .safety-near-miss-summary {
+                    width: 130px;
+                    text-align: center;
+
+                    >div {
+                        padding: 5px;
+                        border: 1px solid var( --lpx-widget-border-color);
+                    }
+                }
+
+                .safety-near-miss-chart {
+                    width: calc(100% - 130px);
+                }
+            }
+        }
+
+        .safety-alert {
+            float: left;
+            width: 350px;
+            height: 100%;
+        }
+    }
+
+    .safety-footer {
+        height: 100px;
+        margin-top: 5px;
+
+        .safety-footer-header {
+            height: 35px;
+            background-color: #ff7425;
+            color: #ffffff;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.2rem;
+            line-height: 35px;
+        }
+
+        .safety-footer-content {
+            height: 65px;
+
+            >div {
+                text-align: center;
+                border-left: 1px solid var(--lpx-widget-border-color);
+                border-bottom: 1px solid var( --lpx-widget-border-color);
+
+                span {
+                    display: inline-block;
+                    margin-top: 5px;
+                    width: 60px;
+                    height: 30px;
+                    line-height: 30px;
+                    background-color: #ffd1b6;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    color: #000000;
+                }
+            }
+        }
+    }
+}

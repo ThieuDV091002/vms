@@ -1,0 +1,261 @@
+<abp-page class="widget-page">
+  <abp-page-toolbar-container>
+    <div class="card-header">
+      <div>
+        <h5>{{'::LABEL_CardManagement' | abpLocalization}}</h5>
+      </div>
+      <div class="widget-toolbar">
+        <span class="me-2 cursor-pointer" *ngIf="!queryId && index >= 0">
+          <span class="cursor-pointer" (click)="deleteWidget()"
+              *abpPermission="'Dashboard.Delete'">
+              <i class="fa fa-trash fa-lg"></i>
+          </span>
+        </span>
+        <div class="d-inline-block me-2">
+          <span (click)="toggleView()"><i [class]="listView ? 'fa fa-table': 'fa fa-list'" class="fa-lg"></i></span>
+        </div>
+        <span class="me-2 cursor-pointer add-card" title="Create Card" (click)="createCard()"
+          *abpPermission="'ActivityCard.Create'">
+          <i class="fas fa-plus fa-lg"></i>
+        </span>
+      </div>
+    </div>
+  </abp-page-toolbar-container>
+  <div class="card mb-0">
+    <div class="ms-2 me-2 mt-1">
+      <div class="input-group">
+        <span class="advanced-filter-icon me-2" (click)="showAdvancedFilter = !showAdvancedFilter">
+          <img [class.filter-show-full]="filterSearchHasValue" [class.filter-show-empty]="!filterSearchHasValue"
+            [ngClass]="showAdvancedFilter ? 'd-none' : ''" alt="Filter Show" />
+          <img [class.filter-hidden-full]="filterSearchHasValue" [class.filter-hidden-empty]="!filterSearchHasValue"
+            [ngClass]="showAdvancedFilter ? '' : 'd-none'" alt="Filter Hidden" />
+        </span>
+        <input #searchInput type="search" class="form-control"
+          [placeholder]="'Search by Short Description / Long Description / Task Description' | abpLocalization"
+          title="search" [(ngModel)]="searchFilter" (change)="getActivityCards()"
+          (keydown.enter)="getActivityCards()" />
+        <button class="btn btn-primary btn-sm" type="button" (click)="getActivityCards()" title="search">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div [ngClass]="showAdvancedFilter ? '' : 'd-none'" class="ms-2 me-2">
+      <div class="row" [formGroup]="filterForm">
+        <div class="col-md-6 col-12">
+          <div class="form-group text-start">
+            <label for="data-tier-site">{{ '::Site'|abpLocalization }}</label>
+            <select class="form-control form-select" id="data-tier-site" formControlName="site">
+              <option [value]="siteData?.id">{{siteData?.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="form-group text-start">
+            <label for="data-tier-area">{{ '::Area'|abpLocalization }}</label>
+            <multiple-select id="data-tier-area" [items]="areaData" displayName="displayName" valueName="id"
+              (change)="selectedChanges($event, 'area')" [values]="filterForm.controls.area.value">
+            </multiple-select>
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="form-group text-start">
+            <label for="data-tier-cell">{{ '::Cell'|abpLocalization }}</label>
+            <multiple-select id="data-tier-cell" [items]="cellData" displayName="displayName" valueName="id"
+              (change)="selectedChanges($event, 'cell')" [values]="filterForm.controls.cell.value">
+            </multiple-select>
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="form-group text-start">
+            <label for="status">{{ '::LABEL_Status' | abpLocalization }}</label>
+            <multiple-select id="status" [items]="states" displayName="displayName" valueName="id"
+              (change)="selectedChanges($event, 'status')" [values]="filterForm.controls.status.value">
+            </multiple-select>
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="form-group text-start">
+            <label for="category">{{'::Category'|abpLocalization}}</label>
+            <multiple-select id="category" [items]="categoryData" displayName="displayName" valueName="id"
+              (change)="selectedChanges($event, 'category')" [values]="filterForm.controls.category.value">
+            </multiple-select>
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="form-group text-start">
+            <label for="owner">{{'::LABEL_Owner'|abpLocalization}}</label>
+            <ng-select id="owner" [items]="userSelectOptions" [appendTo]="'body'" bindValue="id" bindLabel="name"
+              [typeahead]="input$" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true"
+              formControlName="owner">
+              <ng-template ng-option-tmp let-item="item">
+                  <ng-template #tipContent>{{ item.email }}</ng-template>
+                  <span [ngbTooltip]="tipContent" placement="right" container="body" tooltipClass="my-tooltip-class">
+                      {{ item.name }}
+                  </span>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="d-flex pt-2 justify-content-end align-items-center h-100">
+            <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="clearFilterData()">
+              {{ 'AbpUi::Clear' | abpLocalization }}
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="getActivityCards()">
+              {{ 'AbpUi::PagerSearch' | abpLocalization }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="quick-filter me-2 ms-2 mt-1">
+      <span>{{'::LABEL_QuickFilters' | abpLocalization}}:</span>
+      <span class="ms-2">[</span>
+      @for (cardType of activityCardTypes; track cardType) {
+      <a (click)="filterCard('cardType', cardType.id)" [class.active]="quickFilterActive('cardType', cardType.id)">{{
+        cardType.displayName || cardType.name }}</a>
+      }
+      <span >]</span>
+      <span style="margin-left: 10px;">[</span>
+      <a (click)="filterCard('owner')" [class.active]="quickFilterActive('owner')">{{'::LABEL_MyCard' |
+        abpLocalization}}</a>
+          <span>]</span>
+          <span class="ms-2">[</span>
+      <a (click)="getMyDirectEmployeesCard()" [class.active]="isMyDirectEmployees">
+        {{'::LABEL_MyDirectEmployees' | abpLocalization}}
+      </a>
+      <span>]</span>
+      <span class="ms-2">[</span>
+      <a (click)="ExpandSubTiers()" [class.active]="expandSubTiers">
+        {{'::LABEL_ExpandSubTiers' | abpLocalization}}
+      </a>
+      <span>]</span>
+    </div>
+    <!-- Summary card -->
+    <div class="overall-view summary-card d-flex pt-2 ps-2 pe-2 pb-1">
+      <div *ngFor="let item of summaryItems">
+        <div
+          class="summary-label"
+          [ngbTooltip]="item.tooltip | abpLocalization"
+          container="body">
+          <a
+            [ngClass]="{'summary-active-filter': currentFilter === item.label}"
+            (click)="filterBySummaryType(item.label)">
+            {{ item.label | abpLocalization }}
+          </a>
+          <span class="summary-value ms-2">
+            {{ item.value() }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="cdk-drop-list-container" cdkDropListGroup>
+      @if(listView) {
+      <div class="list-view">
+        <app-card-list-view [data]="cardListViewData" [statusData]="states" (editEvent)="editCard($event)"
+          (updateEvent)="updateCardStatus($event)"></app-card-list-view>
+      </div>
+      } @else {
+      <div class="kanban-view ps-2 pe-2 pb-2">
+        <div class="kanban-board d-flex">
+          @for (card of groupedCardData; track card) {
+          <div class="kanban-board-column" [class.drag-enabled]="checkDragEnabled(card.status)">
+            <div class="kanban-board-column-header" [ngbTooltip]="card.tooltip | abpLocalization" container="body">
+              <span>{{ card.statusLabel | abpLocalization }} : {{ card.data.length }}</span>
+            </div>
+            <div cdkDropList
+              class="kanban-board-column-body"
+              [id]="card.status.toLowerCase().replace(' ', '') + '-container'"
+              [cdkDropListData]="card.data"
+              (cdkDropListDropped)="onCardDropped($event)">
+              @for (data of card.data; track data) {
+              <div cdkDrag 
+                [cdkDragData]="data"
+                [cdkDragDisabled]="drag || isDropRequestInProgress"
+                (cdkDragStarted)="onCardDragStarted($event)"
+                cdkDragBoundary=".cdk-drop-list-container">
+                <app-activity-card-tile
+                  [data]="data"
+                  (dblclick)="editCard(data)"
+                  [user]="userMap.get(data.assignedOwnerId)"
+                  (editCardEvent)="editCard(data, $event)">
+                </app-activity-card-tile>
+                <div *cdkDragPlaceholder [ngClass]="{'d-none': drag}"></div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+      <!-- drag to change status -->
+      <div class="kanban-board-footer d-flex ps-2 pe-2" *ngIf="!listView">
+        @for (dragAction of dragActions; track dragAction) {
+        <div cdkDropList
+          class="kanban-status-pool"
+          [class.drag-not-allowed]="drag"
+          [class.drag-enabled]="checkDragEnabled(DragAction[dragAction])" 
+          [id]="dragAction.toLowerCase() + '-footer-container'"
+          [cdkDropListData]="[]"
+          (cdkDropListDropped)="onCardDropped($event)"
+          [title]="'::LABEL_DragHereFor' + DragAction[dragAction] | abpLocalization">
+          <span>
+            {{ '::LABEL_DragHereFor' + DragAction[dragAction] | abpLocalization }}
+          </span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</abp-page>
+<!-- card de-escalate modal -->
+<abp-modal [(visible)]="isCardDeEscalateModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_DeEscalate' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <!-- <label for="widget-name">{{'::Area'|abpLocalization}}</label> -->
+      <ng-select [items]="deDscalateDataTierList" appendTo="body" bindLabel="name"
+        [(ngModel)]="deDscalateDataTier"></ng-select>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="!deDscalateDataTier" (click)="deEscalateCardAction()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+<!-- card transfer modal -->
+<abp-modal [(visible)]="isCardTransferModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_Transfer' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="widget-name">{{'::Area'|abpLocalization}}</label>
+      <ng-select [items]="areas" id="widget-name" appendTo="body" bindLabel="displayName" [typeahead]="areaSearchInput$"
+        [(ngModel)]="transferArea">
+      </ng-select>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="!transferArea" (click)="transferCard()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+<!-- add card modal -->
+<abp-modal [(visible)]="isAddCardModalVisible" [options]="{size: 'xl', windowClass: 'card-editor-modal'}">
+  <ng-template #abpBody>
+    <app-card-editor [card]="card" [filter]="filterForm.value" (cardChange)="cardChange()"
+      [accordingIndex]="accordingIndex" (cardClose)="isAddCardModalVisible=false"></app-card-editor>
+  </ng-template>
+</abp-modal>

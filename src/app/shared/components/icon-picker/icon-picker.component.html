@@ -1,0 +1,23 @@
+<ng-select
+    #ngSelect
+    [items]="icons"
+    placeholder="Select Icon"
+    (change)="iconChange($event)"
+    [(ngModel)]="selectedIcon"
+    [appendTo]="'body'"
+    notFoundText="No icon found"
+    (search)="search($event)"
+    (clear)="clear($event)">
+    @if (noFilteredIcons) {
+        <ng-template ng-header-tmp>
+            <button (click)="addIcon(); ngSelect.close()" class="btn btn-sm btn-primary" title="Add icon class">Add</button>
+        </ng-template>
+    }
+    <ng-template ng-label-tmp let-item="item" let-clear="clear">
+        <span class="ng-value-label"><i [ngClass]="item"></i> {{item}}</span>
+        <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+    </ng-template>
+    <ng-template ng-option-tmp let-item="item">
+        <i [ngClass]="item"></i> {{item}}
+    </ng-template>
+</ng-select>

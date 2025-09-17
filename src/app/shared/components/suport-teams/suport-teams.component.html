@@ -1,0 +1,19 @@
+<span class="fa fa-users nav-item nav-item"
+      (click)="openDialog(content)"
+      [title]="'::SuportTeams'|abpLocalization"
+      [ngStyle]="{'color': isActive ? 'var(--lpx-brand)' : 'var(--lpx-navbar-text-color)'}">
+</span>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ '::SuportTeams' | abpLocalization }}</h4>
+        <app-data-tier-filter class="ms-2" [multiple]="false" (areaChange)="areaChange($event)"
+          (cellChange)="cellChange($event)" [dataTierTreeNode]="haveAccessTreeNode"
+          (workCenterChange)="workCenterChange($event)" (deleteChange)="dataTierDelete()" [dataTierLevel]="'Cell'">
+        </app-data-tier-filter>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <app-support-team-page [isWidget]="false" [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"></app-support-team-page>
+    </div>
+</ng-template>

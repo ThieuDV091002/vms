@@ -1,0 +1,174 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <abp-page-title-container class="col text-start">
+        <h5>{{ selectedWidget.name | abpLocalization }}</h5>
+    </abp-page-title-container>
+    <abp-page-toolbar-container class="col widget-toolbar">
+        <div class="text-end">
+
+            <span class="me-2 cursor-pointer" (click)="add()" *abpPermission="'Link.Create'">
+                <i class="fa fa-plus fa-lg"></i>
+            </span>
+
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deleteLinksWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <!-- <span class="me-2 cursor-pointer">
+                <i class="fa fa-cloud-download fa-lg"></i>
+            </span> -->
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'Link.Edit'">
+                <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+            </span>
+        </div>
+    </abp-page-toolbar-container>
+    <div class="card px-3 m-0 h-100">
+        <div id="data-tables-table-filter" class="data-tables-filter pb-3">
+            <div class="input-group">
+                <input #searchInput type="search" class="form-control"
+                    [placeholder]="'::LABEL_LinkWidgetSearch' | abpLocalization" title="search"
+                    (change)="searchKeyword = $event.target.value; hookToQuery()"
+                    (keydown.enter)="searchKeyword = $event.target.value; hookToQuery()" />
+                <button class="btn btn-primary" type="button"
+                    (click)="hookToQuery()">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="link-table-container">
+            <ngx-datatable default [rows]="data?.items" [count]="data.totalCount" [headerHeight]="40"
+                [limit]="this.selectedWidget?.extraProperties.pageSize" [reorderable]="true" [list]="list" #myTable
+                [columnMode]="'force'" style="height: 100%;">
+                <ngx-datatable-column [name]="'::LABEL_LinkFavorite' | abpLocalization" [maxWidth]="150"
+                    prop="isFavorite">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div>
+                            <i [class]="row.isFavorite ? 'fas fa-star favoriteColor' : 'fa fa-star-o'"
+                                (click)="addOrRemoveFavorite(row.id, row.isFavorite)"></i>
+                        </div>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::Category' | abpLocalization" prop="linkCategoryName" [maxWidth]="200">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_LinkDisplayName' | abpLocalization" prop="displayName">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div>
+                            <a href="{{row.url}}" target="_blank" [tooltip]="row.description" placement="bottom"
+                                [adaptivePosition]="false" container="body">
+                                {{ row.displayName | abpLocalization }}
+                            </a>
+                        </div>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_TargetReaders' | abpLocalization" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>{{ getTargetReaders(row.linkRoleDtos) }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_Tags' | abpLocalization" prop="tags">
+                </ngx-datatable-column>
+            </ngx-datatable>
+        </div>
+
+    </div>
+</abp-page>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group mb-2">
+            <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+        </div>
+        <div class="form-group">
+            <label for="cells-displayName" [title]="'::INFO_DisplayRowCount' | abpLocalization">{{'::LABEL_DisplayRowCount'|abpLocalization}}</label>
+            <input type="number" id="cells-displayName" class="form-control" [(ngModel)]="pageSize" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+            (click)="saveSettiings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (form) {
+        <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                    <div class="form-group mb-2">
+                        <label for="link-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                        <input type="text" id="link-name" class="form-control" formControlName="name" autofocus
+                            (input)="form.controls['displayName'].setValue($event.target.value)" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="link-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> *
+                        </span>
+                        <input type="text" id="link-displayName" class="form-control" formControlName="displayName" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="link-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                        <input type="text" id="link-description" class="form-control" formControlName="description" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="link-url" [title]="'::INFO_Url' | abpLocalization">{{'::LABEL_Url'|abpLocalization}}</label><span> * </span>
+                        <input type="text" id="link-url" class="form-control" formControlName="url" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="link-category" [title]="'::INFO_Category' | abpLocalization">{{ '::Category' | abpLocalization }}</label><span> * </span>
+                        <select class="form-control form-select" placeholder="Select Category" id="link-category"
+                            formControlName="linkCategoryId">
+                            <option [ngValue]="category.id" *ngFor="let category of linkCategoriesData">
+                                {{ category.displayName || category.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="link-readers" [title]="'::INFO_TargetReaders' | abpLocalization">{{ '::LABEL_TargetReaders'|abpLocalization}}</label><span> * </span>
+                        <multiple-select [items]="roleData" displayName="name" valueName="name"
+                            (change)="selectedRoleChanges($event)" [values]="selectedRoles">
+                        </multiple-select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tags" [title]="'::INFO_Tags' | abpLocalization">{{ '::LABEL_Tags' | abpLocalization }}</label>
+                        <tag-input id="tags" class="form-control" [placeholder]="''" [secondaryPlaceholder]="''"
+                            [addOnBlur]="true" [modelAsStrings]="true" formControlName="tags">
+                        </tag-input>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>

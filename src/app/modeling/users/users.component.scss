@@ -1,0 +1,65 @@
+app-users {}
+
+.createModalWindow .modal-content {
+  width: auto; // 默认宽度
+}
+
+@media (min-width: 768px) {
+  .createModalWindow .modal-content {
+    width: 90vw;
+  }
+
+  .createModalWindow {
+    --bs-modal-width: 90vw;
+  }
+}
+
+@media (min-width: 992px) {
+  .createModalWindow .modal-content {
+    width: 90vw;
+  }
+
+  .createModalWindow {
+    --bs-modal-width: 90vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .createModalWindow .modal-content {
+    width: 80vw;
+  }
+
+  .createModalWindow {
+    --bs-modal-width: 80vw;
+  }
+}
+
+.createModalWindow .modal-body {
+  padding: 10;
+}
+
+.ufe-center {
+  display: flex;
+  align-items: center;
+}
+
+.header-width {
+  width: calc(100% - 40px);
+}
+
+input.password {
+  width: 100%!important;
+  border-radius: 0.5rem!important;
+}
+button.password-btn {
+    position: absolute!important;
+    right: 0;
+    top: 0;
+    background: transparent!important;
+    border: none!important;
+    color: var(--lpx-dark)!important;
+    &:focus, &:active {
+        outline: none!important;
+        box-shadow: none!important;
+    }
+}

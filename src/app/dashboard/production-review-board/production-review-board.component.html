@@ -1,0 +1,331 @@
+<abp-page>
+  <div class="review-content card">
+    <div class="content-filter d-flex justify-content-between px-1">
+      <div class="quick-filter">
+        <span>{{'::LABEL_QuickFilters' | abpLocalization}}: </span>
+        <a [class.active]="!isYesterday" (click)="isYesterday = false; getStartTime()">{{'::Today' | abpLocalization}}</a>
+        <a [class.active]="isYesterday" (click)="isYesterday = true; getStartTime()">{{'::LABEL_Yesterday' | abpLocalization}}</a>
+      </div>
+      <div class="right-action d-flex">
+        <div>
+          @if (updatedMins) {
+          <span>{{'::Updated' | abpLocalization}}:</span>
+          <span class="refresh-time me-2">{{updatedMins}} {{'::LABEL_MinutesAgo' | abpLocalization}}</span>
+          }
+          <span>{{(manualRefresh ? '::LABEL_ManualDataRefresh': '::LABEL_AutoDataRefresh') |
+            abpLocalization}}</span>
+        </div>
+        <span class="me-1" (click)="refreshChange()"><i
+            [ngClass]="['fa', manualRefresh ? 'text-danger fa-toggle-on': 'text-success fa-toggle-off']"></i></span>
+        <div><span>{{(settings.isProductSeries ? '::LABEL_ProductSerie': '::MENU_ProductFamily') |
+            abpLocalization}}</span></div>
+        <span (click)="changeFamilySerial()"><i
+            [ngClass]="['fa', settings.isProductSeries ? 'fa-toggle-on': 'fa-toggle-off']"></i></span>
+        <span class="advanced-filter-icon" (click)="showAdvancedFilter = !showAdvancedFilter">
+          <img [class.filter-show-full]="filterSearchHasValue" [class.filter-show-empty]="!filterSearchHasValue"
+            [ngClass]="showAdvancedFilter ? 'd-none' : ''" alt="Filter Show" />
+          <img [class.filter-hidden-full]="filterSearchHasValue" [class.filter-hidden-empty]="!filterSearchHasValue"
+            [ngClass]="showAdvancedFilter ? '' : 'd-none'" alt="Filter Hidden" />
+        </span>
+        <span class="icon-combine" (click)="showComments()">
+          <span class="base-icon"><i class="fas fa-message"></i></span>
+          <span class="cover-icon"><i class="fa fa-eye"></i></span>
+        </span>
+        <span class="icon-combine" (click)="addComment()" *abpPermission="'Comment.Create'">
+          <span class="base-icon"><i class="fas fa-message"></i></span>
+          <span class="cover-icon"><i class="fa fa-plus"></i></span>
+        </span>
+        <span title="Create Card" (click)="createCard()" *abpPermission="'ActivityCard.Create'">
+          <i class="fas fa-plus fa-lg"></i>
+        </span>
+        <!-- <span><i class="fa fa-expand"></i></span> -->
+        <!-- <span (click)="openEditSettings()"><i class="fa fa-cog"></i></span> -->
+      </div>
+    </div>
+    <div *ngIf="showAdvancedFilter" class="advanced-filter d-flex px-1 pb-1 flex-wrap">
+      <div class="col-12 col-md-6 d-flex flex-wrap">
+        <div class="form-group col-12 col-md-6">
+          @if (settings.isProductSeries) {
+          <label for="">{{'::LABEL_ProductSerie' | abpLocalization}}</label>
+          <ng-select appendTo="body" bindLabel="displayName" bindValue="id" [multiple]="true" [closeOnSelect]="false"
+            [(ngModel)]="settings.productSeries" (change)="saveSettings()" [items]="productSeries">
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+              <span>{{item.displayName || item.name}}</span>
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item">
+              <span>{{item.displayName || item.name}}</span>
+            </ng-template>
+          </ng-select>
+          } @else {
+          <label for="">{{'::MENU_ProductFamily' | abpLocalization}}</label>
+          <ng-select appendTo="body" bindLabel="displayName" bindValue="id" [multiple]="true" [closeOnSelect]="false"
+            [(ngModel)]="settings.productFamilies" [items]="productFamilies">
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+              <span>{{item.displayName || item.name}}</span>
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item">
+              <span>{{item.displayName || item.name}}</span>
+            </ng-template>
+          </ng-select>}
+        </div>
+        <div class="form-group col-12 col-md-6">
+          <label for="">{{'::MENU_Product' | abpLocalization}}</label>
+          <ng-select appendTo="body" bindLabel="displayName" bindValue="id" [multiple]="true" [closeOnSelect]="false"
+            [(ngModel)]="settings.products" [items]="products">
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+              <span>{{item.displayName || item.name}}</span>
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item">
+              <span>{{item.displayName || item.name}}</span>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 d-flex justify-content-end">
+        <button type="button" class="btn btn-sm btn-outline-primary me-2" (click)="clearFilters()">{{'::Clear' |
+          abpLocalization}}</button>
+        <button type="button" class="btn btn-sm btn-primary" (click)="applyFilters()">{{'::Search' |
+          abpLocalization}}</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row mx-0">
+        <div class="report-chart scrap-chart col col-12 col-md-4 px-1"
+          [class.advanced-filter-active]="showAdvancedFilter">
+          <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+            <!-- <app-top-scrap-reasons-chart [areaIds]="selectedAreas" [cellIds]="selectedCells"
+              [workCenterIds]="selectedWorkCenters" [productFamilyIds]="selectedProductFamilies"
+              [productSerieIds]="selectedProductSeries" [productIds]="selectedProducts" [startDate]="startTime"
+              [endDate]="endTime">
+            </app-top-scrap-reasons-chart> -->
+            <div class="add-widget" *ngIf="!findWidgetBySeq(1)">
+              <a *ngIf="!queryId" href="javascript:void(0)" (click)="addWidget(1)">
+                {{'::LABEL_AddWidget' | abpLocalization}}
+              </a>
+            </div>
+            <app-widget-container *ngIf="findWidgetBySeq(1)" [widget]="findWidgetBySeq(1)" [index]="1"
+              [queryId]="queryId" [homePage]="homepage" [haveAccessTreeNode]="haveAccessTreeNode"
+              [selectedDataTier]="selectedDataTier" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+              [productionDataParams]="productionDataParams" (widgetUpdate)="widgetUpdate($event)" >
+            </app-widget-container>
+          </div>
+        </div>
+        <div class="report-chart downtime-reason-chart col col-12 col-md-4 px-1"
+          [class.advanced-filter-active]="showAdvancedFilter">
+          <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+            <!-- <app-top-downtime-reasons-chart [areaIds]="selectedAreas" [cellIds]="selectedCells"
+              [workCenterIds]="selectedWorkCenters" [productFamilyIds]="selectedProductFamilies"
+              [productSerieIds]="selectedProductSeries" [productIds]="selectedProducts" [startDate]="startTime"
+              [endDate]="endTime">
+            </app-top-downtime-reasons-chart> -->
+            <div class="add-widget" *ngIf="!findWidgetBySeq(2)">
+              <a *ngIf="!queryId" href="javascript:void(0)" (click)="addWidget(2)">
+                {{'::LABEL_AddWidget' | abpLocalization}}
+              </a>
+            </div>
+            <app-widget-container *ngIf="findWidgetBySeq(2)" [widget]="findWidgetBySeq(2)" [index]="2"
+              [queryId]="queryId" [homePage]="homepage" [haveAccessTreeNode]="haveAccessTreeNode"
+              [selectedDataTier]="selectedDataTier" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+              [productionDataParams]="productionDataParams" (widgetUpdate)="widgetUpdate($event)">
+            </app-widget-container>
+          </div>
+        </div>
+        <div class="report-chart performance-part-number-chart col col-12 col-md-4 px-1"
+          [class.advanced-filter-active]="showAdvancedFilter">
+          <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+            <!-- <app-top-performance-products-chart [areaIds]="selectedAreas" [cellIds]="selectedCells"
+              [workCenterIds]="selectedWorkCenters" [productFamilyIds]="selectedProductFamilies"
+              [productSerieIds]="selectedProductSeries" [productIds]="selectedProducts" [startDate]="startTime"
+              [endDate]="endTime">
+            </app-top-performance-products-chart> -->
+            <div class="add-widget" *ngIf="!findWidgetBySeq(3)">
+              <a *ngIf="!queryId" href="javascript:void(0)" (click)="addWidget(3)">
+                {{'::LABEL_AddWidget' | abpLocalization}}
+              </a>
+            </div>
+            <app-widget-container *ngIf="findWidgetBySeq(3)" [widget]="findWidgetBySeq(3)" [index]="3"
+              [queryId]="queryId" [homePage]="homepage" [haveAccessTreeNode]="haveAccessTreeNode"
+              [selectedDataTier]="selectedDataTier" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+              [productionDataParams]="productionDataParams" (widgetUpdate)="widgetUpdate($event)">
+            </app-widget-container>
+          </div>
+        </div>
+      </div>
+      <div class="labor-table-l1 px-1 pt-2" style="overflow-y: hidden;">
+        <div class="border border-2 shadow-sm bg-body-tertiary rounded h-100">
+          <div class="add-widget" *ngIf="!findWidgetBySeq(4)">
+            <a *ngIf="!queryId" href="javascript:void(0)" (click)="addWidget(4)">
+              {{'::LABEL_AddWidget' | abpLocalization}}
+            </a>
+          </div>
+          <app-widget-container *ngIf="findWidgetBySeq(4)" [widget]="findWidgetBySeq(4)" [index]="4"
+            [queryId]="queryId" [homePage]="homepage" [haveAccessTreeNode]="haveAccessTreeNode" 
+            [selectedDataTier]="selectedDataTier" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+            [productionDataParams]="productionDataParams" (widgetUpdate)="widgetUpdate($event)" [isYesterdayInProductionReview]="isYesterday">
+          </app-widget-container>
+        </div>
+      </div>
+    </div>
+    <div class="footer d-flex justify-content-between">
+      <div class="color-tips">
+        <div class="not-meet-warning"><span class="color-item me-1"></span><span>{{'::LABEL_NotMeetWithinGap' |
+            abpLocalization}}</span></div>
+        <div class="not-meet-alert"><span class="color-item me-1"></span><span>{{'::LABEL_NotMeetOverGap' |
+            abpLocalization}}</span></div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.WorkOrder)"><i
+            class="fa fa-plus"></i> {{'::LABEL_OrderInfo' | abpLocalization}}</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.Labor)"><i
+            class="fa fa-plus"></i> {{'::LABEL_Labor' | abpLocalization}}</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.BreakTime)"><i
+            class="fa fa-plus"></i> {{'::LABEL_BreakTime' | abpLocalization}}</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.Downtime)"><i
+            class="fa fa-plus"></i> {{'::Label_Dwontime' | abpLocalization}}</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ProductQty)"><i
+            class="fa fa-plus"></i> {{'::LABEL_ProductQty' | abpLocalization}}</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ScrapQty)"><i
+            class="fa fa-plus"></i> {{'::LABEL_ScrapQty' | abpLocalization}}</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ReworkQty)"><i
+            class="fa fa-plus"></i> {{'::Label_ReworkQty' | abpLocalization}}</button>
+      </div>
+    </div>
+  </div>
+</abp-page>
+@if (openAddData) {
+@if (addDataType === DataType.WorkOrder) {
+<app-work-order-data [openAddWorkOrderData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-work-order-data>
+}
+@else if(addDataType === DataType.Labor) {
+<app-labor-data [openAddLaborData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-labor-data>
+}
+@else if(addDataType === DataType.BreakTime) {
+<app-breaktime-data [openAddBreaktimeData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-breaktime-data>
+}
+@else if(addDataType === DataType.Downtime) {
+<app-downtime-data [openAddDowntimeData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-downtime-data>
+}
+@else if(addDataType === DataType.ProductQty) {
+<app-production-qty-data [openAddProductionData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-production-qty-data>
+}
+@else if(addDataType === DataType.ScrapQty) {
+<app-scrap-qty-data [openAddScrapData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-scrap-qty-data>
+}
+@else if(addDataType === DataType.ReworkQty) {
+<app-rework-qty-data [openAddReworkQtyData]="openAddData" (closeEvent)="openAddData = false"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-rework-qty-data>
+}
+}
+<abp-modal [(visible)]="isSettingsModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <!-- <div class="form-group">
+      <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+      <input type="text" id="widget-name" class="form-control" [(ngModel)]="editSettings.name" />
+    </div>
+    <div class="form-group">
+      <div class="d-flex">
+        <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+          {{ '::Label_HideTitle' | abpLocalization }}
+        </label>
+        <div class="col-form-label ms-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="hide-title" [(ngModel)]="editSettings.hideTitle" />
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div class="form-group mb-2">
+      <label for="refresh-rate"
+        [title]="'::INFO_RefreshRateMin' | abpLocalization">{{'::LABEL_RefreshRateMin'|abpLocalization}}</label>
+      <input type="text" id="refresh-rate" class="form-control" [(ngModel)]="editSettings.refreshRate" />
+    </div>
+    <div class="form-group mb-2">
+      <label for="auto-reset-idle-time"
+        [title]="'::INFO_AutoResetIdleTime' | abpLocalization">{{'::LABEL_AutoResetIdleTime'|abpLocalization}}</label>
+      <input type="text" id="auto-reset-idle-time" class="form-control" [(ngModel)]="editSettings.autoResetIdleTime" />
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="!settings?.name" (click)="saveSettings()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl', windowClass: 'card-editor-modal'}">
+  <ng-template #abpBody>
+    <app-card-editor [card]="card" (cardClose)="isModalVisible=false"></app-card-editor>
+  </ng-template>
+</abp-modal>
+
+<app-add-comment-data *ngIf="isAddCommentModalVisible" [selectedComment]="selectedComment" [areaData]="areaData"
+  [currentShift]="currentShift" [showInterval]="true" [openModal]="isAddCommentModalVisible"
+  (closeEvent)="isAddCommentModalVisible = false">
+</app-add-comment-data>
+<abp-modal [(visible)]="isViewCommentVisible" [options]="{size: 'xl', windowClass: 'comment-modal'}">
+  <ng-template #abpHeader>
+    <h3>{{ commentViewType === 'commentPage' ? 'Comment' : '::Shift Comment' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div *ngIf="commentViewType === 'commentPage'" style="height: 700px;">
+      <app-comment-display-widget
+        [selected]="{widgetName: 'commentPage', extraProperties: {hideTitle: true, pageSize: 10}}" [index]="0"
+        [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier" [currentShift]="currentShift"
+        [queryId]="1" (updateChange)="handleCommentWidgetUpdate($event)">
+      </app-comment-display-widget>
+    </div>
+    <div *ngIf="commentViewType === 'shiftComment'" style="height: 700px;">
+      <app-comment-entry-widget
+        [selected]="{widgetName: 'shiftComment', extraProperties: {hideTitle: true, pageSize: 20}}" [index]="0"
+        [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier" [currentShift]="currentShift"
+        [queryId]="1" (updateChange)="handleCommentWidgetUpdate($event)">
+      </app-comment-entry-widget>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

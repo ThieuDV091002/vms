@@ -1,0 +1,20 @@
+app-kanban-board ::ng-deep {
+    .kanban-view {
+        height: calc(100vh - 24rem) !important;
+    }
+
+    .list-view {
+        height: calc(100vh - 20.2rem);
+    }
+}
+
+app-kanban-board.has-header ::ng-deep {
+    .kanban-view {
+        height: calc(100vh - 27.3rem) !important;
+    }
+
+    .list-view {
+        height: calc(100vh - 23.8rem);
+    }
+
+}

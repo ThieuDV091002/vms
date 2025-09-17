@@ -1,0 +1,294 @@
+<abp-page>
+    <div class="row entry-row fixed-header">
+        <div class="col-auto content-header w-100 d-flex justify-content-between">
+            <div class="d-flex">
+                <h2 class="content-header-title">{{('::LABEL_ManageAssessment') | abpLocalization}}</h2>
+                <div class="filter-bar ms-2">
+                    <app-data-tier-filter (areaChange)="dataTierChange($event)" (cellChange)="dataTierChange($event)"
+                        (workCenterChange)="dataTierChange($event)" dataTierLevel="Cell">
+                    </app-data-tier-filter>
+                </div>
+            </div>
+            <div class="me-3">
+                <button *abpPermission="'Assessment.Create'" class="btn btn-sm btn-primary" (click)="add()"><i
+                        class="fa fa-plus"></i> {{'::Create' | abpLocalization}}</button>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-0 flex-grow-1">
+        <div class="card-body">
+            <div id="advanced-filter">
+                <div class="overflow-hidden">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-area">{{ '::LABEL_AssessmentType'|abpLocalization }}</label>
+                                <ng-select [items]="assessmentTypes" appendTo="body" bindValue="id"
+                                    [(ngModel)]="advancedFilter.assessmentType" bindLabel="displayName">
+                                    <ng-template ng-option-tmp let-item="item">
+                                        {{ item.displayName || item.name }}
+                                    </ng-template>
+                                    <ng-template ng-label-tmp let-item="item">
+                                        {{ item.displayName || item.name }}
+                                    </ng-template>
+                                </ng-select>
+                                <!-- <ng-select
+                          id="filter-area"
+                          [items]="''"
+                          appendTo="body"
+                          bindValue="id"
+                          formControlName="area"
+                          bindLabel="displayName"
+                          >
+                        </ng-select> -->
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-area">{{ '::LABEL_Owner'|abpLocalization }}</label>
+                                <ng-select [items]="users" [typeahead]="userSearchInput$" appendTo="body" bindValue="id"
+                                    [(ngModel)]="advancedFilter.owner" (open)="getUsers()" bindLabel="userName">
+                                    <ng-template ng-option-tmp let-item="item">
+                                        <ng-template #tipContent>{{ item.email }}</ng-template>
+                                        <span [ngbTooltip]="tipContent" placement="right" container="body"
+                                            tooltipClass="my-tooltip-class">
+                                            {{ getUserDisplayName(item) }}
+                                        </span>
+                                    </ng-template>
+                                    <ng-template ng-label-tmp let-item="item">
+                                        {{ getUserDisplayName(item) }}
+                                    </ng-template>
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-area">{{ '::LABEL_UserGroup'|abpLocalization }}</label>
+                                <ng-select [items]="userGroups" appendTo="body" bindValue="id"
+                                    [(ngModel)]="advancedFilter.userGroup" (open)="getUserGroups()"
+                                    bindLabel="displayName">
+                                    <ng-template ng-option-tmp let-item="item">
+                                        {{ item.displayName || item.name }}
+                                    </ng-template>
+                                    <ng-template ng-label-tmp let-item="item">
+                                        {{ item.displayName || item.name }}
+                                    </ng-template>
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-area">{{ '::LABEL_StartDate'|abpLocalization }}</label>
+                                <!-- <input type="date" class="form-control" min="2020-01-01"
+                                    [(ngModel)]="advancedFilter.startDate"
+                                    [max]="advancedFilter.endDate || '2050-12-31'" /> -->
+                                <input type="text" class="form-control" [(ngModel)]="advancedFilter.startDate" [minDate]="minDate" [maxDate]="advancedFilter.endDate || maxDate" bsDatepicker
+                                    [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-area">{{ '::LABEL_EndDate'|abpLocalization }}</label>
+                                <!-- <input type="date" class="form-control" max="2050-12-31"
+                                    [(ngModel)]="advancedFilter.endDate"
+                                    [min]="advancedFilter.startDate || '2024-01-01'" /> -->
+                                <input type="text" class="form-control" [(ngModel)]="advancedFilter.endDate" [minDate]="advancedFilter.startDate || minDate" [maxDate]="maxDate" bsDatepicker
+                                    [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex pt-2 justify-content-end">
+                    <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="clearAdvancedFilter()">
+                        {{ 'AbpUi::Clear' | abpLocalization }}
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="search()">
+                        {{ 'AbpUi::PagerSearch' | abpLocalization }}
+                    </button>
+                </div>
+            </div>
+            <div class="quick-filter mt-2">
+                <span>{{'::LABEL_QuickFilters' | abpLocalization}}:</span>
+                <span class="ms-2">[</span>
+                @for (type of assessmentTypes; track type) {
+                <a (click)="filterCard('assessmentType', type.id)"
+                    [class.active]="quickFilterActive('assessmentType', type.id)">{{ type.displayName}}</a>
+                }
+                <span class="mx-2">]</span>
+                <span>[</span>
+                <a (click)="filterCard('ownerType', 'Owner')"
+                    [class.active]="quickFilterActive('ownerType', 'Owner')">{{ '::LABEL_Owner' | abpLocalization}}</a>
+                <a (click)="filterCard('ownerType', 'Team Member')"
+                    [class.active]="quickFilterActive('ownerType', 'Team Member')">{{ '::LABEL_TeamMember' |
+                    abpLocalization}}</a>
+                <span>]</span>
+            </div>
+            <ngx-datatable [rows]="assessments.items" [count]="assessments.totalCount" [list]="list" default>
+                <ngx-datatable-column [width]="40" [sortable]="false" [canAutoResize]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div ngbDropdown container="body" class="d-inline-block">
+                            <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 30px;"
+                                data-toggle="dropdown" aria-haspopup="true" ngbDropdownToggle></i>
+                            <div ngbDropdownMenu aria-labelledby="dropdown">
+                                <button ngbDropdownItem *abpPermission="'Assessment.Edit'" (click)="edit(row)">
+                                    {{ '::Edit' | abpLocalization }}
+                                </button>
+                                <button ngbDropdownItem *abpPermission="'Assessment.Delete'" (click)="delete(row)">
+                                    {{ '::Delete' | abpLocalization }}
+                                </button>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_DataTierType' | abpLocalization" prop="dataTierType"
+                    [width]="100" [canAutoResize]="false" [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_DataTier' | abpLocalization" prop="datatierName"
+                    [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_AssessmentDate' | abpLocalization" [width]="120"
+                    [canAutoResize]="false" prop="assessmentDate" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>{{ row.assessmentDate | date: 'dd MMM yyyy' }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_AssessmentTime' | abpLocalization" [width]="120"
+                    [canAutoResize]="false" prop="assessmentTime" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>{{ formatTime(row.assessmentTime) }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_Assessment_Type' | abpLocalization" prop="assessmentTypeName"
+                    [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_Owner' | abpLocalization" prop="ownerName" [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_UserGroup' | abpLocalization" prop="userGroupName"
+                    [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'::LABEL_Status' | abpLocalization" [width]="85" [canAutoResize]="false"
+                    prop="statusName" [sortable]="false">
+                </ngx-datatable-column>
+                <!-- <ngx-datatable-column [sortable]="false" [width]="80" [canAutoResize]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <button *abpPermission="'Assessment.Edit'" class="btn btn-primary btn-sm" (click)="perform(row)">
+                            {{ '::LABEL_Perform' | abpLocalization }}
+                        </button>
+                    </ng-template>
+                </ngx-datatable-column> -->
+            </ngx-datatable>
+        </div>
+    </div>
+</abp-page>
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+        <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form">
+            <div class="row">
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label form="assessment-type"
+                            [title]="'::INFO_AssessmentType' | abpLocalization">{{'::LABEL_Assessment_Type'|abpLocalization}}</label><span>
+                            * </span>
+                        <ng-select id="assessment-type" [items]="assessmentTypes" appendTo="body" bindValue="id"
+                            formControlName="typeId" [readonly]="selected.id" bindLabel="displayName">
+                            <ng-template ng-option-tmp let-item="item">
+                                {{ item.displayName || item.name }}
+                            </ng-template>
+                            <ng-template ng-label-tmp let-item="item">
+                                {{ item.displayName || item.name }}
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="col-12"></div>
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label form="data-tier-type"
+                            [title]="'::INFO_DataTierType' | abpLocalization">{{'::LABEL_DataTierType'|abpLocalization}}</label><span>
+                            * </span>
+                        <ng-select id="data-tier-type" [items]="dataTierTypes" appendTo="body" [readonly]="selected.id"
+                            (change)="onDataTierTypeChange($event)" formControlName="dataTierType">
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label form="data-tier"
+                            [title]="'::INFO_DataTier' | abpLocalization">{{'::LABEL_DataTier'|abpLocalization}}</label><span>
+                            * </span>
+                        <ng-select id="data-tier" [items]="getDataTiers()" appendTo="body" bindValue="id"
+                            formControlName="dataTierId" [readonly]="selected.id" bindLabel="name">
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label form="owner"
+                            [title]="'::INFO_Owner' | abpLocalization">{{'::LABEL_Owner'|abpLocalization}}</label><span>
+                            * </span>
+                        <ng-select id="owner" [items]="users" appendTo="body" bindValue="id" formControlName="ownerId"
+                            [typeahead]="userSearchInput$" bindLabel="userName">
+                            <ng-template ng-option-tmp let-item="item">
+                                <ng-template #tipContent>{{ item.email }}</ng-template>
+                                <span [ngbTooltip]="tipContent" placement="right" container="body"
+                                    tooltipClass="my-tooltip-class">
+                                    {{ getUserDisplayName(item) }}
+                                </span>
+                            </ng-template>
+                            <ng-template ng-label-tmp let-item="item">
+                                {{ getUserDisplayName(item) }}
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label form="user-group"
+                            [title]="'::INFO_UserGroup' | abpLocalization">{{'::LABEL_UserGroup'|abpLocalization}}</label>
+                        <ng-select id="user-group" [items]="userGroups" appendTo="body" bindValue="id"
+                            formControlName="userGroupId" bindLabel="displayName">
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label form="assessment-date"
+                            [title]="'::INFO_AssessmentDate' | abpLocalization">{{'::LABEL_AssessmentDate'|abpLocalization}}</label><span>
+                            * </span>
+                        <input type="text" class="form-control" formControlName="assessmentDate" bsDatepicker
+                           [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-2">
+                    <div class="form-group">
+                        <label for="assessment-time"
+                            [title]="'::INFO_AssessmentTime' | abpLocalization">{{'::LABEL_AssessmentTime'|abpLocalization}}</label><span>
+                            * </span>
+                        <timepicker formControlName="assessmentTime" id="assessment-time" [minuteStep]="15">
+                        </timepicker>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpUi::Cancel' | abpLocalization }}
+        </button>
+        <button type="button" class="btn btn-primary" [disabled]="form?.invalid" (click)="save()">
+            <i class="fa fa-check"></i> {{ 'AbpUi::Save' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+<!-- <abp-modal [(visible)]="isPerformModalVisible" [options]="{size: 'lg'}">
+    <ng-template #abpBody>
+      <div class="text-center mt-1">
+        <h3 class="mb-0 perform-title">{{ selected.name }}</h3>
+      </div>
+      <app-assessment-card [assessmentCard]="selected"
+        (isAssessmentCardVisibleChange)="closeAssessmentCard()"></app-assessment-card>
+    </ng-template>
+</abp-modal> -->

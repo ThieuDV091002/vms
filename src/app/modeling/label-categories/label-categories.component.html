@@ -1,0 +1,77 @@
+<app-modeling-template
+    [title]="'::MENU_LabelCategory'"
+    [data]="data"
+    [objectType]="'LabelCategories'"
+    [permissions]="{create: 'LabelCategory.Create', edit: 'LabelCategory.Edit', delete: 'LabelCategory.Delete', copy: 'LabelCategory.Copy', import: 'LabelCategory.Import', export: 'LabelCategory.Export'}"
+    [columns]="columns"
+    [customAction]=""
+    [copyPrefix]="'::LABEL_NewLabelCategory'"
+    (customActionTrigger)="openPermissionsModal($event)"
+    [list]="list"
+    [hasLastUpdate]="true"
+    (dataAdd)="add()"
+    (dataEdit)="edit($event)"
+    (dataDelete)="delete($event)"
+    (multiDelete)="multiDelete($event)"
+    (dataViewHistory)="viewHistory($event)"
+    (export)="export($event)" (exportAll)="exportAll($event)"
+    (import)="import($event)"
+    (copyData)="copy($event, edit.bind(this))"
+    [noDisplayNameCopy]="true"
+    [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (form) {
+            <form [formGroup]="form" (ngSubmit)="save()">
+                <div class="form-group">
+                    <label for="labelCategory-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                    <input type="text" id="labelCategory-name" class="form-control" formControlName="name" autofocus />
+                </div>
+            </form>
+
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+      <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+        {{ 'AbpIdentity::Close' | abpLocalization }}
+      </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'LabelCategories'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

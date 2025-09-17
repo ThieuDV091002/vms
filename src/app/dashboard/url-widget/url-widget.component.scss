@@ -1,0 +1,23 @@
+:host ::ng-deep .row.entry-row {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.dashboard-iframe {
+    height: 100%;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}

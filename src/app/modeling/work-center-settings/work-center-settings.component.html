@@ -1,0 +1,237 @@
+<app-modeling-template [title]="'::MENU_WorkCenterSetting'" [data]="data" [objectType]="'WorkCenterSetting'"
+  [copyPrefix]="'::LABEL_NewWorkCenterSetting'"
+  [permissions]="{create: 'WorkCenterSetting.Create', edit: 'WorkCenterSetting.Edit', delete: 'WorkCenterSetting.Delete', copy: 'WorkCenterSetting.Copy', import: 'WorkCenterSetting.Import', export: 'WorkCenterSetting.Export'}"
+  [columns]="columns" [list]="list" [hasLastUpdate]="true" (copyData)="copySetting($event)" (multiDelete)="multiDelete($event)" [noDisplayNameCopy]="true"
+  (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)" (copyModalOpen)="copyModalOpen($event)"
+  (import)="import($event)" (dataViewHistory)="viewHistory($event)" [noNameCopy]="true" [placeholder]="'::LABEL_WorkCenterSearch' | abpLocalization">
+  <div class="form-group mb-2" id="copyCustomeField">
+    <label for="workCenterId">{{'::LABEL_NewWorkCenter'|abpLocalization}}</label><span> * </span>
+    <ng-select
+        #copyNgSelectField
+        id="workCenterId"
+        [items]="workcenters"
+        appendTo="body"
+        bindValue="id"
+        bindLabel="displayName"
+        [typeahead]="workcenterInput$"
+        [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization">
+        <ng-template ng-label-tmp let-item="item">
+          {{ item.displayName }}
+        </ng-template>
+      </ng-select>
+  </div>
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{centered: true, size: 'lg'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (workCenterSettingForm) {
+    <form [formGroup]="workCenterSettingForm" (ngSubmit)="save()">
+      <div class="accordion" id="accordionExample">
+        <div class="accordion accordion-flush">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne" [class.collapsed]="isCollapse">
+                {{ '::LABEL_General' | abpLocalization }}
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-workCenterId" [title]="'::INFO_WorkCenter' | abpLocalization">{{'::WorkCenter'|abpLocalization}}</label><span> *
+                      </span>
+                      <ng-select
+                        id="work-center-setting-workCenterId"
+                        [items]="workcenters"
+                        appendTo="body"
+                        bindValue="id"
+                        formControlName="workCenterId"
+                        bindLabel="displayName"
+                        [typeahead]="workcenterInput$"
+                        [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization">
+                        <ng-template ng-option-tmp let-item="item">
+                          {{ item.displayName}}
+                        </ng-template>
+                        <ng-template ng-label-tmp let-item="item">
+                          {{ item.displayName }}
+                        </ng-template>
+                      </ng-select>
+                    </div>
+                  </div>
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                      <input type="text" id="work-center-setting-description" class="form-control"
+                        formControlName="description" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                aria-expanded="true" aria-controls="collapseTwo" [class.collapsed]="isCollapse">
+                {{ '::LABEL_ProductionReviewSettings' | abpLocalization }}
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label
+                        for="work-center-setting-dataIntegrationSettingId" [title]="'::INFO_DataIntegrationSettings' | abpLocalization">{{'::MENU_DataIntegrationSetting'|abpLocalization}}</label>
+                      <select class="form-select" formControlName="dataIntegrationSettingId">
+                        <option *ngFor="let dataIntegrationSetting of dataIntegrationSettings"
+                          [ngValue]="dataIntegrationSetting.id">
+                          {{ dataIntegrationSetting.displayName || dataIntegrationSetting.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-goodQtyOption" [title]="'::INFO_GoodQtyOption' | abpLocalization">{{'::LABEL_GoodQtyOption'|abpLocalization}}</label>
+                      <ng-select [items]="['PLC', 'Confirmed']" bindLabel="name" bindValue="value"
+                        formControlName="goodQtyOption"></ng-select>
+                    </div>
+                  </div>
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-scrapQtyOption" [title]="'::INFO_ScrapQtyOption' | abpLocalization">{{'::LABEL_ScrapQtyOption'|abpLocalization}}</label>
+                      <ng-select [items]="['PLC', 'Confirmed']" bindLabel="name" bindValue="value"
+                        formControlName="scrapQtyOption"></ng-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <!-- <div class="accordion-item" *abpPermission="''"> -->
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                aria-expanded="true" aria-controls="collapseThree" [class.collapsed]="isCollapse">
+                {{ '::LABEL_KPISettings' | abpLocalization }}
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-kpi" [title]="'::INFO_KPI' | abpLocalization">{{'::LABEL_KPI'|abpLocalization}}</label>
+                      <ng-select [items]="['OLE', 'OEE/POEE']" bindLabel="name" bindValue="value"
+                        formControlName="kpi"></ng-select>
+                    </div>
+                  </div>
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label
+                        for="work-center-setting-fpyTarget" [title]="'::INFO_FPYTargetPercentage' | abpLocalization">{{'::LABEL_FPYTargetPercentage'|abpLocalization}}</label>
+                      <input appInputNumber [min]="0" [max]="100" type="number" id="work-center-setting-fpyTarget"  (input)="onInputLimit($event)" class="form-control"
+                        formControlName="fpyTarget" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-sppmTarget" [title]="'::INFO_SPPMTarget' | abpLocalization">{{'::LABEL_SPPMTarget'|abpLocalization}}</label>
+                      <input appInputNumber [min]="0"  id="work-center-setting-sppmTarget"  class="form-control"
+                        formControlName="sppmTarget" />
+                    </div>
+                  </div>
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label
+                        for="work-center-setting-performanceTarget" [title]="'::INFO_PerformanceTargetPercentage' | abpLocalization">{{'::LABEL_PerformanceTargetPercentage'|abpLocalization}}</label>
+                      <input appInputNumber [min]="0" [max]="100"  type="number"  (input)="onInputLimit($event)" id="work-center-setting-performanceTarget" class="form-control"
+                        formControlName="performanceTarget" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label for="work-center-setting-upphTarget" [title]="'::INFO_UPPHTarget' | abpLocalization">{{'::LABEL_UPPHTarget'|abpLocalization}}</label>
+                      <input appInputNumber [min]="0"   id="work-center-setting-upphTarget" class="form-control"
+                        formControlName="upphTarget" />
+                    </div>
+                  </div>
+                  <div class="col col-6">
+                    <div class="form-group mb-2">
+                      <label
+                        for="work-center-setting-udtTarget" [title]="'::INFO_UnplannedDowntimeTargetPercentage' | abpLocalization">{{'::LABEL_UdtTargetPercentage'|abpLocalization}}</label>
+                      <input appInputNumber [min]="0" [max]="100" type="number"   (input)="onInputLimit($event)" id="work-center-setting-udtTarget" class="form-control"
+                        formControlName="udtTarget" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="workCenterSettingForm?.invalid" (click)="save()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'WorkCenterSetting'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

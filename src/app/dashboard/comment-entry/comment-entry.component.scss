@@ -1,0 +1,147 @@
+
+.shift-comment-container {
+    border: 1px solid var(--lpx-border-color);
+    height: calc(100% - 30px);
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.datatable-container {
+  height: calc(100% - 30px);
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+.action-button {
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline !important;
+    }
+}
+
+
+ngx-datatable {
+  height: 96%;
+
+  ::ng-deep {
+      >div {
+          height: 100% !important;
+
+          .datatable-body {
+              height: calc(100% - 2.1rem) !important;
+          }
+      }
+
+      .datatable-body-row {
+          :hover {
+              background-color: var(--lpx-card-bg) !important;
+          }
+      }
+
+      .datatable-footer {
+        overflow: hidden;
+
+        .datatable-footer-inner {
+            height: 2rem !important;
+
+            .page-count,
+            .datatable-pager {
+                height: 2rem !important;
+                line-height: 2rem !important;
+            }
+        }
+    }
+}
+
+
+
+.accordion {
+
+    .accordion-item {
+        border: none !important;
+
+        .accordion-header {
+            border: none !important;
+
+            button {
+                padding: 1px;
+                box-shadow: none !important;
+            }
+
+            .accordion-button::before {
+                flex-shrink: 0;
+                width: var(--bs-accordion-btn-icon-width);
+                height: var(--bs-accordion-btn-icon-width);
+                content: "";
+                background-image: var(--bs-accordion-btn-icon);
+                background-repeat: no-repeat;
+                background-size: 0.75rem;
+                background-position: center;
+                transition: var(--bs-accordion-btn-icon-transition);
+            }
+
+            .accordion-button::after {
+                display: none !important;
+            }
+
+            .accordion-button:not(.collapsed)::before {
+                background-image: var(--bs-accordion-btn-active-icon);
+                transform: var(--bs-accordion-btn-icon-transform);
+            }
+        }
+
+        .accordion-body {
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+    }
+}
+
+    .accordion {
+        .accordion-item {
+            border: none !important;
+
+            .accordion-header {
+                border: none !important;
+
+                button {
+                    padding: 1px;
+                    box-shadow: none !important;
+                }
+
+                .accordion-button::before {
+                    flex-shrink: 0;
+                    width: var(--bs-accordion-btn-icon-width);
+                    height: var(--bs-accordion-btn-icon-width);
+                    content: "";
+                    background-image: var(--bs-accordion-btn-icon);
+                    background-repeat: no-repeat;
+                    background-size: 0.75rem;
+                    background-position: center;
+                    transition: var(--bs-accordion-btn-icon-transition);
+                }
+
+                .accordion-button::after {
+                    display: none !important;
+                }
+
+                .accordion-button:not(.collapsed)::before {
+                    background-image: var(--bs-accordion-btn-active-icon);
+                    transform: var(--bs-accordion-btn-icon-transform);
+                }
+            }
+
+            .accordion-body {
+                padding-top: 1px;
+                padding-bottom: 1px;
+            }
+        }
+    }
+}

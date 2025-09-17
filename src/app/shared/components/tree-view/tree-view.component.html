@@ -1,0 +1,30 @@
+<ul>
+    <li *ngFor="let node of nodes; let idx=index">
+        <div [class.disabled]="node.disabled">
+            <span  class="expand-icon cursor-pointer d-inline-block me-2">
+                <i *ngIf="node.children && node.children.length > 0" (click)="toggleExpand(node)" class="fa" [ngClass]="node.expanded ? 'fa-caret-down' : 'fa-caret-right'"></i>
+            </span>
+    
+            <input type="checkbox" class="form-check-input me-1" *ngIf="!hideCheckbox" [disabled]="node.disabled" #checkbox id="{{node.type}}-{{node.id}}-{{idx}}" [checked]="node.checked" (change)="toggleCheckbox(checkbox, node)">
+            <label for="{{node.type}}-{{node.id}}-{{idx}}">{{ node.displayName || node.name }}</label>
+            <span *ngIf="hasDefault">
+                @if(node.checked) {
+                    <input class="form-check-input ms-2" type="radio" name="flexRadioDefault" id="{{node.type}}-{{node.id}}-{{idx}}-default" [checked]="node.isDefault && node.checked" (change)="toggleDefault(node)" [disabled]="!node.checked">
+                    <label class="form-check-label ms-1" for="{{node.type}}-{{node.id}}-{{idx}}-default" *ngIf="node.isDefault">({{'AbpIdentity::DisplayName:IsDefault' | abpLocalization}})</label>
+                } @else {
+                    <input class="form-check-input ms-2" type="radio" name="flexRadioDefault" id="{{node.type}}-{{node.id}}-{{idx}}-default" [checked]="node.isDefault && node.checked" (change)="toggleDefault(node)" [disabled]="!node.checked">
+                    <label class="form-check-label ms-1" for="{{node.type}}-{{node.id}}-{{idx}}-default" *ngIf="node.isDefault">({{'AbpIdentity::DisplayName:IsDefault' | abpLocalization}})</label>
+                }
+            </span>
+        </div>  
+        <div class="ms-2">
+            <!-- Add two to make sure to refresh input DOM so that refresh indeterminate state-->
+            @if(node.checked) {
+                <app-tree-view *ngIf="node.children && node.expanded" [nodes]="node.children" [parent]="node" (checkChange)="refreshState()" (defaultChange)="defaultDataTierChange($event)" [hasDefault]="hasDefault" [hideCheckbox]="hideCheckbox"></app-tree-view>
+            } @else {
+                <app-tree-view *ngIf="node.children && node.expanded" [nodes]="node.children" [parent]="node" (checkChange)="refreshState()" (defaultChange)="defaultDataTierChange($event)" [hasDefault]="hasDefault" [hideCheckbox]="hideCheckbox"></app-tree-view>
+            }
+            
+        </div>
+    </li>
+</ul>

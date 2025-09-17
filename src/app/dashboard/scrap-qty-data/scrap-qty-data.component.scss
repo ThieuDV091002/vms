@@ -1,0 +1,21 @@
+#scrapDataTable ::ng-deep .datatable-body-cell {
+    .form-group {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .datatable-body-cell-label {
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+        width: 100% !important;
+
+        input {
+            height: 100% !important;
+        }
+    }
+}
+
+.scrap-qty .input-group {
+    height: 100% !important;
+}

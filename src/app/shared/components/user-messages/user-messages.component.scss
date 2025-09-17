@@ -1,0 +1,66 @@
+app-user-messages {
+  .nav-item {
+    font-size: 25px;
+    color: var(--lpx-navbar-text-color);
+
+    span {
+      font-size: 10px;
+      color: white;
+    }
+  }
+
+  .dropdown-list-image {
+    position: relative;
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .dropdown-list-image img {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .lpx-context-menu--header {
+    padding: 0px 0px 0px 0px !important;
+  }
+
+  .header-item {
+    line-height: 2;
+    font-size: 0.9em;
+    font-weight: bold;
+  }
+
+  .body-item:hover {
+    color: var(--lpx-navbar-active-text-color);
+    background-color: var(--lpx-navbar-active-bg-color);
+  }
+
+  .body-item {
+
+    line-height: 2;
+    font-size: 0.8em;
+    text-align: start;
+
+  }
+
+  .body-item-content {
+    padding: 0px 1em 5px 1em !important;
+    flex-grow: 1;
+  }
+
+  .list-group-item {
+    padding: 5px 1em 5px 1em !important;
+  }
+
+  .body-item-end {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .d-flex {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

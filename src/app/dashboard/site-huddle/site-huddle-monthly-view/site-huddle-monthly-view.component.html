@@ -1,0 +1,63 @@
+<div class="site-huddle-container" [class.has-header]="hasHeader">
+    <div class="nav nav-tabs flex-column flex-sm-row" role="tablist">
+        <!-- <button class="flex-sm-fill nav-link huddle-tab active" id="summary-tab" data-bs-toggle="tab" role="tab" data-bs-target="#Summary">{{'::LABEL_Summary' | abpLocalization}}</button> -->
+        <button class="flex-sm-fill nav-link huddle-tab active" id="safety-tab" data-bs-toggle="tab" role="tab"
+            data-bs-target="#Safety">
+            {{'::LABEL_Safety' | abpLocalization}}
+            @if (hasSafetyAlert && safetyAlertNumber > 0) {
+            <i class="ics-icon ms-1 fas fa-person-falling-burst"></i><span class="ics-num">{{safetyAlertNumber}}</span>
+            }
+        </button>
+        <button class="flex-sm-fill nav-link huddle-tab" id="quality-tab" data-bs-toggle="tab" role="tab"
+            data-bs-target="#Quality">{{'::LABEL_Quality' | abpLocalization}}</button>
+        <button class="flex-sm-fill nav-link huddle-tab" id="productivity-tab" data-bs-toggle="tab" role="tab"
+            data-bs-target="#Productivity">{{'::LABEL_Productivity' | abpLocalization}}</button>
+        <!-- <button class="flex-sm-fill nav-link huddle-tab" id="supply-chain-tab" data-bs-toggle="tab" role="tab" data-bs-target="#Supply-Chain">{{'::LABEL_SupplyChain' | abpLocalization}}</button> -->
+        <button class="flex-sm-fill nav-link huddle-tab" id="KPI-indicator-tab" data-bs-toggle="tab" role="tab"
+            data-bs-target="#KPI-Indicator">{{'::LABEL_KPIIndicator' | abpLocalization}}</button>
+        <button class="flex-sm-fill nav-link huddle-tab" id="activity-card-tab" data-bs-toggle="tab" role="tab"
+            data-bs-target="#Activity-Card">{{'::LABEL_ActivityCard' | abpLocalization}}</button>
+    </div>
+    <div class="tab-content">
+        <!-- <div class="tab-pane fade show active" id="Summary" role="tabpanel" aria-labelledby="summary-tab">
+            <app-site-huddle-summary
+                [site]="site"
+                [areas]="areas">
+            </app-site-huddle-summary>
+        </div> -->
+        <div class="tab-pane fade show active" id="Safety" role="tabpanel" aria-labelledby="safety-tab">
+            <app-site-huddle-monthly-safety-view (broadcastMsgListChange)="getSafetyAlertInfo()" [queryId]="queryId"
+                [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [areas]="areas" [cells]="cells"
+                [selectedDataTier]="selectedDataTier">
+            </app-site-huddle-monthly-safety-view>
+        </div>
+        <div class="tab-pane fade" id="Quality" role="tabpanel" aria-labelledby="quality-tab">
+            <app-site-huddle-monthly-quality-view [areas]="areas" [cells]="cells">
+            </app-site-huddle-monthly-quality-view>
+        </div>
+        <div class="tab-pane fade" id="Productivity" role="tabpanel" aria-labelledby="productivity-tab">
+            <app-site-huddle-monthly-productivity-view [areas]="areas" [cells]="cells">
+            </app-site-huddle-monthly-productivity-view>
+        </div>
+        <!-- <div class="tab-pane fade" id="Supply-Chain" role="tabpanel" aria-labelledby="supply-chain-tab">
+            <app-site-huddle-supply-chain></app-site-huddle-supply-chain>
+        </div> -->
+        <div class="tab-pane fade" id="KPI-Indicator" role="tabpanel" aria-labelledby="KPI-indicator-tab">
+            <div class="add-widget mb-1" *ngIf="!findWidgetBySeq(3)">
+                <a *ngIf="!queryId" href="javascript:void(0)" (click)="addWidgetChange.emit(3)">{{'::LABEL_AddWidget' |
+                    abpLocalization}}</a>
+            </div>
+            <ng-container *ngIf="findWidgetBySeq(3)">
+                <app-widget-container [widget]="findWidgetBySeq(3)" [index]="idx" [selectedIndex]="selectedIndex"
+                    [queryId]="!enableEdit" [homePage]="homepage" [haveAccessTreeNode]="haveAccessTreeNode"
+                    [selectedDataTier]="selectedDataTier" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers"
+                    (widgetUpdate)="widgetUpdate.emit($event)" (expandChange)="expandChange($event)">
+                </app-widget-container>
+            </ng-container>
+        </div>
+        <div class="tab-pane fade activity-cards-content" id="Activity-Card" role="tabpanel"
+            aria-labelledby="activity-Card-tab">
+            <app-kanban-board [defaultDataTierLevel]="'Site'"></app-kanban-board>
+        </div>
+    </div>
+</div>

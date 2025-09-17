@@ -1,0 +1,61 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <abp-page-title-container class="col text-start" *ngIf="!selected?.extraProperties?.hideName">
+        <h5 class="d-inline-block">{{'::Production Review Screen' | abpLocalization}}</h5>
+    </abp-page-title-container>
+    <abp-page-toolbar-container class="col">
+        <div class="text-end">
+            <span *abpPermission="'Standard.Create'" class="me-2 cursor-pointer" (click)="openAddModal()">
+                <i class="fa fa-plus fa-lg"></i>
+            </span>
+            <span class="me-2 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                    <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                    <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            <span (click)="openEditWidgetModal()" class="cursor-pointer">
+                <i class="fa fa-cog me-2 fa-lg" aria-hidden="true"></i>
+            </span>
+        </div>
+
+    </abp-page-toolbar-container>
+</abp-page>
+<abp-modal [(visible)]="editWidget">
+    <ng-template #abpHeader>
+        <h3>{{ '::Edit' | abpLocalization}}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+    <form  #dashboardForm="ngForm">
+      <div class="form-group mb-2">
+        <label for="name">{{'::Name' | abpLocalization}}</label><span> * </span>
+        <input type="text" id="name" required [(ngModel)]="editObj.name" name="name" class="form-control">
+      </div>
+      <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="hideName" [(ngModel)]="editObj.extraProperties.hideName"/>
+            <label for="hideName">{{'::Hide Name' | abpLocalization}}</label>
+        </div>
+      </div>
+    </form>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>{{'::Cancel' | abpLocalization}}</button>
+        <button type="button" class="btn btn-primary me-2" [disabled]="!editObj.name" (click)="saveWidget()">{{'::Save' | abpLocalization}}</button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="addModal" [options]="{size: 'xl'}">
+    <ng-template #abpHeader>
+        <h3>{{ '::add' | abpLocalization}}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>{{'::Cancel' | abpLocalization}}</button>
+        <button type="button" class="btn btn-primary me-2" (click)="addStandard()">{{'::Save' | abpLocalization}}</button>
+    </ng-template>
+</abp-modal>

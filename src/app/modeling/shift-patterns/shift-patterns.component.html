@@ -1,0 +1,135 @@
+<app-modeling-template [title]="'::MENU_ShiftPattern'" [data]="data" [objectType]="'ShiftPatterns'" [copyPrefix]="'::LABEL_NewShiftPattern'"
+[permissions]="{create: 'ShiftPattern.Create', edit: 'ShiftPattern.Edit', delete: 'ShiftPattern.Delete', import: 'ShiftPattern.Import', export: 'ShiftPattern.Export'}" [columns]="columns"
+  [customAction] (customActionTrigger)="openPermissionsModal($event)" [list]="list" (dataAdd)="add()"
+  (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+  (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)" (copyData)="copyShiftPattern($event)"
+  [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+  <div class="form-group mb-2" id="copyCustomeField">
+      <label>{{'::LABEL_DataTier'|abpLocalization}}</label><span> * </span>
+      <div><span class="text-info"> * {{'::LABEL_ShiftPatternDataTierTips' | abpLocalization}}</span></div>
+      <app-tree-view #copyTreeViewField id="assignedShiftPatternDataTiers" [nodes]="dataTierTreeNode"></app-tree-view>
+  </div>
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="accordion accordion-flush">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body pb-0">
+              <div class="row">
+              <div class="col-12 col-md-6 form-group mb-2">
+                <label for="shift-pattern-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> *
+                </span>
+                <input type="text" id="shift-pattern-name" class="form-control" formControlName="name" autofocus
+                  (input)="form.controls['displayName'].setValue($event.target.value)"/>
+              </div>
+
+              <div class="col-12 col-md-6 form-group mb-2">
+                <label for="shift-pattern-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span>
+                  *
+                </span>
+                <input type="text" id="shift-pattern-displayName" class="form-control" formControlName="displayName" />
+              </div>
+
+              <div class="col-12 col-md-6 form-group mb-2">
+                <label for="shift-pattern-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                <input type="text" id="shift-pattern-description" class="form-control" formControlName="description" />
+              </div>
+
+              <div class="col-12 col-md-6 form-group mb-2">
+                <label for="increment" [title]="'::INFO_TimeIncrement' | abpLocalization">{{'::LABEL_TimeIncrement' | abpLocalization}}</label><span> *</span>
+                <select class="form-select" id="increment" formControlName="timeIncrement" name="increment">
+                  @for (increment of increments; track increment) {
+                    <option [value]="Increments[increment]">{{increment}}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group details">
+                <div class="header">
+                  {{'::LABEL_ShiftPatternDetails' | abpLocalization}}<span> *</span>
+                </div>
+                <app-shift-pattern-details [shifts]="shifts" [(shiftPatternDetails)]="shiftPatternDetails"></app-shift-pattern-details>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#data-tier" type="button"
+              aria-controls="data-tier" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_DataTier' | abpLocalization }}<span> *</span>
+            </button>
+          </h2>
+          <div id="data-tier" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body pb-0">
+              <span class="text-info"> * {{'::LABEL_ShiftPatternDataTierTips' | abpLocalization}}</span>
+              <app-tree-view [nodes]="dataTierTreeNode"></app-tree-view>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid || !checkShiftPatternDetails() || !hasAssignedDataTiers()" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+      <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Close' | abpLocalization }}
+      </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'ShiftPatterns'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

@@ -1,0 +1,190 @@
+<div class="h-100 area-huddle-kpi-table widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+     <div class="d-flex justify-content-end align-items-center" style="height: 20px;">
+        <div class="text-end widget-toolbar">
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+        </div>
+    </div>
+    <ngx-datatable default [rows]="data" [headerHeight]="40" [reorderable]="true" #AreaHuddleKpiTable
+        [columnMode]="'force'" style="height: calc(100% - 20px)" [footerHeight]="10" [scrollbarV]="true" [scrollbarH]="true">
+        <ngx-datatable-column [sortable]="false" [minWidth]="150">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="empty-row-height"></div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="area-huddle-table-header-label">{{ '::LABEL_CellName' | abpLocalization }}</span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span>{{ row.cell }}</span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column [sortable]="false" [minWidth]="190">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="area-huddle-table-header-label">{{ '::LABEL_UnsafeConditionCount' | abpLocalization }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span *ngFor="let date of dateHeaders" class="col-4 text-center area-huddle-table-header-label">
+                            {{ date }}
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span *ngFor="let unsafe of row.unsafe; let i = index" class="col-4 text-center"
+                        [ngStyle]="{'color': unsafe?.color}">
+                        {{ unsafe.totalCount | number:'1.0-1' }}
+                    </span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" [minWidth]="190">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="d-flex justify-content-center align-items-center area-huddle-table-header-label">
+                        <i style="font-size: 1.8em;"
+                            [class]="isFPY ? 'fa fa-toggle-on cursor-pointer toggle-button' : 'fa fa-toggle-off cursor-pointer toggle-button'"
+                            (click)="toogleTarget('FPY')">
+                        </i>
+                        <span class="ms-1">{{(isFPY ? '::LABEL_FPYPercentage' : '::LABEL_SPPM') | abpLocalization}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span *ngFor="let date of dateHeaders" class="col-4 text-center area-huddle-table-header-label">
+                            {{ date }}
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span *ngFor="let fpyOrSppm of row.fpyOrSppm; let i = index" class="col-4 text-center"
+                        [ngStyle]="{'color': fpyOrSppm?.color}">
+                        {{ isFPY 
+                            ? ((fpyOrSppm.dailyFPY | number:'1.0-1') + '%')
+                            : (fpyOrSppm.dailySPPM | number:'1.0-0')
+                        }}                    
+                    </span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" [minWidth]="190">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="d-flex justify-content-center align-items-center area-huddle-table-header-label">
+                        <i style="font-size: 1.8em;"
+                            [class]="isUPPH ? 'fa fa-toggle-on cursor-pointer toggle-button' : 'fa fa-toggle-off cursor-pointer toggle-button'"
+                            (click)="toogleTarget('UPPH')"></i>
+                        <span class="ms-1">{{(isUPPH ? '::LABEL_UPPH' : '::LABEL_Eff') | abpLocalization}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span *ngFor="let date of dateHeaders" class="col-4 text-center area-huddle-table-header-label">
+                            {{ date }}
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span *ngFor="let upphOrPerformance of row.upphOrPerformance; let i = index"
+                        class="col-4 text-center" [ngStyle]="{'color': upphOrPerformance?.color}">
+                        {{ isUPPH 
+                            ? (upphOrPerformance.dailyUPPH | number:'1.0-1') 
+                            : ((upphOrPerformance.dailyPerformance | number:'1.0-1') + '%') 
+                        }}
+                    </span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" [minWidth]="190">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="area-huddle-table-header-label">{{ '::LABEL_UnplannedDT' | abpLocalization }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span *ngFor="let date of dateHeaders" class="col-4 text-center area-huddle-table-header-label">
+                            {{ date }}
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span *ngFor="let availability of row.availability; let i = index" class="col-4 text-center"
+                        [ngStyle]="{'color': availability?.color}">
+                        {{ (availability.dailyAvailability | number:'1.0-1') + '%' }}
+                    </span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" [minWidth]="190">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="area-huddle-table-header-label">{{ '::LABEL_OverallPoee' | abpLocalization }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span *ngFor="let date of dateHeaders" class="col-4 text-center area-huddle-table-header-label">
+                            {{ date }}
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span *ngFor="let poee of row.poee; let i = index" class="col-4 text-center"
+                        [ngStyle]="{'color': poee?.color}">
+                        {{ (poee.dailyPOEE % 1 === 0 ? poee.dailyPOEE : (poee.dailyPOEE | number:'1.0-1')) + '%' }}
+                    </span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" [minWidth]="150">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="empty-row-height"></div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="area-huddle-table-header-label">{{ '::LABEL_OpenAction' | abpLocalization }}</span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span>{{ row.actions.totalOpenCount }}</span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" [minWidth]="150">
+            <ng-template ngx-datatable-header-template>
+                <div>
+                    <div class="empty-row-height"></div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="area-huddle-table-header-label">{{ '::LABEL_PastDueAction' | abpLocalization }}</span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span>{{ row.actions.totalPassDueCount }}</span>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+    </ngx-datatable>
+</div>

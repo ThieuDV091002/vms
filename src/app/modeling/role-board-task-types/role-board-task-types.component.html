@@ -1,0 +1,155 @@
+<app-modeling-template [title]="'::MENU_RoleBoardTaskType'" [data]="data" [objectType]="'TaskTypes'"
+    [copyPrefix]="'::LABEL_RoleBoardNewTaskType'"
+    [permissions]="{create: 'RoleBoardTaskType.Create', edit: 'RoleBoardTaskType.Edit', delete: 'RoleBoardTaskType.Delete', copy: 'RoleBoardTaskType.Copy', import: 'RoleBoardTaskType.Import', export: 'RoleBoardTaskType.Export'}"
+    [columns]="columns" [customAction]="" (customActionTrigger)="openPermissionsModal($event)" [list]="list"
+    (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)" [noDisplayNameCopy]="true"
+    (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+    (copyData)="copy($event, edit.bind(this))" [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center header-width">
+            <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+            <div>
+              <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                {{'::LABEL_ExpandAll' | abpLocalization}}
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                {{'::LABEL_CollapseAll' | abpLocalization}}
+              </button>
+            </div>
+          </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+            <div class="accordion accordion-flush">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general"
+                            type="button" aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+                            {{ '::LABEL_General' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group">
+                                        <label for="task-type-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                                        <input type="text" id="task-type-name" class="form-control"
+                                            formControlName="name" autofocus />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group">
+                                        <label for="task-type-displayName" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                                        <input type="text" id="task-type-description" class="form-control"
+                                            formControlName="description" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#details"
+                            type="button" aria-controls="details" aria-expanded="true" [class.collapsed]="isCollapse">
+                            {{ '::Details' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="details" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group">
+                                        <label
+                                            for="task-type-state-model" [title]="'::INFO_StateModel' | abpLocalization">{{'::LABEL_StateModel'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <ng-select appendTo="body" [items]="stateModels" bindValue="id" bindLabel="name"
+                                            formControlName="stateModelId"></ng-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group">
+                                        <label
+                                            for="task-type-state-category" [title]="'::INFO_Category' | abpLocalization">{{'::LABEL_Category'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <ng-select appendTo="body" [items]="taskTypeCategories"
+                                            formControlName="category"></ng-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group">
+                                        <label
+                                            for="task-type-warning-color" [title]="'::INFO_WarningColor' | abpLocalization">{{'::LABEL_WarningColor'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <div class="color-picker">
+                                            <input type="text" id="task-type-warning-color" class="form-control"
+                                                formControlName="warningColor" />
+                                            <input type="color" class="color-selector" [value]="selectedWarningColor"
+                                                (input)="updateColor($event.target.value, 'warningColor')" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label
+                                            for="task-type-alert-color" [title]="'::INFO_AlertColor' | abpLocalization">{{'::LABEL_AlertColor'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <div class="color-picker">
+                                            <input type="text" id="task-type-warning-color" class="form-control"
+                                                formControlName="alertColor" />
+                                            <input type="color" class="color-selector" [value]="selectedAlertColor"
+                                                (input)="updateColor($event.target.value, 'alertColor')" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+        <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'TaskTypes'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

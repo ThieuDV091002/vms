@@ -1,0 +1,162 @@
+<div class="h-100 ps-2 pe-2 pb-2 widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <div class="d-flex justify-content-between" >
+        <div class="col text-start p-0">
+            <div class="d-flex">
+                <h5 class="m-0 text-nowrap" *ngIf="!selected.extraProperties?.hideTitle">
+                    {{ selected.name | abpLocalization }}
+                    @if (selected.extraProperties?.category) {
+                    <span>({{messageCategoryName}})</span>
+                    }
+                </h5>
+            </div>
+        </div>
+        <div class="col p-0">
+            <div class="text-end mb-2">
+                <span class="me-2 cursor-pointer" (click)="playOrPause()" *abpPermission="'BroadcastMessage.Edit'">
+                    <i class="fa-solid fa-lg" [class]="autoPlay ? 'fa-pause' : 'fa-play'"></i>
+                </span>
+                <span class="me-2 cursor-pointer" (click)="add()" *abpPermission="'BroadcastMessage.Create'">
+                    <i class="fa fa-plus fa-lg"></i>
+                </span>
+                @if (!siteHuddleView) {
+                @if (!queryId) {
+                <span class="me-2 cursor-pointer" (click)="deleteBroadcastMessageViewWidget()" *abpPermission="'Dashboard.Update'">
+                    <i class="fa fa-trash fa-lg"></i>
+                </span>
+                }
+                <span class="me-2 cursor-pointer" (click)="expand()">
+                    @if (expandChart) {
+                    <i class="fa fa-compress fa-lg"></i>
+                    } @else {
+                    <i class="fa fa-expand fa-lg"></i>
+                    }
+                </span>
+                <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'BroadcastMessage.Edit'">
+                    <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+                </span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="message-view">
+        @if (data.items.length > 0) {
+        <carousel [(activeSlide)]="activeSlideIndex" [interval]="settingsInterval" [pauseOnFocus]="false"
+            [noPause]="true">
+            <slide *ngFor="let slide of data.items; let index = index; trackBy: trackByMessageId">
+                <div *ngIf="activeSlideIndex === index" class="h-100 d-flex flex-column">
+                    <div class="text-start">
+                        <span>{{slide.lastModifier}},</span>
+                        <span class="ps-1">{{formatDate(slide.lastModificationTime ? slide.lastModificationTime : slide.creationTime) | date: 'dd MMM yyyy hh:mm:ss a' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center p-1" style="flex: 1;">
+                        <h2 class="text-break">{{slide.message}}</h2>
+                    </div>
+                    <div *ngIf="messageImageGroups[slide.id]?.length > 0 && activeSlideIndex === index"
+                        class="mb-3 mt-2">
+                        <carousel [interval]="getImageCarouselInterval(index, slide.id)" [noPause]="true"
+                            [pauseOnFocus]="false" [wrap]="false">
+                            <slide *ngFor="let group of messageImageGroups[slide.id]">
+                                <div class="row justify-content-center">
+                                    <div *ngFor="let att of group"
+                                        class="col-12 col-md-6 col-lg-6 col-xl-4 d-flex flex-column align-items-center">
+                                        <img #imgRef
+                                            [src]="att.fileId.startsWith('data:') ? att.fileId : imageMap.get(att.fileId)"
+                                            class="img-fluid rounded shadow"
+                                            style="max-height:260px;object-fit:contain;cursor:pointer;margin-bottom: 3rem;"
+                                            (click)="onImageClick(att.fileId.startsWith('data:') ? att.fileId : imageMap.get(att.fileId), imgRef)"
+                                            (load)="att.width = imgRef.naturalWidth; att.height = imgRef.naturalHeight" />
+                                    </div>
+                                </div>
+                            </slide>
+                        </carousel>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <span class="text-danger">{{'::LABEL_ExpiryDateTime' | abpLocalization}}: {{ formatDate(slide.expiryTime) | date: 'dd MMM yyyy hh:mm:ss a' }}</span>
+                    </div>
+                </div>
+            </slide>
+        </carousel>
+        } @else {
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <h2>{{'::LABEL_NoMessage' | abpLocalization}}</h2>
+        </div>
+        }
+
+    </div>
+    <abp-modal [(visible)]="isImagePreviewOpen" [options]="{size: 'fullscreen'}"
+        (keydown.esc)="isImagePreviewOpen = false">
+        <ng-template #abpHeader>
+            <button (click)="isImagePreviewOpen = false" class="btn  btn-icon btn-active-color-primary close-button">
+            <i class="fa fa-times"></i>
+          </button>
+        </ng-template>
+        <ng-template #abpBody>
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <img [src]="previewImageUrl" style="max-width:90vw;max-height:80vh;" />
+            </div>
+        </ng-template>
+    </abp-modal>
+</div>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group mb-2">
+            <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+        </div>
+        <div class="form-group mb-2">
+            <label for="message-category"
+                [title]="'::INFO_Category' | abpLocalization">{{'::Category'|abpLocalization}}</label>
+            <select class="form-control form-select" id="message-category" [(ngModel)]="messageCategory">
+                <option [ngValue]="null"></option>
+                <option [ngValue]="messageCategory.id" *ngFor="let messageCategory of messageCategoryData">
+                    {{ messageCategory.displayName || messageCategory.name }}
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="d-flex">
+                <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+                    {{ '::Label_HideTitle' | abpLocalization }}
+                </label>
+                <div class="col-form-label ms-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="role-hide-title" [(ngModel)]="hideTitle" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mb-2">
+            <div class="d-flex">
+                <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+                    {{ '::LABEL_AutoPlay' | abpLocalization }}
+                </label>
+                <div class="col-form-label ms-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="role-hide-title" [(ngModel)]="isAutoPlay" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="display-time" [title]="'::INFO_DisplayTime' | abpLocalization">{{'::LABEL_DisplayTime'|abpLocalization}}</label>
+            <input appInputNumber [min]="0" id="display-time" class="form-control" [(ngModel)]="displayTime" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="widgetTitle === '' || widgetTitle === undefined || widgetTitle === null"
+            (click)="saveSettings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+
+<app-broadcast-message-entry *ngIf="openModal" [openModal]="openModal" [areaData]="allAreaData" (closeEvent)="close()"
+    (refreshList)="list.get(); broadcastMsgListChange.emit()"></app-broadcast-message-entry>

@@ -1,0 +1,68 @@
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.advanced-filter-icon {
+    display: inline-block;
+    width: 20px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+
+:host ::ng-deep .page-count {
+    text-align: start;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+.message-data-card.table-container-height-collapse {
+    height: calc(100% - 35px);
+}
+
+.message-data-card.table-container-height-expand {
+    height: calc(100% - 146px);
+}
+
+ngx-datatable {
+    height: 96%;
+
+    ::ng-deep {
+        >div {
+            height: 100% !important;
+
+            .datatable-body {
+                height: calc(100% - 4.1rem) !important;
+            }
+        }
+
+        .datatable-footer {
+            overflow: hidden;
+
+            .datatable-footer-inner {
+                height: 2rem !important;
+
+                .page-count,
+                .datatable-pager {
+                    height: 2rem !important;
+                    line-height: 2rem !important;
+                }
+            }
+        }
+    }
+}

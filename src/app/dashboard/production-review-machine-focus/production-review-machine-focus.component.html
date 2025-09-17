@@ -1,0 +1,641 @@
+<abp-page>
+    <div class="row entry-row fixed-header">
+      <div class="col-auto content-header w-100 d-flex">
+        <h2 *ngIf="!settings.hideTitle" class="content-header-title">{{('::' + settings.name) | abpLocalization}}</h2>
+        <div class="filter-bar ms-2">
+          <app-data-tier-filter (areaChange)="dataTierChange($event)" (cellChange)="dataTierChange($event)"
+            (workCenterChange)="dataTierChange($event)" dataTierLevel="WorkCenter">
+          </app-data-tier-filter>
+        </div>
+      </div>
+    </div>
+    <div class="review-content card">
+        <div class="content-filter d-flex justify-content-between px-1">
+            <div class="quick-filter">
+                <span>{{'::LABEL_QuickFilters' | abpLocalization}}: </span>
+                <a [class.active]="!isYesterday" (click)="isYesterday = false;getStartTime()">{{'::Today' | abpLocalization}}</a>
+                <a [class.active]="isYesterday"(click)="isYesterday = true;getStartTime()">{{'::LABEL_Yesterday' | abpLocalization}}</a>
+            </div>
+            <div class="right-action d-flex">
+                <div>
+                    @if (updatedMins) {
+                        <span>{{'::Updated' | abpLocalization}}:</span>
+                        <span class="refresh-time me-2">{{updatedMins}} {{'::LABEL_MinutesAgo' | abpLocalization}}</span>
+                    }
+                    <span>{{(manualRefresh ? '::LABEL_ManualDataRefresh': '::LABEL_AutoDataRefresh') | abpLocalization}}</span>
+                </div>
+                <span class="me-1" (click)="refreshChange()"><i [ngClass]="['fa', manualRefresh ? 'text-danger fa-toggle-on': 'text-success fa-toggle-off']"></i></span>
+                <div><span>{{(settings.isProductSeries ? '::LABEL_ProductSerie': '::MENU_ProductFamily') | abpLocalization}}</span></div>
+                <span (click)="settings.isProductSeries = !settings.isProductSeries"><i [ngClass]="['fa', settings.isProductSeries ? 'fa-toggle-on': 'fa-toggle-off']"></i></span>
+                <span class="advanced-filter-icon"
+                  (click)="showAdvancedFilter = !showAdvancedFilter">
+                  <img [class.filter-show-full]="filterSearchHasValue"
+                    [class.filter-show-empty]="!filterSearchHasValue"
+                    [ngClass]="showAdvancedFilter ? 'd-none' : ''" alt="Filter Show" />
+                  <img [class.filter-hidden-full]="filterSearchHasValue"
+                    [class.filter-hidden-empty]="!filterSearchHasValue"
+                    [ngClass]="showAdvancedFilter ? '' : 'd-none'"
+                    alt="Filter Hidden" />
+                </span>
+                <span class="icon-combine" (click)="showComments()">
+                    <span class="base-icon"><i class="fas fa-message"></i></span>
+                    <span class="cover-icon"><i class="fa fa-eye"></i></span>
+                </span>
+                <span class="icon-combine" (click)="addComment()" *abpPermission="'Comment.Create'">
+                    <span class="base-icon"><i class="fas fa-message"></i></span>
+                    <span class="cover-icon"><i class="fa fa-plus"></i></span>
+                </span>
+                <span title="Create Card" (click)="createCard()"
+                    *abpPermission="'ActivityCard.Create'">
+                    <i class="fas fa-plus fa-lg"></i>
+                </span>
+                <!-- <span><i class="fa fa-expand"></i></span> -->
+                <span (click)="openEditSettings()"><i class="fa fa-cog"></i></span>
+            </div>
+        </div>
+        <div *ngIf="showAdvancedFilter" class="advanced-filter d-flex px-1 pb-1 flex-wrap">
+            <div class="col-12 col-md-6 d-flex flex-wrap">
+                <div class="form-group col-12 col-md-6">
+                    @if (settings.isProductSeries) {
+                        <label for="">{{'::LABEL_ProductSerie' | abpLocalization}}</label>
+                        <ng-select
+                            appendTo="body"
+                            bindLabel="displayName"
+                            bindValue="id"
+                            [multiple]="true"
+                            [closeOnSelect]="false"
+                            [(ngModel)]="settings.productSeries"
+                            [items]="productSeries">
+                            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item">
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                        </ng-select>
+                    } @else {
+                        <label for="">{{'::MENU_ProductFamily' | abpLocalization}}</label>
+                        <ng-select
+                            appendTo="body"
+                            bindLabel="displayName"
+                            [multiple]="true"
+                            [closeOnSelect]="false"
+                            bindValue="id"
+                            [(ngModel)]="settings.productFamilies"
+                            [items]="productFamilies">
+                            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item">
+                                <span>{{item.displayName || item.name}}</span>
+                            </ng-template>
+                        </ng-select>}
+                </div>
+                <div class="form-group col-12 col-md-6">
+                    <label for="">{{'::MENU_Product' | abpLocalization}}</label>
+                    <ng-select
+                        appendTo="body"
+                        bindLabel="displayName"
+                        bindValue="id"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [(ngModel)]="settings.products"
+                        [items]="products">
+                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                            <span>{{item.displayName || item.name}}</span>
+                        </ng-template>
+                        <ng-template ng-option-tmp let-item="item">
+                            <span>{{item.displayName || item.name}}</span>
+                        </ng-template>
+                    </ng-select>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" (click)="clearFilters()">{{'::Clear' | abpLocalization}}</button>
+                <button type="button" class="btn btn-sm btn-primary" (click)="applyFilters()">{{'::Search' | abpLocalization}}</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="row mx-0">
+                <div class="report-chart scrap-chart col-12 col-md-4 px-1" [class.advanced-filter-active]="showAdvancedFilter">
+                    <div class="border shadow-sm bg-body-tertiary rounded h-100">
+                        <app-top-scrap-reasons-chart
+                        [areaIds]="selectedAreas"
+                        [cellIds]="selectedCells"
+                        [workCenterIds]="selectedWorkCenters"
+                        [productFamilyIds]="selectedProductFamilies"
+                        [productSerieIds]="selectedProductSeries"
+                        [productIds]="selectedProducts"
+                        [startDate]="startTime"
+                        [endDate]="endTime">
+                        </app-top-scrap-reasons-chart>
+                    </div>
+                </div>
+                <div class="report-chart downtime-reason-chart col-12 col-md-4 px-1" [class.advanced-filter-active]="showAdvancedFilter">
+                    <div class="border shadow-sm bg-body-tertiary rounded h-100">
+                        <app-top-downtime-reasons-chart
+                        [areaIds]="selectedAreas"
+                        [cellIds]="selectedCells"
+                        [workCenterIds]="selectedWorkCenters"
+                        [productFamilyIds]="selectedProductFamilies"
+                        [productSerieIds]="selectedProductSeries"
+                        [productIds]="selectedProducts"
+                        [startDate]="startTime"
+                        [endDate]="endTime">
+                        </app-top-downtime-reasons-chart>
+                    </div>
+                </div>
+                <div class="report-chart performance-part-number-chart col-12 col-md-4 px-1" [class.advanced-filter-active]="showAdvancedFilter">
+                    <div class="border shadow-sm bg-body-tertiary rounded h-100">
+                        <app-top-performance-products-chart
+                        [areaIds]="selectedAreas"
+                        [cellIds]="selectedCells"
+                        [workCenterIds]="selectedWorkCenters"
+                        [productFamilyIds]="selectedProductFamilies"
+                        [productSerieIds]="selectedProductSeries"
+                        [productIds]="selectedProducts"
+                        [startDate]="startTime"
+                        [endDate]="endTime">
+                        </app-top-performance-products-chart>
+                    </div>
+                </div>
+            </div>
+            <div class="machine-table-l1 px-1">
+                <ngx-datatable #myTable [rows]="machineFocusData" [limit]="10" [count]="machineFocusData.length"
+                    [summaryRow]="true" [summaryPosition]="'bottom'" default>
+                    <!-- First Level -->
+                    <ngx-datatable-column [name]="('::'+ (settings.isProductSeries ? 'LABEL_ProductSerie' : 'LABEL_ProductFamily')) | abpLocalization" prop="productGroupingName" [sortable]="false" [width]="325" [canAutoResize]="false" [summaryTemplate]="totalTemplate">
+                        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                            <span class="cursor-pointer" (click)="toggleExpandRow(row, expanded, myTable)">{{row.productGroupingName}}</span>
+                            <a
+                                href="javascript:void(0)"
+                                class="expand-icon"
+                                [class.datatable-icon-right]="!expanded"
+                                [class.datatable-icon-down]="expanded"
+                                title="Expand/Collapse Row"
+                                (click)="toggleExpandRow(row, expanded, myTable)"
+                            >
+                            </a>
+                        </ng-template>
+                        <ng-template #totalTemplate>
+                            <span>{{'::Total' | abpLocalization}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <!-- workcenter detail start -->
+                    <ngx-datatable-row-detail [rowHeight]="'auto'">
+                        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                        <div class="data-detail">                            
+                            <ngx-datatable #myWorkCenterTable [id]="row.productGroupingId" [rows]="row?.workCenters" [footerHeight]="0" default>
+                                <!-- product detail start -->
+                                <ngx-datatable-row-detail [rowHeight]="'auto'">
+                                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                                    <div class="data-detail">
+                                        <ngx-datatable [rows]="row?.products" [footerHeight]="0" default>
+                                            <!-- Third Level -->
+                                            <ngx-datatable-column [name]="'::LABEL_Product' | abpLocalization" prop="productName" [sortable]="false" [width]="105" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.productName}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::Label_WorkOrder' | abpLocalization" prop="workOrder" [sortable]="false" [width]="105" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.workOrder}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_Operation' | abpLocalization" prop="operation" [sortable]="false" [width]="105" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.operation}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::Label_PlannedQty' | abpLocalization" prop="plannedQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.plannedQty | number : '1.0-1' }}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_ActualQty' | abpLocalization" prop="actualQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.actualQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_Difference' | abpLocalization" prop="differenceQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.differenceQty)" [class.alert-color]="row.differenceQty < 0">{{row.differenceQty | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_PerformancePercentage' | abpLocalization" prop="performancePercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.performancePercentage)" [ngClass]="{'alert-bg': row.performanceKpi == 3, 'warning-bg': row.performanceKpi == 2}">{{row.performancePercentage | number:'1.0-1'}}%</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_PlannedDowntimeHours' | abpLocalization" prop="plannedDowntimeHours" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.plannedDowntimeHours | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_UnplannedDowntimeHours' | abpLocalization" prop="unplannedDowntimeHours" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.unplannedDowntimeHours)" [ngClass]="{'alert-bg': row.udtKpi == 3, 'warning-bg': row.udtKpi == 2}">{{row.unplannedDowntimeHours | number : '1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_DowntimePercentage' | abpLocalization" prop="downtimePercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.downtimePercentage)">{{row.downtimePercentage | number:'1.0-1'}}%</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_AvailabilityPercentage' | abpLocalization" prop="availabilityPercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.availabilityPercentage)">{{row.availabilityPercentage | number:'1.0-1'}}%</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_CellSettingScrapPPM' | abpLocalization" prop="scrapPPM" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.scrapPPM)" [ngClass]="{'alert-bg': row.scrapPPMKpi == 3, 'warning-bg': row.scrapPPMKpi == 2}">{{row.scrapPPM | number:'1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_ScrapQty' | abpLocalization" prop="scrapQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span>{{row.scrapQty | number:'1.0-1'}}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_QualityPercentage' | abpLocalization" prop="qualityPercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.qualityPercentage)" [ngClass]="{'alert-bg': row.qualityKpi == 3, 'warning-bg': row.qualityKpi == 2}">{{row.qualityPercentage | number:'1.0-1'}}%</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column [name]="'::LABEL_POEE' | abpLocalization" prop="poee" [sortable]="false" [width]="100">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <span *ngIf="isValidValue(row.poee)" [ngClass]="{'alert-bg': row.poeeKpi == 3, 'warning-bg': row.poeeKpi == 2}">{{row.poee | number:'1.0-1'}}%</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                        </ngx-datatable>
+                                    </div>
+                                    </ng-template>
+                                </ngx-datatable-row-detail>
+                                <!-- product detail end -->
+                                 <!-- Second Level -->
+                                <ngx-datatable-column [name]="'::LABEL_WorkCenter' | abpLocalization" prop="workCenterName" [sortable]="false" [width]="320" [canAutoResize]="false">
+                                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                                        <span class="cursor-pointer" (click)="toggleExpandWorkCenterRow(row, expanded, myWorkCenterTable)">{{row.workCenterDisplayName}}</span>
+                                        <a
+                                            href="javascript:void(0)"
+                                            class="expand-icon"
+                                            [class.datatable-icon-right]="!expanded"
+                                            [class.datatable-icon-down]="expanded"
+                                            title="Expand/Collapse Row"
+                                            (click)="toggleExpandWorkCenterRow(row, expanded, myWorkCenterTable)"
+                                        >
+                                        </a>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::Label_PlannedQty' | abpLocalization" prop="plannedQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.plannedQty | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_ActualQty' | abpLocalization" prop="actualQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.actualQty | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_Difference' | abpLocalization" prop="differenceQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.differenceQty)" [class.alert-color]="row.differenceQty < 0">{{row.differenceQty | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_PerformancePercentage' | abpLocalization" prop="performancePercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.performancePercentage)" [ngClass]="{'alert-bg': row.performanceKpi == 3, 'warning-bg': row.performanceKpi == 2}">{{row.performancePercentage | number:'1.0-1'}}%</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_PlannedDowntimeHours' | abpLocalization" prop="plannedDowntimeHours" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.plannedDowntimeHours | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_UnplannedDowntimeHours' | abpLocalization" prop="unplannedDowntimeHours" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.unplannedDowntimeHours)" [ngClass]="{'alert-bg': row.udtKpi == 3, 'warning-bg': row.udtKpi == 2}">{{row.unplannedDowntimeHours | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_DowntimePercentage' | abpLocalization" prop="downtimePercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.downtimePercentage)">{{row.downtimePercentage | number:'1.0-1'}}%</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_AvailabilityPercentage' | abpLocalization" prop="availabilityPercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.availabilityPercentage)">{{row.availabilityPercentage | number:'1.0-1'}}%</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_CellSettingScrapPPM' | abpLocalization" prop="scrapPPM" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.scrapPPM)" [ngClass]="{'alert-bg': row.scrapPPMKpi == 3, 'warning-bg': row.scrapPPMKpi == 2}">{{row.scrapPPM | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_ScrapQty' | abpLocalization" prop="scrapQty" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span>{{row.scrapQty | number:'1.0-1'}}</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_QualityPercentage' | abpLocalization" prop="qualityPercentage" [sortable]="false" [width]="100" [canAutoResize]="false">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.qualityPercentage)" [ngClass]="{'alert-bg': row.qualityKpi == 3, 'warning-bg': row.qualityKpi == 2}">{{row.qualityPercentage | number:'1.0-1'}}%</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column [name]="'::LABEL_POEE' | abpLocalization" prop="poee" [sortable]="false" [width]="100">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <span *ngIf="isValidValue(row.poee)" [ngClass]="{'alert-bg': row.poeeKpi == 3, 'warning-bg': row.poeeKpi == 2}">{{row.poee | number:'1.0-1'}}%</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                            </ngx-datatable>
+                        </div>
+                        </ng-template>
+                    </ngx-datatable-row-detail>
+                    <!-- workcenter detail end -->
+                    <ngx-datatable-column [name]="'::Label_PlannedQty' | abpLocalization" prop="plannedQty" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryPlannedQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.plannedQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryPlannedQty>
+                            <span>{{machineFocusSummaryData?.plannedQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_ActualQty' | abpLocalization" prop="actualQty" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryActualQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.actualQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryActualQty>
+                            <span>{{machineFocusSummaryData?.actualQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_Difference' | abpLocalization" prop="differenceQty" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryDifferenceQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.differenceQty)" [class.alert-color]="row.differenceQty < 0">{{row.differenceQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryDifferenceQty>
+                            <span *ngIf="isValidValue(machineFocusSummaryData?.differenceQty)" [class.alert-color]="machineFocusSummaryData?.differenceQty < 0">{{machineFocusSummaryData?.differenceQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_PerformancePercentage' | abpLocalization" prop="performancePercentage" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryPerformancePercentage">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.performancePercentage)" [ngClass]="{'alert-bg': row.performanceKpi == 3, 'warning-bg': row.performanceKpi == 2}">{{row.performancePercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                        <ng-template #summaryPerformancePercentage>
+                            <span *ngIf="isValidValue(machineFocusSummaryData?.performancePercentage)" [ngClass]="{'alert-bg': machineFocusSummaryData.performanceKpi == 3, 'warning-bg': machineFocusSummaryData.performanceKpi == 2}">{{machineFocusSummaryData?.performancePercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_PlannedDowntimeHours' | abpLocalization" prop="plannedDowntimeHours" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryPlannedDowntimeHours">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.plannedDowntimeHours | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryPlannedDowntimeHours>
+                            <span>{{machineFocusSummaryData?.plannedDowntimeHours | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_UnplannedDowntimeHours' | abpLocalization" prop="unplannedDowntimeHours" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryUnplannedDowntimeHours">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.unplannedDowntimeHours)" [ngClass]="{'alert-bg': row.udtKpi == 3, 'warning-bg': row.udtKpi == 2}">{{row.unplannedDowntimeHours | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryUnplannedDowntimeHours>
+                            <span *ngIf="isValidValue(machineFocusSummaryData.unplannedDowntimeHours)" [ngClass]="{'alert-bg': machineFocusSummaryData.udtKpi == 3, 'warning-bg': machineFocusSummaryData.udtKpi == 2}">{{machineFocusSummaryData?.unplannedDowntimeHours | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_DowntimePercentage' | abpLocalization" prop="downtimePercentage" [sortable]="false"  [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryDowntimePercentage">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.downtimePercentage)">{{row.downtimePercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                        <ng-template #summaryDowntimePercentage>
+                            <span *ngIf="isValidValue(machineFocusSummaryData?.downtimePercentage)">{{machineFocusSummaryData?.downtimePercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_AvailabilityPercentage' | abpLocalization" prop="availabilityPercentage" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryAvailabilityPercentage">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.availabilityPercentage)">{{row.availabilityPercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                        <ng-template #summaryAvailabilityPercentage>
+                            <span *ngIf="isValidValue(machineFocusSummaryData?.availabilityPercentage)">{{machineFocusSummaryData?.availabilityPercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_CellSettingScrapPPM' | abpLocalization" prop="scrapPPM" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryScrapPPM">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.scrapPPM)" [ngClass]="{'alert-bg': row.scrapPPMKpi == 3, 'warning-bg': row.scrapPPMKpi == 2}">{{row.scrapPPM | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryScrapPPM>
+                            <span *ngIf="isValidValue(machineFocusSummaryData.scrapPPM)" [ngClass]="{'alert-bg': machineFocusSummaryData.scrapPPMKpi == 3, 'warning-bg': machineFocusSummaryData.scrapPPMKpi == 2}">{{machineFocusSummaryData?.scrapPPM | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_ScrapQty' | abpLocalization" prop="scrapQty" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryScrapQty">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span>{{row.scrapQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                        <ng-template #summaryScrapQty>
+                            <span>{{machineFocusSummaryData?.scrapQty | number:'1.0-1'}}</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_QualityPercentage' | abpLocalization" prop="qualityPercentage" [sortable]="false" [width]="100" [canAutoResize]="false" [summaryTemplate]="summaryQualityPercentage">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.qualityPercentage)" [ngClass]="{'alert-bg': row.qualityKpi == 3, 'warning-bg': row.qualityKpi == 2}">{{row.qualityPercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                        <ng-template #summaryQualityPercentage>
+                            <span *ngIf="isValidValue(machineFocusSummaryData?.qualityPercentage)" [ngClass]="{'alert-bg': machineFocusSummaryData.qualityKpi == 3, 'warning-bg': machineFocusSummaryData.qualityKpi == 2}">{{machineFocusSummaryData?.qualityPercentage | number:'1.0-1'}}%</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="'::LABEL_POEE' | abpLocalization" prop="poee" [sortable]="false" [width]="100" [summaryTemplate]="summaryPoee">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <span *ngIf="isValidValue(row.poee)" [ngClass]="{'alert-bg': row.poeeKpi == 3, 'warning-bg': row.poeeKpi == 2}">{{row.poee | number:'1.0-1'}}%</span>
+                        </ng-template>
+                        <ng-template #summaryPoee>
+                            <span *ngIf="isValidValue(machineFocusSummaryData?.poee)" [ngClass]="{'alert-bg': machineFocusSummaryData.poeeKpi == 3, 'warning-bg': machineFocusSummaryData.poeeKpi == 2}">{{machineFocusSummaryData?.poee | number:'1.0-1'}}%</span>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>
+            </div>
+
+        </div>
+        <div class="footer d-flex justify-content-between">
+            <div class="color-tips">
+                <div class="not-meet-warning"><span class="color-item me-1"></span><span>{{'::LABEL_NotMeetWithinGap' | abpLocalization}}</span></div>
+                <div class="not-meet-alert"><span class="color-item me-1"></span><span>{{'::LABEL_NotMeetOverGap' | abpLocalization}}</span></div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.WorkOrder)"><i class="fa fa-plus"></i> {{'::LABEL_OrderInfo' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.Labor)"><i class="fa fa-plus"></i> {{'::LABEL_Labor' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.BreakTime)"><i class="fa fa-plus"></i> {{'::LABEL_BreakTime' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.Downtime)"><i class="fa fa-plus"></i> {{'::Label_Dwontime' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ProductQty)"><i class="fa fa-plus"></i> {{'::LABEL_ProductQty' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ScrapQty)"><i class="fa fa-plus"></i> {{'::LABEL_ScrapQty' | abpLocalization}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addData(DataType.ReworkQty)"><i class="fa fa-plus"></i> {{'::Label_ReworkQty' | abpLocalization}}</button>
+            </div>
+        </div>
+    </div>
+  </abp-page>
+@if (openAddData) {
+    @if (addDataType === DataType.WorkOrder) {
+        <app-work-order-data
+            [openAddWorkOrderData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-work-order-data>
+    }
+    @else if(addDataType === DataType.Labor) {
+        <app-labor-data
+            [openAddLaborData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-labor-data>
+    }
+    @else if(addDataType === DataType.BreakTime) {
+        <app-breaktime-data
+            [openAddBreaktimeData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-breaktime-data>
+    }
+    @else if(addDataType === DataType.Downtime) {
+        <app-downtime-data
+            [openAddDowntimeData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-downtime-data>
+    }
+    @else if(addDataType === DataType.ProductQty) {
+        <app-production-qty-data
+            [openAddProductionData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-production-qty-data>
+    }
+    @else if(addDataType === DataType.ScrapQty) {
+        <app-scrap-qty-data
+            [openAddScrapData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-scrap-qty-data>
+    }
+    @else if(addDataType === DataType.ReworkQty) {
+        <app-rework-qty-data
+            [openAddReworkQtyData]="openAddData"
+            (closeEvent)="openAddData = false"
+            [dataTierTreeNode]="dataTierTreeNode"
+            [selectedDataTier]="selectedDataTier"
+            [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+        </app-rework-qty-data>
+    }
+}
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group">
+            <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="editSettings.name"/>
+        </div>
+        <div class="form-group">
+            <div class="d-flex">
+                <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+                    {{ '::Label_HideTitle' | abpLocalization }}
+                </label>
+                <div class="col-form-label ms-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="hide-title"
+                            [(ngModel)]="editSettings.hideTitle" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mb-2">
+            <label for="refresh-rate" [title]="'::INFO_RefreshRateMin' | abpLocalization">{{'::LABEL_RefreshRateMin'|abpLocalization}}</label>
+            <input type="number" min="0" id="refresh-rate" class="form-control" [(ngModel)]="editSettings.refreshRate" />
+        </div>
+        <div class="form-group mb-2">
+            <label for="auto-reset-idle-time" [title]="'::INFO_AutoResetIdleTime' | abpLocalization">{{'::LABEL_AutoResetIdleTime'|abpLocalization}}</label>
+            <input type="text" id="auto-reset-idle-time" class="form-control" [(ngModel)]="editSettings.autoResetIdleTime" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="!settings?.name" (click)="saveSettings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl', windowClass: 'card-editor-modal'}">
+    <ng-template #abpBody>
+        <app-card-editor [card]="card" (cardClose)="isModalVisible=false"></app-card-editor>
+    </ng-template>
+</abp-modal>
+
+<app-add-comment-data
+    *ngIf="isAddCommentModalVisible"
+    [selectedComment]="selectedComment"
+    [areaData]="areaData"
+    [currentShift]="currentShift"
+    [showInterval]="true"
+    [openModal]="isAddCommentModalVisible"
+    (closeEvent)="isAddCommentModalVisible = false">
+</app-add-comment-data>
+<abp-modal [(visible)]="isViewCommentVisible" [options]="{size: 'xl', windowClass: 'comment-modal'}">
+    <ng-template #abpHeader>
+        <h3>{{ commentViewType === 'commentPage' ? 'Comment' : '::Shift Comment' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div *ngIf="commentViewType === 'commentPage'" style="height: 700px;">
+            <app-comment-display-widget
+                [selected]="{widgetName: 'commentPage', extraProperties: {hideTitle: true, pageSize: 10}}"
+                [index]="0"
+                [dataTierTreeNode]="haveAccessTreeNode"
+                [selectedDataTier]="selectedDataTier"
+                [currentShift]="currentShift"
+                [queryId]="1"
+                (updateChange)="handleCommentWidgetUpdate($event)">
+            </app-comment-display-widget>
+        </div>
+        <div *ngIf="commentViewType === 'shiftComment'" style="height: 700px;">
+            <app-comment-entry-widget
+                [selected]="{widgetName: 'shiftComment', extraProperties: {hideTitle: true, pageSize: 10}}"
+                [index]="0"
+                [dataTierTreeNode]="haveAccessTreeNode"
+                [selectedDataTier]="selectedDataTier"
+                [currentShift]="currentShift"
+                [queryId]="1"
+                (updateChange)="handleCommentWidgetUpdate($event)">
+            </app-comment-entry-widget>
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>

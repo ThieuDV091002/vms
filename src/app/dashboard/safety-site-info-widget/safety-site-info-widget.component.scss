@@ -1,0 +1,70 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 5px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+.site-info-container {
+    height: calc(100% - 2rem);
+    display: flex;
+    width: 100%!important;
+    // overflow: auto;
+    .site-info-title {
+        width: 100%;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .site-item-container {
+        flex: 1;
+        // padding: 1rem;
+        margin-bottom: .5rem;
+        > div {
+            height: 100%!important;
+            background: var(--kanban-status-pool-color);
+            color: var(--lpx-dark);
+            width: 100%!important;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: .5rem;
+            box-shadow: 0 0 5px 0 var(--lpx-content-text);
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            padding-left: 10%;
+            .site-item-cion {
+                width: 4rem;
+                height: 4rem;
+                margin-right: 1rem;
+                background-color: var(--kanban-header-color);
+                border-radius: 2rem;
+                i {
+                    font-size: 2rem;
+                    line-height: 4rem;
+                    color: #fff;
+                }
+            }
+            .site-info-item-value {
+                font-size: 3rem;
+                line-height: 3rem;
+                text-align: left;
+            }
+            .site-info-item-title {
+                text-align: left;
+            }
+            .site-info-tips {
+                font-weight: normal;
+            }
+        }
+    }
+    .site-item-container:last-child {
+        margin-bottom: .3rem !important;
+    }
+}

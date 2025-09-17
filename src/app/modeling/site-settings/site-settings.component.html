@@ -1,0 +1,260 @@
+<app-modeling-template [title]="'::MENU_SiteSetting'" [data]="data" [objectType]="'SiteSettings'" [copyPrefix]="'::LABEL_NewSiteSetting'"
+    [permissions]="{create: 'SiteSetting.Create', edit: 'SiteSetting.Edit', delete: 'SiteSetting.Delete', copy: 'SiteSetting.Copy', import: 'SiteSetting.Import', export: 'SiteSetting.Export'}"
+    [columns]="columns" [list]="list" (copyModalOpen)="copyModalOpen($event)"
+    (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+    (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+    (copyData)="copySetting($event)" [hasLastUpdate]="true" [noNameCopy]="true" [noDisplayNameCopy]="true" [placeholder]="'::LABEL_SiteSearch' | abpLocalization">
+    <div class="form-group mb-2" id="copyCustomeField">
+      <label for="siteId">{{'::LABEL_NewSite'|abpLocalization}}</label><span> * </span>
+      <ng-select
+          #copyNgSelectField
+          id="siteId"
+          [items]="sites"
+          appendTo="body"
+          bindValue="id"
+          bindLabel="displayName">
+          <ng-template ng-option-tmp let-item="item">
+            {{item.displayName || item.name}}
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.displayName || item.name }}
+          </ng-template>
+        </ng-select>
+    </div>
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+    <ng-template #abpHeader>
+      <div class="d-flex justify-content-between align-items-center header-width">
+        <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+        <div>
+          <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+            {{'::LABEL_ExpandAll' | abpLocalization}}
+          </button>
+          <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+            {{'::LABEL_CollapseAll' | abpLocalization}}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+            <div class="accordion accordion-flush">
+              <!-- genaral start -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+                    aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_General' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label for="site-setting-site" [title]="'::INFO_Site' | abpLocalization">{{'::Site'|abpLocalization}}</label><span> * </span>
+                          <ng-select
+                            id="site-setting-site"
+                            [items]="sites"
+                            appendTo="body"
+                            bindValue="id"
+                            bindLabel="displayName"
+                            formControlName="siteId">
+                            <ng-template ng-option-tmp let-item="item">
+                              {{item.displayName || item.name}}
+                            </ng-template>
+                            <ng-template ng-label-tmp let-item="item">
+                              {{ item.displayName || item.name }}
+                            </ng-template>
+                          </ng-select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- general end -->
+              <!-- Safety Incidents Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#safetyIncidentsTarget" type="button"
+                    aria-controls="safetyIncidentsTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_SafetyIncidentsTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="safetyIncidentsTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.safetyIncidentsTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- Near Miss Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#nearMissTarget" type="button"
+                    aria-controls="nearMissTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_NearMissTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="nearMissTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.nearMissesTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- External QNS Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#externalQNsTarget" type="button"
+                    aria-controls="externalQNsTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_ExternalQNsTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="externalQNsTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.externalQNsTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- Internal QNS Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#internalQNsTarget" type="button"
+                    aria-controls="internalQNsTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_InternalQNsTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="internalQNsTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.internalQNsTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- COPQ Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#COPQTarget" type="button"
+                    aria-controls="COPQTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_COPQTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="COPQTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.copqTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- COPQ/COGS QNS Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#COPQCOGSTarget" type="button"
+                    aria-controls="COPQCOGSTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_COPQCOGSTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="COPQCOGSTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.copqcogsTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- POEE Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#POEETarget" type="button"
+                    aria-controls="POEETarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_POEETarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="POEETarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.poeeTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- People Productivity Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#peopleProductivityTarget" type="button"
+                    aria-controls="peopleProductivityTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_PeopleProductivityTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="peopleProductivityTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.peopleProdTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- Asset Productivity Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#assetProductivityTarget" type="button"
+                    aria-controls="assetProductivityTarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_AssetProductivityTarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="assetProductivityTarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.assetProdTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+              <!-- OEE Target -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#OEETarget" type="button"
+                    aria-controls="OEETarget" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_OEETarget' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="OEETarget" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <app-monthly-target-setting [(settings)]="selected.oeeTarget"></app-monthly-target-setting>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+          <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'SiteSettings'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

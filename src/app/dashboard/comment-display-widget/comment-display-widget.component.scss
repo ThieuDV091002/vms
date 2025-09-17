@@ -1,0 +1,73 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+
+:host ::ng-deep .page-count {
+    text-align: start;
+}
+
+:host ::ng-deep .row.entry-row {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+.comment-card {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+ngx-datatable {
+    height: 96%;
+
+    ::ng-deep {
+        >div {
+            height: 100% !important;
+
+            .datatable-body {
+                height: calc(100% - 4.1rem) !important;
+            }
+        }
+
+        .datatable-footer {
+            overflow: hidden;
+
+            .datatable-footer-inner {
+                height: 2rem !important;
+
+                .page-count,
+                .datatable-pager {
+                    height: 2rem !important;
+                    line-height: 2rem !important;
+                }
+            }
+        }
+    }
+}
+
+::ng-deep.confirmation .confirmation-dialog .content .message {
+    overflow-wrap: break-word !important;
+}
+
+.advanced-filter-icon {
+  display: inline-block;
+  width: 20px;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}

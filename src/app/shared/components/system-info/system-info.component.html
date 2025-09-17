@@ -1,0 +1,32 @@
+<div class="card">
+  <div class="card-body">
+    <ngx-datatable default [rows]="data" [count]="data.length" #myTable>
+      <ngx-datatable-column [name]="'::LABEL_Name' | abpLocalization" prop="Name">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Version' | abpLocalization" prop="Version">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_SourceVersion' | abpLocalization" prop="SourceVersion" [width]="120">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.SourceVersion" [title]="row.SourceVersion">{{ row.SourceVersion | slice:0:8 }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_BuildTime' | abpLocalization" prop="BuildTime">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.BuildTime | date: 'dd MMM yyyy hh:mm:ss a' }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_ServerName' | abpLocalization" prop="ServerName" [width]="300">
+      </ngx-datatable-column>
+      <!-- <ngx-datatable-column [name]="'::LABEL_IPAddress' | abpLocalization" prop="IPAddress" [width]="80">
+      </ngx-datatable-column> -->
+      <!-- <ngx-datatable-column [name]="'::LABEL_Runtime' | abpLocalization" prop="Runtime">
+      </ngx-datatable-column> -->
+      <ngx-datatable-column [name]="'::LABEL_Status' | abpLocalization" prop="Status">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fas fa-circle" [style.color]="row.Status?'green':'red'"
+            [title]="row.Status?'running':'error'"></span>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</div>

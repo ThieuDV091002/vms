@@ -1,0 +1,30 @@
+<div class="table-container">
+    <div class="table-header-wrapper" #tableHeaderWrapper>
+        <table class="summary-table">
+            <thead [ngClass]="{'light-border': !isDarkTheme, 'dark-border': isDarkTheme}">
+                <tr>
+                    <th class="category-cell"></th>
+                    <th class="sub-category"></th>
+                    <th *ngFor="let month of months">{{ month }}</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="table-body-wrapper" #tableBodyWrapper>
+        <table class="summary-table h-100">
+            <tbody [ngClass]="{'light-border': !isDarkTheme, 'dark-border': isDarkTheme}">
+                <ng-container *ngFor="let row of rows">
+                    <tr>
+                        <td class="category-cell category" [attr.rowspan]="2">{{ row.label }}</td>
+                        <td class="sub-category">{{ '::LABEL_Target' | abpLocalization }}</td>
+                        <td *ngFor="let month of months"></td>
+                    </tr>
+                    <tr>
+                        <td class="sub-category">{{ '::LABEL_Actual' | abpLocalization }}</td>
+                        <td *ngFor="let month of months"></td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>

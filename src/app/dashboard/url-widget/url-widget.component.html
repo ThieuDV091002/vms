@@ -1,0 +1,66 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <abp-page-title-container class="col text-start">
+        <h5>{{ this.form.controls['hideTitle'].value ? '' : selected.name | abpLocalization }}</h5>
+    </abp-page-title-container>
+    <abp-page-toolbar-container class="col widget-toolbar">
+        <div class="text-end">
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deletePowerBIWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            <span class="cursor-pointer" (click)="edit = true;">
+                <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+            </span>
+        </div>
+    </abp-page-toolbar-container>
+
+    <div class="card px-3 m-0 h-100">
+        <form [formGroup]="form" [hidden]="!edit">
+            <div class="row">
+                <label class="col-2 col-form-label text-start" for="title">
+                    {{'::Title' | abpLocalization}}
+                </label>
+                <div class="col-6">
+                    <input type="text" id="title" class="form-control" formControlName="title" autofocus />
+                </div>
+            </div>
+            <div class="d-flex mt-2">
+                <label class="col-form-label text-start" for="role-hide-title">
+                    {{ '::Label_HideTitle' | abpLocalization }}
+                </label>
+                <div class="col-form-label ms-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="role-hide-title"
+                            formControlName="hideTitle" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <label class="col-2 col-form-label text-start" for="role-url">
+                    {{ '::URL' | abpLocalization }}
+                    <span> * </span>
+                </label>
+                <div class="col-6">
+                    <input type="text" class="form-control" id="role-url" formControlName="url" />
+                </div>
+            </div>
+
+            <div class="text-end mt-2">
+                <button class="btn btn-primary me-2" [disabled]="!form?.valid" (click)="save()">{{'::Ok' |
+                    abpLocalization}}</button>
+                <button class="btn btn-outline-primary" (click)="cancel()">{{ '::Cancel' | abpLocalization}}</button>
+            </div>
+        </form>
+        @if (safeUrl) {
+        <iframe class="dashboard-iframe" [hidden]="edit" [src]="safeUrl" width="100%" frameborder="0"></iframe>
+        }
+    </div>
+</abp-page>

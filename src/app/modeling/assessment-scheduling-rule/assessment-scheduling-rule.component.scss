@@ -1,0 +1,82 @@
+// ::ng-deep .modal-content {
+//   height: 88vh;
+// }
+
+.circle-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ng-select .ng-select-container {
+  font-size: 1em;
+  background: var(--lpx-navbar-active-bg-color);
+  border-radius: var(--lpx-radius);
+  border: 1px solid rgba(var(--lpx-navbar-active-text-color-rgb), 0.05);
+  color: var(--lpx-navbar-active-text-color);
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  background: var(--lpx-navbar-color);
+  color: var(--lpx-navbar-text-color);
+}
+
+.ng-select.ng-select-opened>.ng-select-container {
+  background: var(--lpx-navbar-color);
+  color: var(--lpx-navbar-text-color);
+}
+
+.ng-dropdown-panel {
+  background: var(--lpx-navbar-color);
+  color: var(--lpx-navbar-text-color);
+}
+
+.ng-dropdown-panel .ng-dropdown-header {
+  background: var(--lpx-navbar-color);
+  color: var(--lpx-navbar-text-color);
+
+  input {
+      background: var(--lpx-navbar-active-bg-color);
+      color: var(--lpx-navbar-active-text-color);
+      //border-radius: var(--lpx-radius);
+      border: 1px solid rgba(var(--lpx-navbar-active-text-color-rgb), 0.05);
+      width: 100%;
+  }
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+  background: var(--lpx-navbar-active-bg-color);
+  color: var(--lpx-navbar-active-text-color);
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
+  background: var(--lpx-brand);
+  color: white;
+}
+
+ng-dropdown-panel {
+  z-index: 9999999 !important;
+}
+
+// .task-due-date {
+//   flex: none;
+
+//   &.due-date-editor {
+//     position: relative;
+//     input[type="date"] {
+//       color: transparent;
+//     }
+//     span {
+//       position: absolute;
+//       top: .7rem;
+//       left: .8rem;
+//       width: 6rem;
+//       height: 1rem;
+//       font-weight: 500;
+//       color: var(--lpx-dark);
+//     }
+//   }
+// }

@@ -1,0 +1,17 @@
+<div class="loading-modal" *ngIf="isShow">
+    <div class="loading-content">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>{{loadingText}}</p>
+    </div>
+</div>
+
+<!-- <abp-modal [visible]="!isShow">
+    <div class="loading-content">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>{{loadingText}}</p>
+    </div>
+</abp-modal> -->

@@ -1,0 +1,196 @@
+<abp-page>
+  <div class="card px-3 m-0" [class]="isWidget ? 'support-team-height' : ''">
+    <div id="data-tables-table-filter" class="data-tables-filter mb-3">
+      <div class="input-group">
+        <input #searchInput type="search" class="form-control"
+          [placeholder]="'::LABEL_SupportTeamSearchPlaceholder' | abpLocalization" title="search"
+          (change)="searchKeyword = $event.target.value; hookToQuery()"
+          (keydown.enter)="searchKeyword = $event.target.value; hookToQuery()" />
+        <button class="btn btn-primary" type="button" (click)="hookToQuery()">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="support-table-container">
+      <ngx-datatable default [rows]="data.items" [count]="data.totalCount" [headerHeight]="40" [limit]="pageSize"
+        [reorderable]="true" [list]="list" [scrollbarV]="true" #myTable [columnMode]="'force'"
+        [style]="isWidget ? 'height: 100%;': 'min-height: 40vh'">
+        <ngx-datatable-column [maxWidth]="25" [sortable]="false" *ngIf="hasEditOrDeletePermission()">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div ngbDropdown container="body" class="d-inline-block">
+              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 25px;" data-toggle="dropdown"
+                aria-haspopup="true" ngbDropdownToggle></i>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                <button ngbDropdownItem *abpPermission="'SupportTeam.Edit'" (click)="edit(row.id)">
+                  {{ '::Edit' | abpLocalization }}
+                </button>
+                <button ngbDropdownItem *abpPermission="'SupportTeam.Delete'" (click)="delete(row.id, row.userName)">
+                  {{ '::Delete' | abpLocalization }}
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="userName">
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_JobFunction' | abpLocalization" [minWidth]="200">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div>
+              <span class="job-function-cell p-1 rounded" [ngStyle]="jobFunctionColorMap[row.id]">
+                {{ row.jobFunctionName | abpLocalization }}
+              </span>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LABEL_SupportShift' | abpLocalization">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.supportShiftName | abpLocalization }}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::Phone' | abpLocalization" [sortable]="false" prop="phoneNumber">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <a [href]="'tel:' + row.phoneNumber" *ngIf="row.phoneNumber && !isWeb">
+              {{ row.phoneNumber }}
+            </a>
+            <span *ngIf="isWeb">
+              {{ row.phoneNumber }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'AbpIdentity::DisplayName:Email' | abpLocalization" [sortable]="false"
+          prop="email">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <a [href]="'mailTo:' + row.email" style="text-decoration: none;">
+              {{ row.email }}
+            </a>
+          </ng-template>
+        </ngx-datatable-column>
+        @for(cell of cellColumns;track cell) {
+        <ngx-datatable-column [name]="cell.displayName || cell.name" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            @if(isAssignedCell(cell.id, row.assignedDataTiers)) {
+            <div class="pt-1">
+              <i class="fas fa-check" style="color: green;"></i>
+            </div>
+            }
+          </ng-template>
+        </ngx-datatable-column>
+        }
+      </ngx-datatable>
+    </div>
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{ size: 'lg' }">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="accordion accordion-flush">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body pb-0">
+              <div class="row">
+                <div class="col-12 col-md-6 form-group mb-2">
+                  <label for="support-user" [title]="'::INFO_User' | abpLocalization">{{'::LABEL_User'|abpLocalization}}</label><span> * </span>
+                  <ng-select id="support-user" [items]="userSelectOptions" [appendTo]="'body'" bindValue="id" bindLabel="name"
+                    [typeahead]="input$" formControlName="user">
+                    <ng-template ng-option-tmp let-item="item">
+                      <ng-template #tipContent>{{ item.email }}</ng-template>
+                      <span [ngbTooltip]="tipContent" placement="right" container="body" tooltipClass="my-tooltip-class">
+                          {{ getUserDisplayName(item) }}
+                      </span>
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                      {{getUserDisplayName(item)}}
+                    </ng-template>
+                  </ng-select>
+                </div>
+                
+                <div class="col-12 col-md-6 form-group mb-2">
+                  <label for="support-user-email" [title]="'::INFO_EmailAddressReadonly' | abpLocalization">
+                    {{'::LABEL_EmailReadonly'|abpLocalization}}
+                  </label>
+                  <input type="text" id="support-user-email" class="form-control" formControlName="email" />
+                </div>
+                
+                <div class="col-12 col-md-6 form-group mb-2" [title]="'::INFO_PhoneNumberReadonly' | abpLocalization">
+                  <label for="support-user-phone">
+                    {{'::LABEL_PhoneReadonly'|abpLocalization}}
+                  </label>
+                  <input type="text" id="support-user-phone" class="form-control" formControlName="phone" />
+                </div>
+                
+                <div class="col-12 col-md-6 form-group mb-2">
+                  <label for="support-job-function" [title]="'::INFO_JobFunction' | abpLocalization">{{'::LABEL_JobFunction'|abpLocalization}}</label><span> *
+                  </span>
+                  <select class="form-control form-select" id="support-job-function" formControlName="jobFunction">
+                    <option [ngValue]="jobFunction.id" *ngFor="let jobFunction of jobFunctionData">
+                      {{ jobFunction.displayName || jobFunction.name }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="col-12 col-md-6 form-group mb-2">
+                  <label for="support-shift" [title]="'::INFO_SupportShift' | abpLocalization">{{'::LABEL_SupportShift'|abpLocalization}}</label>
+                  <select class="form-control form-select" id="support-shift" formControlName="supportShift">
+                    <option [ngValue]="supportShift.id" *ngFor="let supportShift of supportShiftData">
+                      {{ supportShift.displayName || supportShift.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#data-tier" type="button"
+              aria-controls="data-tier" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_DataTier' | abpLocalization }}<span> *</span>
+            </button>
+          </h2>
+          <div id="data-tier" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body pb-0">
+              <app-tree-view [nodes]="supportTeamDataTierTreeNode" (checkChange)="treeViewCheckChange()" [parent]="true"
+                id="support-data-tier">
+              </app-tree-view>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" (click)="save()" [disabled]="form?.invalid || !hasAssignedDataTiers()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>

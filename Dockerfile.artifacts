@@ -1,0 +1,22 @@
+FROM docker.io/library/nginx:latest
+
+# Set version information (will be overridden by CI build args)
+ARG VERSION=1.0.0
+ARG SOURCE_VERSION=""
+ARG BUILD_TIME=""
+
+ENV Version=$VERSION
+ENV SourceVersion=$SOURCE_VERSION
+ENV BuildTime=$BUILD_TIME
+
+# Copy built Angular app from CI artifacts
+COPY . /usr/share/nginx/html
+
+# Copy environment replacement script
+COPY replace_env.sh /replace_env.sh
+
+# Make script executable
+RUN chmod +x /replace_env.sh
+
+# Start with environment replacement script
+CMD ["/replace_env.sh"]

@@ -1,0 +1,715 @@
+<abp-page>
+  <div class="card">
+    <div class="card-header d-flex justify-content-between">
+      @if (card?.id) {
+      <h5 class="mb-0 card-title"><span *ngIf="card?.code">{{card?.code}} - </span>{{card?.instructions}} <span
+          *ngIf="status">({{status}}) </span>
+        <span *ngIf="card?.code" class="share-link cursor-pointer" (click)="copyLink()"> <i
+            class="fa fa-share-nodes fa-lg"></i></span>
+      </h5>
+      } @else {
+      <h5 class="mb-0">{{'::Create' | abpLocalization}} {{'::LABEL_Card' | abpLocalization}}</h5>
+      }
+      <div class="card-tools">
+        @if (card?.id) {
+        <button type="button" class="btn btn-outline-primary me-2" (click)="openDuplicate()">{{'::LABEL_Duplicate' | abpLocalization}}</button>
+        <button type="button" class="btn btn-outline-primary me-2" (click)="expandAll()">{{'::LABEL_ExpandAll' | abpLocalization}}</button>
+        <button type="button" class="btn btn-outline-primary me-2" (click)="compressAll()">{{'::LABEL_CollapseAll' | abpLocalization}}</button>
+        <!-- <span class="me-2" (click)="expandAll()"><i class="fas fa-expand"></i></span>
+          <span class="me-2" (click)="compressAll()"><i class="fas fa-compress"></i></span> -->
+        }
+        <span (click)="closeCardEditor()" class="close-editor"><i class="fa fa-close"></i></span>
+      </div>
+    </div>
+    <div class="card-body card-content">
+      <!-- body start -->
+      <div class="row overall-section" [formGroup]="cardForm">
+        <div class="col-3">
+          <div class="form-group">
+            <label [title]="'::INFO_ActivityCardType' | abpLocalization">{{'::LABEL_ActivityCardType' |
+              abpLocalization}}</label><span> *</span>
+            <!-- disable all the field when this.status === 'Completed' -->
+            <ng-select [items]="cardTypes" [appendTo]="'body'" bindLabel="displayName" bindValue="id"
+              [readonly]="status === 'Completed'" formControlName="cardTypeId"
+              placeholder="{{'::LABEL_CardType'|abpLocalization}}" (change)="onCardTypeChange($event)"
+              [clearable]="false">
+            </ng-select>
+          </div>
+        </div>
+        <div class="col-3" *ngIf="selectedCardType && selectedCardType?.categoryField !== 'Hidden'">
+          <div class="form-group mb-2">
+            <label for="card-categories"
+              [title]="'::INFO_Category' | abpLocalization">{{'::LABEL_Category'|abpLocalization}}</label><span
+              *ngIf="selectedCardType?.categoryField === 'Required'"> *</span>
+            <ng-select id="card-categories" [items]="cardCategories" appendTo="body" bindLabel="displayName"
+              [readonly]="status === 'Completed'" bindValue="id" formControlName="categoryId"
+              (change)="getReasons($event?.reasonsDataSource)" placeholder="Select Category">
+            </ng-select>
+          </div>
+        </div>
+        <div class="col-3" *ngIf="selectedCardType && selectedCardType?.reasonField !== 'Hidden'">
+          <div class="form-group mb-2">
+            <!-- <div class="form-group mb-2"> -->
+            <label for="reasons"
+              [title]="'::INFO_Reason' | abpLocalization">{{'::LABEL_Reason'|abpLocalization}}</label><span
+              *ngIf="selectedCardType?.reasonField === 'Required'"> *</span>
+            <ng-select id="reasons" [items]="reasons" appendTo="body" bindLabel="displayName"
+              [readonly]="status === 'Completed'" formControlName="reasonCode" bindValue="id"
+              placeholder="Select Reason">
+            </ng-select>
+          </div>
+        </div>
+        <div class="col-3" *ngIf="selectedCardType && selectedCardType?.incidentDateField !== 'Hidden'">
+          <div class="form-group mb-2">
+            <!-- <div class="form-group mb-2"> -->
+            <label for="incident-date"
+              [title]="'::INFO_IncidentDate' | abpLocalization">{{'::LABEL_IncidentDate'|abpLocalization}}</label><span
+              *ngIf="selectedCardType?.incidentDateField === 'Required'"> *</span>
+            <input type="text" class="form-control" formControlName="incidentDate" [minDate]="minDate" [maxDate]="maxDate" [isDisabled]="status === 'Completed'" bsDatepicker
+              [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+          </div>
+        </div>
+        @if (selectedCardType && selectedCardType?.assessmentField !== 'Hidden') {
+        <div class="col-12"></div>
+        <div class="col-3">
+          <div class="form-group mb-2">
+            <label for="assessment-type"
+              [title]="'::INFO_AssessmentType' | abpLocalization">{{'::LABEL_AssessmentType'|abpLocalization}}</label>
+              <span *ngIf="selectedCardType?.assessmentField === 'Required'"> *</span>
+              @if(card.assessmentId) {
+                <input type="text" class="form-control" id="assessment-type" [readonly]="true" [value]="assessmentTypeName" />
+              } @else {
+                <ng-select id="assessment-type" [items]="assessmentTypes" appendTo="body" bindLabel="displayName" bindValue="id" [readonly]="true" placeholder="Select Assessment Type"></ng-select>
+              }
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group mb-2">
+            <label for="assessment-question"
+              [title]="'::INFO_AssessmentQuestionGuideline' | abpLocalization">{{'::LABEL_AssessmentQuestionGuideline'|abpLocalization}}</label><span
+              *ngIf="selectedCardType?.assessmentField === 'Required'">*</span>
+                @if(card.assessmentId) {
+                  <input type="text" class="form-control" id="assessment-question" [readonly]="true" [value]="assessmentQuestion" />
+                } @else {
+                  <ng-select id="assessment-type" [items]="cardTypes" [readonly]="true" appendTo="body"
+                    bindLabel="displayName" bindValue="id" placeholder="Select Assessment Question"></ng-select>
+                }
+          </div>
+        </div>
+        }
+        <div class="col-12"></div>
+        <div class="col-6">
+          <div class="form-group mb-2">
+            <label for="short-description"
+              [title]="'::INFO_ShortDescription' | abpLocalization">{{'::LABEL_ShortDescription'|abpLocalization}}</label><span>
+              *</span>
+            <input type="text" class="form-control" id="short-description" [readonly]="status === 'Completed'"
+              formControlName="instructions" />
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="form-group mb-2">
+            <label for="status" [title]="'::INFO_Status' | abpLocalization">{{'::LABEL_Status'|abpLocalization}}</label>
+            <input type="text" class="form-control" readonly id="status" [value]="status" />
+          </div>
+        </div>
+        <div class="col-3" *ngIf="selectedCardType && selectedCardType?.priorityField !== 'Hidden'">
+          <div class="form-group mb-2">
+            <label for="card-priorities"
+              [title]="'::INFO_Priority' | abpLocalization">{{'::LABEL_Priority'|abpLocalization}}</label><span
+              *ngIf="selectedCardType?.priorityField === 'Required'"> *</span>
+            <ng-select id="card-priorities" [items]="cardPriorities" appendTo="body" bindLabel="displayName"
+              [readonly]="status === 'Completed'" bindValue="id" formControlName="priorityId"
+              placeholder="Select Priority">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+      @if (selectedCardType) {
+      <div class="accordion accordion-flush" [class.assessment]="selectedCardType?.assessmentField !== 'Hidden'">
+        <!-- General -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button general" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" #accordionItem class="accordion-collapse collapse show">
+            <div class="accordion-body">
+              <app-card-creator [cardForm]="cardForm" (inProgressChange)="inProgress = $event" [card]="card"
+                [status]="status" [filter]="filter" [selectedCardType]="selectedCardType" (requestUpdateForCardOwnerEvent)="requestUpdateForCardOwner($event)"
+                (userAssignedAreasAndCells)="getUserAssignedAreasAndCells($event)">
+              </app-card-creator>
+            </div>
+          </div>
+        </div>
+        @if (card.id) {
+        <!-- Root Cause Analysis -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button rootCauseAnalysis collapsed" data-bs-toggle="collapse"
+              data-bs-target="#rootCauseAnalysis" type="button" aria-controls="rootCauseAnalysis" aria-expanded="false">
+              {{ '::RootCauseAnalysis' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="rootCauseAnalysis" #accordionItem class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <!-- <div class="row"> -->
+              <!-- <div class="col-12"> -->
+              <!-- <ngx-datatable [rows]="card?.rootCauseAnalysiss" [count]="card?.rootCauseAnalysiss.length" [limit]="5"
+                  default [footerHeight]="0">
+                  <ngx-datatable-column name="{{'::LABLE_Perform5Why'| abpLocalization}}" prop="why" [sortable]="false">
+                    <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <div>
+                        <div class="root-cause-item-header">
+                          {{selectedUserMap.get(row.lastModifierId || row.creatorId)?.surname}},
+                          {{selectedUserMap.get(row.lastModifierId || row.creatorId)?.name}}
+                          {{ ((row.lastModificationTime|| row.creationTime) +'z') | date: 'dd/mm/yyyy, hh:mm:ss a'}}
+                          <div ngbDropdown container="body" class="d-inline-block ps-1 pe-1">
+                            <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 25px;"
+                              data-toggle="dropdown" aria-haspopup="true" ngbDropdownToggle></i>
+                            <div ngbDropdownMenu aria-labelledby="dropdown">
+                              <button ngbDropdownItem (click)="row['edit']=true">
+                                {{ 'AbpActions::Edit' | abpLocalization }}
+                              </button>
+                              <button ngbDropdownItem (click)="deleteRootCause(row)">
+                                {{ '::Delete' | abpLocalization }}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="">
+                          <span *ngIf="!row['edit']" class="me-2">{{row.why}}</span>
+                          <textarea *ngIf="row['edit']" type="text" class="form-control" [(ngModel)]="row.why"></textarea>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </ngx-datatable-column>
+                </ngx-datatable> -->
+              <div class="root-cause-container">
+                @for (rootcause of card.rootCauseAnalysiss; track rootcause) {
+                <div class="root-cause-item d-flex mb-1">
+                  <div class="rot-cause-action d-inline-block me-2" *ngIf="status !== 'Completed'">
+                    <span class="cursor-pointer" (click)="deleteRootCause(rootcause)"><i class="fa fa-trash"></i></span>
+                  </div>
+                  <div class="root-cause-item-content d-inline-block">
+                    <div class="root-cause-type">
+                      <select *ngIf="rootcause?.category" [(ngModel)]="rootcause.category"
+                        [disabled]="status === 'Completed'">
+                        <option value="Occurrences">Occurrences</option>
+                        <option value="Detection">Detection</option>
+                        <option value="System">System</option>
+                      </select>
+                    </div>
+                    <textarea class="form-control" [readonly]="status === 'Completed'" [(ngModel)]="rootcause.why"
+                      rows="5" cols="50" (keydown)="insertRootcause($event)"></textarea>
+                  </div>
+                </div>
+                }
+              </div>
+              <div class="root-cause-action d-flex justify-content-start mb-1" *ngIf="status !== 'Completed'">
+                <span class="add-button" (click)="addRootCause()">
+                  <i class="fa fa-plus"></i>
+                </span>
+              </div>
+              <!-- </div> -->
+              <!-- <div class="col-12"> -->
+              <div class="attachments mb-2">
+                <div>
+                  <span>{{'::MENU_ActivityCardAttachment'|abpLocalization}}
+                    @if (status !== 'Completed') {
+                    <i class="fas fa-camera-retro fa-lg cursor-pointer" style="color: #fc276b; margin-left: 15px;"
+                      [title]="'::LABEL_CapturePhoto' | abpLocalization"
+                      (click)="takePhoto(false, AttachmentType.RootCauseAnalysis)"></i>
+                    <i class="fas fa-cloud-upload-alt cursor-pointer fa-lg" style="color: #74C0FC; margin-left: 15px;"
+                      [title]="'::LABEL_UploadPictures' | abpLocalization" (click)="fileInput.click()"></i>
+                    }
+                  </span>
+                </div>
+                <div class="col-6 form-group">
+                  <input #fileInput id="upload-file" type="file" class="form-control"
+                    (change)="uploadType = AttachmentType.RootCauseAnalysis;onFileChange($event)" accept="image/*"
+                    style="display:none;" />
+                </div>
+                <div class="attachment-content">
+                  <div class="attachment-title d-flex justify-content-end">
+                    <!-- <div>
+                        <span class="me-2">{{'::MENU_ActivityCardAttachment'|abpLocalization}}</span>
+                        <span *ngIf="!isWeb" class="me-1 camera-upload"><i class="fa fa-camera"></i></span>
+                        <span *ngIf="isWeb" title="click to upload" class="photo-upload"
+                          (click)="isUploadModalOpen = true; uploadType = AttachmentType.RootCauseAnalysis"><i
+                            class="fa fa-image"></i></span>
+                      </div> -->
+                    <button class="btn btn-sm" *ngIf="status !== 'Completed'" type="button"
+                      [disabled]="!selectedRootAttachments.length"
+                      (click)="attachmentDelete(AttachmentType.RootCauseAnalysis)">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                    <!-- <div ngbDropdown>
+                        <span class="dropdown-toggle cursor-pointer me-2" ngbDropdownToggle><i
+                            class="fa fa-ellipsis-v"></i></span>
+                        <div class="dropdown-menu" ngbDropdownMenu>
+                            <button ngbDropdownItem [disabled]="!selectedRootAttachments.length" (click)="attachmentDelete(AttachmentType.RootCauseAnalysis)">
+                              {{ '::Delete' | abpLocalization }}
+                            </button>
+                        </div>
+                      </div> -->
+                  </div>
+                  <div class="attchment-contains">
+                    <div class="row">
+                      @for (attachment of rootCauseAnalysisAttachments; track attachment) {
+                      <div class="col-2 img-container" [class.selected]="attachmentCheck.checked">
+                        <img (click)="isAttachementPreviewOpen = true; previewAttchmentId = attachment.fileId"
+                          [src]="attachmentMap.get(attachment.fileId)" />
+                        <input type="checkbox" name="attachment" #attachmentCheck [disabled]="status === 'Completed'"
+                          (change)="selectedAttchmentsChange($event, attachment.fileId, AttachmentType.RootCauseAnalysis)" />
+                      </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- </div> -->
+              <!-- </div> -->
+              <!-- <div class="card-footer d-flex justify-content-end px-0">
+                  <button class="btn btn-primary" type="button" [disabled]="!card?.id || saving"
+                    (click)="saveRootcCauseAnaly()">{{'::Save'|abpLocalization}}</button>
+                </div> -->
+            </div>
+          </div>
+        </div>
+        <!-- Task -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button task collapsed" data-bs-toggle="collapse" data-bs-target="#task"
+              type="button" aria-controls="task" aria-expanded="false">
+              {{ '::Task' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="task" #accordionItem class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12">
+                  <!-- <ngx-datatable [rows]="updateCardTaskList" [count]="card?.tasks?.length" [limit]="5"
+                      (select)="onCardTaskSelect($event)" default [footerHeight]="0">
+                      <ngx-datatable-column name="" [width]="20" [canAutoResize]="false" [sortable]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <div container="body" ngbDropdown>
+                            <span class="dropdown-toggle cursor-pointer me-2" ngbDropdownToggle><i
+                                class="fa fa-ellipsis-v"></i></span>
+                            <div class="dropdown-menu" ngbDropdownMenu>
+                              <a class="dropdown-item cursor-pointer" (click)="completeTask(row)">{{'::LABEL_Complete' |
+                                abpLocalization}}</a>
+                              <button ngbDropdownItem (click)="deleteCardTask(row)">
+                                {{ '::Delete' | abpLocalization }}
+                              </button>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="{{'::LABEL_Task'| abpLocalization}}" prop="taskDescription"
+                        [sortable]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <input type="text" class="form-control" [(ngModel)]="row.taskDescription" />
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="{{'::LABEL_TaskOwner'| abpLocalization}}" [width]="200"
+                        [canAutoResize]="false" [sortable]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <ng-select [items]="users" appendTo="body" bindLabel="userName" bindValue="id"
+                            [typeahead]="userSearchInput$" [(ngModel)]="row.ownerId" (change)="userChange($event)"
+                            placeholder="Select User">
+                            <ng-template ng-option-tmp let-item="item">
+                              {{item.surname || item.surName}}, {{item.name}}
+                            </ng-template>
+                            <ng-template ng-label-tmp let-item="item">
+                              {{item.surname || item.surName}}, {{item.name}}
+                            </ng-template>
+                          </ng-select>
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="{{'::LABEL_DueDate'| abpLocalization}}" prop="dueDate" [width]="155"
+                        [canAutoResize]="false" [sortable]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <input type="date" class="form-control" min="2020-01-01" max="2050-12-31"
+                            [(ngModel)]="row.dueDate" />
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="{{'::LABEL_ActivityCardTaskOriginalDueDate'| abpLocalization}}"
+                        prop="originalDueDate" [width]="150" [canAutoResize]="false" [sortable]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <input type="input" class="form-control" readonly disabled [value]="row.originalDueDate | date: 'dd MMM YYYY'" />
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="{{'::LABEL_CompletedDate'| abpLocalization}}" prop="completeDate"
+                        [width]="150" [canAutoResize]="false" [sortable]="false">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <input type="input" class="form-control" readonly disabled
+                            [value]="getLocalDate(row.completeDate)" />
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable> -->
+                  <ul class="task-list mb-1">
+                    <li class="task-list-header">
+                      <div class="task-action"></div>
+                      <div class="task-title">{{'::LABEL_Task'| abpLocalization}}<span> *</span></div>
+                      <div class="task-support">{{'::LABEL_Support' | abpLocalization}}</div>
+                      <div class="task-owner">{{'::LABEL_TaskOwner'| abpLocalization}}</div>
+                      <div class="task-due-date">{{'::LABEL_DueDate'| abpLocalization}}</div>
+                      <div class="task-original-date">{{'::LABEL_ActivityCardTaskOriginalDueDate'| abpLocalization}}
+                      </div>
+                      <div class="task-completed-date">{{'::LABEL_CompletedDate'| abpLocalization}}</div>
+                    </li>
+                    @for (cardTask of updateCardTaskList; track cardTask) {
+                    <li class="task-list-item">
+                      <div class="task-action" *ngIf="status !== 'Completed'">
+                        <div container="body" ngbDropdown>
+                          <span class="dropdown-toggle cursor-pointer me-2" ngbDropdownToggle><i
+                              class="fa fa-ellipsis-v"></i></span>
+                          <div class="dropdown-menu" ngbDropdownMenu>
+                            <button ngbDropdownItem
+                              *ngIf="cardTask.status === 'Completed' || cardTask.status === 'Cancelled'"
+                              (click)="openCardTask(cardTask)">
+                              {{ '::LABEL_Open' | abpLocalization }}
+                            </button>
+                            <button ngbDropdownItem *ngIf="cardTask.status === 'Open'"
+                              (click)="completeCardTask(cardTask)">
+                              {{ '::LABEL_Complete' | abpLocalization }}
+                            </button>
+                            <button ngbDropdownItem *ngIf="cardTask.status === 'Open'"
+                              (click)="cancelCardTask(cardTask)">
+                              {{ '::Cancel' | abpLocalization }}
+                            </button>
+                            <button ngbDropdownItem *ngIf="cardTask.status === 'Open' || !cardTask.status"
+                              [disabled]="!!cardTask?.dueDate" (click)="deleteCardTask(cardTask)">
+                              {{ '::Delete' | abpLocalization }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="task-title">
+                        <div class="task-input">
+                          <span *ngIf="cardTask.status === 'Completed'" class="task-status-icon">
+                            <i class="fa fa-check"></i>
+                          </span>
+                          <!-- <span *ngIf="cardTask.status === 'Cancel'" class="task-status-icon">
+                                <i class="fa fa-ban"></i>
+                              </span> -->
+                          <input type="text" [class.task-cancelled]="cardTask.status === 'Cancelled'"
+                            [disabled]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed' || status === 'Completed'"
+                            [readOnly]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed' || status === 'Completed'"
+                            class="form-control" [(ngModel)]="cardTask.taskDescription" />
+                        </div>
+                      </div>
+                      <div class="task-support form-check">
+                        <input type="checkbox" class="form-check-input" [(ngModel)]="cardTask.support"
+                          [disabled]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed' || status === 'Completed'"
+                          [readOnly]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed' || status === 'Completed'"
+                          [class.cursor-pointer]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed'" />
+                      </div>
+                      <div class="task-owner">
+                        <div class="task-owner-select flex-grow-1">
+                          <ng-select [items]="users" appendTo="body" bindLabel="userName" bindValue="id"
+                            [typeahead]="userSearchInput$" [(ngModel)]="cardTask.ownerId" (change)="userChange($event)"
+                            placeholder="Select User"
+                            [disabled]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed' || status === 'Completed'">
+                            <ng-template ng-option-tmp let-item="item">
+                              <ng-template #tipContent>{{ item.email }}</ng-template>
+                              <span [ngbTooltip]="tipContent" placement="right" container="body"
+                                tooltipClass="my-tooltip-class">
+                                {{ getUserDisplayName(item) }}
+                              </span>
+                            </ng-template>
+                            <ng-template ng-label-tmp let-item="item">
+                              {{ getUserDisplayName(item) }}
+                            </ng-template>
+                          </ng-select>
+                        </div>
+                        <!-- Request Update for task owner -->
+                        <span *ngIf="card?.id && cardTask?.id && cardTask.status === 'Open' && !['', null, undefined].includes(cardTask.ownerId) && status !== 'Completed' && status !== 'Cancelled' && status !== 'Archived'"
+                        class="ps-1 pe-1 cursor-pointer" [tooltip]="'::LABEL_RequestUpdateForTaskOwner' | abpLocalization" placement="bottom" [adaptivePosition]="false"
+                        container="body" (click)="requestUpdateForTaskOwner(cardTask)">
+                            <i class="fa-solid fa-bell fa-2xl" style="color: #74C0FC;"></i>
+                        </span>
+                      </div>
+                      <div class="task-due-date">
+                        <input type="text" class="form-control" [(ngModel)]="cardTask.dueDate" [minDate]="minDate" [maxDate]="maxDate" [isDisabled]="cardTask.status === 'Cancelled' || cardTask.status === 'Completed' || status === 'Completed'" bsDatepicker
+                          [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                      </div>
+                      <div class="task-original-date">
+                        <input type="input" class="form-control" readonly disabled
+                          [value]="(cardTask?.originalDueDate && cardTask?.dueDate && cardTask?.originalDueDate?.split('T')[0] !== cardTask?.dueDate?.toString().split('T')[0]) ? (cardTask?.originalDueDate | date: 'dd MMM yyyy') : ''" />
+                      </div>
+                      <div class="task-completed-date">
+                        <input type="input" class="form-control" readonly disabled
+                          [value]="cardTask.completeDate | date: 'dd MMM yyyy'" />
+                      </div>
+                    </li>
+                    }
+                    @if (updateCardTaskList.length === 0) {
+                    <li class="task-list-item">
+                      {{'::NoDataAvailableInDatatable' | abpLocalization}}
+                    </li>
+                    }
+                  </ul>
+                  <div class="task-action d-flex justify-content-start mb-1" *ngIf="status !== 'Completed'">
+                    <span class="add-button" (click)="addCardTask()">
+                      <i class="fa fa-plus"></i>
+                    </span>
+                    <span *ngIf="showRequestUpdateForTaskOwner() && status !== 'Completed' && status !== 'Cancelled' && status !== 'Archived'" class="ps-1 cursor-pointer"
+                      [tooltip]="'::LABEL_RequestUpdateForTaskOwner' | abpLocalization"
+                      placement="bottom" [adaptivePosition]="false" container="body" (click)="requestUpdateForAllTaskOwner()">
+                      <i class="fa-solid fa-bell fa-2xl" style="color: #74C0FC;"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="attachments mb-2">
+                    <div>
+                      <div class="form-group">
+                        <span>{{'::MENU_ActivityCardAttachment'|abpLocalization}}
+                          @if (status !== 'Completed') {
+                          <i class="fas fa-camera-retro fa-lg cursor-pointer" style="color: #fc276b; margin-left: 15px;"
+                            [title]="'::LABEL_CapturePhoto' | abpLocalization"
+                            (click)="takePhoto(false, AttachmentType.Task)"></i>
+                          <i class="fas fa-cloud-upload-alt cursor-pointer fa-lg"
+                            style="color: #74C0FC; margin-left: 15px;"
+                            [title]="'::LABEL_UploadPictures' | abpLocalization" (click)="fileInputTask.click()"></i>
+                          }
+                        </span>
+                      </div>
+                      <div class="col-6 form-group">
+                        <input #fileInputTask id="upload-file-task" type="file" class="form-control"
+                          (change)="uploadType = AttachmentType.Task;onFileChange($event)" accept="image/*"
+                          style="display:none;" />
+                      </div>
+                    </div>
+                    <div class="attachment-content">
+                      <div class="attachment-title d-flex justify-content-end">
+                        <!-- <div>
+                            <span class="me-2">{{'::MENU_ActivityCardAttachment'|abpLocalization}}</span>
+                            <span *ngIf="!isWeb" class="me-1 camera-upload"><i class="fa fa-camera"></i></span>
+                            <span *ngIf="isWeb" title="click to upload" class="photo-upload"
+                              (click)="isUploadModalOpen = true; uploadType = AttachmentType.Task"><i
+                                class="fa fa-image"></i></span>
+                          </div> -->
+                        <button class="btn btn-sm" type="button" *ngIf="status !== 'Completed'"
+                          [disabled]="!selectedTaskAttachments.length" (click)="attachmentDelete(AttachmentType.Task)">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                        <!-- <div ngbDropdown>
+                            <span class="dropdown-toggle cursor-pointer me-2" ngbDropdownToggle><i
+                                class="fa fa-ellipsis-v"></i></span>
+                            <div class="dropdown-menu" ngbDropdownMenu>
+                                <button ngbDropdownItem [disabled]="!selectedTaskAttachments.length" (click)="attachmentDelete(AttachmentType.Task)">
+                                  {{ '::Delete' | abpLocalization }}
+                                </button>
+                            </div>
+                          </div> -->
+                      </div>
+                      <div class="attchment-contains">
+                        <div class="row">
+                          @for (attachment of taskAttachments; track attachment) {
+                          <div class="col-2 img-container" [class.selected]="attachmentCheck.checked">
+                            <img (click)="isAttachementPreviewOpen = true; previewAttchmentId = attachment.fileId"
+                              [src]="attachmentMap.get(attachment.fileId)" />
+                            <input type="checkbox" name="attachment" #attachmentCheck [disabled]="status === 'Completed'"
+                              (change)="selectedAttchmentsChange($event, attachment.fileId, AttachmentType.Task)" />
+                          </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="card-footer d-flex justify-content-end px-0">
+                  <button class="btn btn-primary" type="button" [disabled]="!card?.id || saving"
+                    (click)="saveCardTask()">{{'::Save'|abpLocalization}}</button>
+                </div> -->
+            </div>
+          </div>
+        </div>
+        <!-- comment -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button comment collapsed" data-bs-toggle="collapse" data-bs-target="#comment"
+              type="button" aria-controls="comment" aria-expanded="false">
+              {{ '::Comment' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="comment" #accordionItem class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 comment-container">
+                  <!-- comment list, all guys can add comment and can see the comment list, at the bottom there is input to fill comment and send -->
+                  <div class="comment-list" #commentList>
+                    @if (card?.comments?.length === 0) {
+                    <div class="no-comment p-2">{{'::LABEL_NoComments' | abpLocalization}}</div>
+                    } @else {
+                    @for (comment of card.comments; track comment) {
+                    <div class="comment-item mb-1" [class.current-user]="comment?.creatorId === currentUser?.id">
+                      <div class="comment-header">
+                        <div class="comment-user mb-1">
+                          <!-- avart start with 2 start word -->
+                          <!-- <img *ngIf="commentUserAvaMap.get(comment?.creatorId)" class="comment-avartar-img"
+                              [src]="'data:image/png;base64,' + commentUserAvaMap.get(comment?.creatorId)" />
+                            <span *ngIf="!commentUserAvaMap.get(comment?.creatorId)" class="comment-avartar"
+                              [style.background-color]="comment?.creatorId === currentUser.id ? '#e7f3fe' : '#eeeeee'">{{getCommentUser(comment?.creatorId,
+                              true)}}</span> -->
+                          <span class="comment-avartar"
+                            [style.background-color]="comment?.creatorId === currentUser.id ? '#e7f3fe' : '#eeeeee'">
+                            {{getCommentUser(comment?.creatorId,true)}}
+                          </span>
+                          <span>{{getCommentUser(comment?.creatorId)}}</span>&nbsp;
+                          <span>{{comment.creationTime | date: 'dd MMM yyyy hh:mm a'}}</span>
+                        </div>
+                      </div>
+                      <div class="comment-content">
+                        <p [style.background-color]="comment?.creatorId === currentUser.id ? '#e7f3fe' : '#eeeeee'">
+                          {{comment.commentText}}</p>
+                      </div>
+                    </div>
+                    }}
+                  </div>
+                  <div class="comment-input">
+                    <textarea class="form-control comment-input-field" rows="2" [disabled]="status === 'Completed'"
+                      [placeholder]="'::LABEL_YourComments' | abpLocalization" #commentInput
+                      (keydown)="commentEnter($event, commentInput)"></textarea>
+                    <span class="comment-send" *ngIf="status !== 'Completed'"><i class="fa fa-send"
+                        (click)="addComment(commentInput.value); commentInput.value = ''"></i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Results -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button results collapsed" data-bs-toggle="collapse" data-bs-target="#results"
+              type="button" aria-controls="results" aria-expanded="false">
+              {{ '::Results' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="results" #accordionItem class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 mb-2">
+                  <label for="card-results" class="mb-2">{{'::LABEL_ClosingNotes' | abpLocalization}}</label>
+                  <quill-editor id="card-results" [readOnly]="status === 'Completed'" [(ngModel)]="card.results"
+                    [modules]="editorConfig"></quill-editor>
+                </div>
+                <!-- <div class="col-12 mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="value-realization"
+                        [(ngModel)]="card.valueRealization" />
+                      <label for="value-realization">{{'::LABEL_ValueRealization' | abpLocalization}}</label>
+                    </div>
+                  </div> -->
+                <div class="col-12 col-md-6" *ngIf="selectedCardType?.extraProjectNumField !== 'Hidden'">
+                  <label for="external-project-no">{{'::LABEL_ExternalProjectNo' | abpLocalization}}</label><span
+                    *ngIf="selectedCardType?.extraProjectNumField === 'Required'"> *</span>
+                  <input id="external-project-no" type="text" class="form-control" [readonly]="status === 'Completed'"
+                    [(ngModel)]="card.externalProjectNo" />
+                </div>
+              </div>
+              <!-- <div class="card-footer d-flex justify-content-end px-0">
+                  <button class="btn btn-primary" type="button" [disabled]="!card.id || saving"
+                    (click)="saveCardResults()">{{'::Save'|abpLocalization}}</button>
+                </div> -->
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      <!-- Body end -->
+    </div>
+    <!-- card-footer with save button -->
+    <div class="card-footer d-flex justify-content-end mb-2">
+      <button *ngIf="!card?.id" class="btn btn-outline-primary me-2" type="button"
+        [disabled]="!cardForm.valid || !conditionalFieldValid() || saving || inProgress"
+        (click)="saveCard(true)"><span><i class="fa fa-edit"></i></span> {{'::Save'|abpLocalization}} & {{'::Edit' |
+        abpLocalization}}
+      </button>
+      <button *ngIf="status !== 'Completed'" class="btn btn-primary" type="button"
+        [disabled]="!cardForm.valid || !conditionalFieldValid() || saving || inProgress" (click)="saveCard()"><span><i
+            class="fa fa-check"></i></span> {{'::Save'|abpLocalization}} <span class="close-editor">& {{'::Close' |
+          abpLocalization}}</span>
+      </button>
+    </div>
+  </div>
+</abp-page>
+<abp-modal [(visible)]="isUploadModalOpen">
+  <ng-template #abpHeader>
+    <h3>{{'::Add' | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group">
+      <label for="upload-file">{{'::File' | abpLocalization}} </label>
+      <input id="upload-file" type="file" class="form-control" (change)="onFileChange($event)" accept="image/*" />
+    </div>
+    <div class="form-group mt-2">
+      <!-- <input type="checkbox" class="form-check-input" id="disclaimer" #disclaimer/> -->
+      <label for="" class="form-label text-danger"><span class="fa fa-info-circle"></span> {{'::LABEL_UploadDisclaimer'
+        | abpLocalization}} </label>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button class="btn btn-primary" (click)="uploadImage()" [disabled]="inProgress">
+      @if (inProgress) {
+      <i class="fa fa-spinner fa-spin"></i>
+      {{'::Uploading' | abpLocalization}}
+      } @else {
+      <i class="fa fa-check"></i>
+      {{'::Save' | abpLocalization}}
+      }
+    </button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isAttachementPreviewOpen" [options]="{size: 'fullscreen'}">
+  <ng-template #abpHeader>
+    <button (click)="isAttachementPreviewOpen = false" class="btn btn-icon btn-active-color-primary close-button">
+      <i class="fa fa-times"></i>
+    </button>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="attachment-preview">
+      <img [src]="attachmentMap.get(previewAttchmentId)" />
+    </div>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isDuplicateModalOpen">
+  <ng-template #abpHeader>
+    <h3>{{'::LABEL_Duplicate' | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="data-tier-type">{{'::LABEL_Tier'|abpLocalization}}</label><span> * </span>
+      <ng-select id="data-tier-type" [items]="duplicateDataTierTypes" appendTo="body" (ngModelChange)="getDataTiers($event)"
+      [(ngModel)]="selectedDuplicateDataTierType" placeholder="Select Data Tier Type">
+      </ng-select>
+    </div>
+    <div class="form-group">
+      <label for="data-tier">{{'::LABEL_TierDetails'|abpLocalization}}</label><span> * </span>
+      <ng-select id="data-tier" [items]="duplicatedataTiers" appendTo="body" [(ngModel)]="selectedDuplicateDataTier"
+      bindLabel="displayName" bindValue="id" placeholder="Select Data Tier">
+      </ng-select>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button class="btn btn-primary" (click)="duplicateCard()" [disabled]="!selectedDuplicateDataTierType || !selectedDuplicateDataTier">
+      <i class="fa fa-check"></i>
+      {{'::Save' | abpLocalization}}
+    </button>
+  </ng-template>
+</abp-modal>

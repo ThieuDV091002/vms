@@ -1,0 +1,33 @@
+.accordion-button::after {
+    display: none;
+}
+
+.accordion-button.roles {
+    width: 30%;
+    text-align: left;
+}
+
+.accordion-button.data-tier {
+    width: 50%;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 1rem;
+
+    li {
+        margin: 5px 0;
+
+        .expand-icon {
+            width: .5rem;
+        }
+    }
+}
+
+.notification-title {
+    width: 100px;
+}
+
+.toggle-off-button {
+    color: var(--bs-gray-600);
+}

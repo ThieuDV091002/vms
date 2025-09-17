@@ -1,0 +1,149 @@
+.content-header-title {
+    display: inline-block;
+    margin: .3rem 0!important;
+    white-space: nowrap;
+}
+.filter-btn {
+    background-color: var(--lpx-content-text);
+    color: var(--lpx-content-bg);
+    padding: 0 .5rem;
+}
+.filter-bar {
+    padding: 0rem;
+    margin-bottom: 0rem;
+    app-data-tier-filter ::ng-deep {
+        form.data-tier-filter {
+            flex-wrap: nowrap!important;
+            .filter-bar {
+                margin: 0!important;
+                .col-form-label {
+                    padding-top: .4rem!important;
+                    padding-bottom: .4rem!important;
+                }
+                select.form-select {
+                    line-height: 1.1!important;
+                    font-size: .8rem!important;
+                    padding: 0.7rem 2rem 0.7rem .5rem!important;
+                    background-color: var(--lpx-card-bg)!important;
+                }
+            }
+        }
+    }
+}
+.role-board-content {
+    margin: 0!important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    // add bottom in case appversion section cover it
+    &.card-bt {
+        margin-bottom: 1.5rem!important;
+    }
+    .content-left > div {
+        padding: .2rem;
+        > div {
+            position: relative;
+            padding: .1rem;
+            height: calc(100vh - 3.3rem);
+            width: 100%;
+            border: 1px solid var(--lpx-border-color);
+        }
+    }
+    .content-right > div {
+        padding: .2rem;
+        > div {
+            position: relative;
+            padding: .1rem;
+            height: calc((100vh + 13.7rem) / 2);
+            width: 100%;
+            border: 1px solid var(--lpx-border-color);
+            &.chart {
+                height: calc((100vh + 13.7rem) / 4);
+            }
+        }
+    }
+}
+.collapsed {
+    display: none;
+}
+.cursor {
+    cursor: pointer;
+}
+.chart:hover .action-bar {
+    display: block;
+}
+.chart {
+    position: relative;
+    .action-bar {
+        display: none;
+        font-size: 1.2rem;
+        position: absolute;
+        right: .5rem;
+        top: .5rem;
+        z-index: 9999;
+    }
+}
+.expand {
+    width: 100%!important;
+    > div {
+        height: calc(100vh - 3.3rem)!important;
+    }
+}
+
+.filter-bar {
+    padding: 0rem;
+    margin-bottom: 0rem;
+    app-data-tier-filter ::ng-deep {
+        form.data-tier-filter {
+            flex-wrap: nowrap!important;
+            .filter-bar {
+                margin: 0!important;
+                .col-form-label {
+                    padding-top: .4rem!important;
+                    padding-bottom: .4rem!important;
+                }
+                select.form-select {
+                    line-height: 1.1!important;
+                    font-size: .8rem!important;
+                    padding: 0.7rem 2rem 0.7rem .5rem!important;
+                    background-color: white!important;
+                }
+
+                select[formcontrolname="area"],
+                ng-select[formcontrolname="areas"] {
+                    min-width: 160px !important;
+                    max-width: 160px !important;
+                }
+
+                select[formcontrolname="cell"],
+                ng-select[formcontrolname="cells"],
+                select[formcontrolname="workCenter"],
+                ng-select[formcontrolname="workCenters"] {
+                    min-width: 220px !important;
+                    max-width: 220px !important;
+                }
+
+                .ng-select {
+                    .ng-select-container {
+                        background-color: white!important;
+                        font-size: .8rem!important;
+                        height: 37px!important;
+                        min-height: 37px!important;
+                        border-color: #dee2e6;
+
+                        .ng-value-container {
+                            white-space: nowrap !important;
+                            flex-wrap: nowrap !important;
+
+                            .ng-input {
+                                flex: 0 0 auto;
+                                display: inline-block;
+                                min-width: 20px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

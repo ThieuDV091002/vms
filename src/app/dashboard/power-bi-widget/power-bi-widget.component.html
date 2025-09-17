@@ -1,0 +1,146 @@
+<abp-page class="widget-page" *ngIf="isWidget" style="display: flex; flex-direction: column; height: 100%;">
+  <abp-page-title-container class="col text-start">
+    <h5>{{ this.form.controls['hideTitle'].value ? '' : selected.name | abpLocalization }}</h5>
+  </abp-page-title-container>
+  <abp-page-toolbar-container class="col widget-toolbar">
+    <div class="text-end me-2">
+      @if (!queryId) {
+      <span class="me-2 cursor-pointer" (click)="deletePowerBIWidget()" *abpPermission="'Dashboard.Update'">
+        <i class="fa fa-trash fa-lg"></i>
+      </span>
+      }
+      <span class="me-2 cursor-pointer" (click)="expand()">
+        <i [class]="expandChart?' fa fa-compress fa-lg':'fa fa-expand fa-lg'"></i>
+      </span>
+      <span class="cursor-pointer" (click)="edit = true;">
+        <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+      </span>
+    </div>
+  </abp-page-toolbar-container>
+
+  <div class="card px-3 m-0 h-100">
+
+    @if (reportId&&groupId&&reportConfig.accessToken) {
+    <powerbi-report [embedConfig]="reportConfig" cssClassName="report-container-widget"
+      [phasedEmbedding]="phasedEmbeddingFlag" [eventHandlers]="eventHandlersMap">
+    </powerbi-report>
+    }
+    @else {
+    <div class="text-center">
+      @if (!reportId || !groupId) {
+      <h3>{{ 'AbpUi::No' | abpLocalization }} {{ 'AbpSettingManagement::Settings' | abpLocalization}}</h3>
+      }
+      @else if (!reportConfig.accessToken) {
+      <h3>{{ 'AbpUi::No' | abpLocalization }} {{ 'AbpIdentity::Permissions' | abpLocalization}}</h3>
+      }
+
+    </div>
+    }
+  </div>
+
+
+  <abp-modal [(visible)]="edit" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+      <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+
+      @if (form) {
+      <form [formGroup]="form" [hidden]="!edit">
+        <div class="row">
+          <label class="col-2 col-form-label text-start" for="title">
+            {{'::Title' | abpLocalization}}
+          </label>
+          <div class="col-10">
+            <input type="text" id="title" class="form-control" formControlName="title" autofocus />
+          </div>
+        </div>
+        <div class="d-flex mt-2">
+          <label class="col-form-label text-start" for="role-hide-title">
+            {{ '::Label_HideTitle' | abpLocalization }}
+          </label>
+          <div class="col-form-label ms-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="role-hide-title" formControlName="hideTitle" />
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <label class="col-2 col-form-label text-start" for="role-url">
+            {{ '::ReportId' | abpLocalization }}
+            <span> * </span>
+          </label>
+          <div class="col-10">
+            <input type="text" class="form-control" id="role-url" formControlName="reportId" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <label class="col-2 col-form-label text-start" for="role-url">
+            {{ '::GroupId' | abpLocalization }}
+            <span> * </span>
+          </label>
+          <div class="col-10">
+            <input type="text" class="form-control" id="role-url" formControlName="groupId" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <label class="col-2 col-form-label text-start" for="role-site">
+            {{ '::Site' | abpLocalization }}
+          </label>
+          <div class="col-10">
+            <input type="text" class="form-control" id="role-site" formControlName="site" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <label class="col-2 col-form-label text-start" for="role-area">
+            {{ '::Area' | abpLocalization }}
+          </label>
+          <div class="col-10">
+            <input type="text" class="form-control" id="role-area" formControlName="area" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <label class="col-2 col-form-label text-start" for="role-cell">
+            {{ '::Cell' | abpLocalization }}
+          </label>
+          <div class="col-10">
+            <input type="text" class="form-control" id="role-cell" formControlName="cell" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <label class="col-2 col-form-label text-start" for="role-work-center">
+            {{ '::WorkCenter' | abpLocalization }}
+          </label>
+          <div class="col-10">
+            <input type="text" class="form-control" id="role-work-center" formControlName="workCenter" />
+          </div>
+        </div>
+      </form>
+      } @else {
+      <div class="text-center"><i class="fa fa-pulse fa-spinner"></i></div>
+      }
+
+    </ng-template>
+    <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+        {{ 'AbpIdentity::Cancel' | abpLocalization }}
+      </button>
+      <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+        {{ 'AbpIdentity::Save' | abpLocalization }}
+      </abp-button>
+    </ng-template>
+  </abp-modal>
+</abp-page>
+
+<abp-page *ngIf="!isWidget">
+  <abp-page-toolbar-container class="col powerbi-page-toolbar">
+    <div class="text-end me-2">
+      <span class="me-2 cursor-pointer" (click)="expand()">
+        <i [class]="expandChart?' fa fa-compress fa-lg':'fa fa-expand fa-lg'"></i>
+      </span>
+    </div>
+  </abp-page-toolbar-container>
+  <powerbi-report [embedConfig]="reportConfig" [cssClassName]="reportClass" [phasedEmbedding]="phasedEmbeddingFlag"
+    [eventHandlers]="eventHandlersMap" *ngIf="reportId&&groupId">
+  </powerbi-report>
+</abp-page>

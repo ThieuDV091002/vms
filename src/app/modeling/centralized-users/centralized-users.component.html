@@ -1,0 +1,180 @@
+<app-modeling-template [title]="'::LABEL_CentralizedUsers'" [data]="data" [objectType]="'CentralizedUser'"
+    [copyPrefix]="'::LABEL_NewCentralizedUser'" [copyFields]="[{displayKey: 'AbpIdentity::DisplayName:Email', field: 'emailAddress', required: true, clearValue: true}]"
+    [permissions]="{create: 'CentralizedUser.Create', edit: 'CentralizedUser.Edit', delete: 'CentralizedUser.Delete', copy: 'CentralizedUser.Copy', import: 'CentralizedUser.Import', export: 'CentralizedUser.Export'}"
+    [columns]="[{displayKey:'AbpAccount::EmailAddress', field: 'emailAddress'},{displayKey:'AbpIdentity::DisplayName:UserName', field: 'name'}]"
+    [list]="list" [hasLastUpdate]="true" (copyData)="copy($event)" (multiDelete)="multiDelete($event)" (dataAdd)="add()"
+    (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+    (dataViewHistory)="viewHistory($event)" [placeholder]="'::LABEL_CentrUserSearch' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{size: 'xl', centered: true}">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center header-width">
+            <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+            <div>
+              <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                {{'::LABEL_ExpandAll' | abpLocalization}}
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                {{'::LABEL_CollapseAll' | abpLocalization}}
+              </button>
+            </div>
+          </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form [formGroup]="form" (ngSubmit)="save()" [validateOnSubmit]="true">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion accordion-flush">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" [class.collapsed]="isCollapse"
+                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                {{ '::LABEL_General' | abpLocalization }}
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                        <div class="form-group">
+                                            <label for="users-email" [title]="'::INFO_EmailAddress' | abpLocalization">
+                                                {{ 'AbpAccount::EmailAddress' | abpLocalization }}
+                                            </label><span> * </span>
+                                            <input type="email" id="users-email" class="form-control" autofocus
+                                                formControlName="email"
+                                                (change)="getUserInfoByEmail($event.target.value)" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                        <div class="form-group">
+                                            <label for="users-name" [title]="'::INFO_Username' | abpLocalization">
+                                                {{ 'AbpIdentity::DisplayName:UserName' | abpLocalization }}
+                                            </label>
+                                            <input type="text" id="users-name" class="form-control"
+                                                formControlName="name" [readOnly]="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                        <div class="form-group">
+                                            <label for="users-lastname" [title]="'::INFO_LastName' | abpLocalization">
+                                                {{ '::LABEL_LastName' | abpLocalization }}
+                                            </label>
+                                            <input type="text" id="users-lastname" class="form-control"
+                                                formControlName="lastName" [readOnly]="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                        <div class="form-group ">
+                                            <label for="users-firstname" [title]="'::INFO_FirstName' | abpLocalization">
+                                                {{ '::LABEL_FirstName' | abpLocalization }}
+                                            </label>
+                                            <input type="text" id="users-firstname" class="form-control"
+                                                formControlName="firstName" [readOnly]="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                        <div class="form-group">
+                                            <label for="users-phone" [title]="'::INFO_PhoneNumber' | abpLocalization">
+                                                {{ 'AbpAccount::DisplayName:PhoneNumber' | abpLocalization }}
+                                            </label>
+                                            <input type="text" id="users-phone" class="form-control"
+                                                formControlName="phoneNumber" [readOnly]="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                        <div class="form-group" *ngIf="false">
+                                            <label for="users-supervisorname">
+                                                {{ '::LABEL_SupervisorName' | abpLocalization }}
+                                            </label>
+                                            <input type="tel" id="users-supervisorname" class="form-control"
+                                                formControlName="supervisor" [readOnly]="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mt-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="AbpIdentity-IsActive" class="form-check-input"
+                                                formControlName="isActive" />
+                                            <label class="form-check-label" [title]="'::INFO_Active' | abpLocalization">
+                                                {{ 'AbpIdentity::DisplayName:IsActive' | abpLocalization }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-4 col-xl-4 mt-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="AbpIdentity-LockoutEnabled"
+                                                class="form-check-input" formControlName="lockoutEnabled" />
+                                            <label class="form-check-label" [title]="'::INFO_LockAccountAfterFailedLoginAttempts' | abpLocalization">
+                                                {{ 'AbpIdentity::DisplayName:LockoutEnabled' | abpLocalization }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" [class.collapsed]="isCollapse"
+                                data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                {{ 'AbpTenantManagement::Tenants' | abpLocalization }}
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 mb-2">
+                                        <div class="form-group">
+                                            <label for="users-application" class="form-label" [title]="'::INFO_Tenants' | abpLocalization">
+                                                {{ 'AbpTenantManagement::Tenants'|abpLocalization}}
+                                            </label><span> * </span>
+                                            <multiple-select [items]="tenantsData" displayName="displayName" valueName="id"
+                                                (change)="selectedTenantChanges($event)" [values]="selectedTenants">
+                                            </multiple-select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'CentralizedUser'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

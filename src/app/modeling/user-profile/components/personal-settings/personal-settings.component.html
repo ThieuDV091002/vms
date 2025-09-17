@@ -1,0 +1,55 @@
+@if (form) {
+    <form [formGroup]="form" (ngSubmit)="submit()" validateOnSubmit class="abp-md-form">
+        <div class="row mb-2">
+            <div class="col">
+                <div class="form-group">
+                    <label for="userName">{{ 'AbpIdentity::UserName' | abpLocalization }}</label>
+                    <input type="text" formControlName="userName" class="form-control" id="userName"
+                        [attr.readonly]="isAdUser ? true : null">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col">
+                <div class="form-group">
+                    <label for="name">{{ 'AbpIdentity::Name' | abpLocalization }}</label>
+                    <input type="text" formControlName="name" class="form-control" id="name"
+                        [attr.readonly]="isAdUser ? true : null">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="surname">{{ 'AbpIdentity::Surname' | abpLocalization }}</label>
+                    <input type="text" formControlName="surname" class="form-control" id="surname"
+                        [attr.readonly]="isAdUser ? true : null">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col">
+                <div class="form-group">
+                    <label for="email">{{ 'AbpIdentity::Email' | abpLocalization }}</label>
+                    <input type="text" formControlName="email" class="form-control" id="email"
+                        [attr.readonly]="isAdUser ? true : null">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <div class="form-group">
+                    <label for="phoneNumber">{{ 'AbpIdentity::PhoneNumber' | abpLocalization }}</label>
+                    <input type="text" formControlName="phoneNumber" class="form-control" id="phoneNumber"
+                        [attr.readonly]="isAdUser ? true : null">
+                </div>
+            </div>
+        </div>
+        <abp-button buttonType="submit" buttonClass="btn btn-primary color-white" [loading]="inProgress"
+            [iconClass]="isAdUser ? 'fas fa-sync' : 'fas fa-save'">
+            @if (isAdUser) {
+            {{ 'AbpIdentity::Sync' | abpLocalization }}
+            } @else {
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+            }
+        </abp-button>
+    </form>
+    }

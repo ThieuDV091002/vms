@@ -1,0 +1,71 @@
+<div class="lpx-menu-filter">
+  <div class="menu-filter-icon">
+    <i aria-hidden="true" class="fa fa-search"></i>
+  </div>
+  <input type="text" #filterInput (input)="filter($event.target.value)"
+    class="menu-filter-input hidden-in-hover-trigger" placeholder="{{'::LABEL_FilterMenu'|abpLocalization}}">
+  <span class="menu-filter-clear" [hidden]="!filterInput.value">
+    <div class="clear-icon" (click)="filterInput.value = '';filter('')">
+      <i aria-hidden="true" class="bi bi-x"></i>
+    </div>
+  </span>
+</div>
+<ul #navMenu class="lpx-nav-menu">
+  @if (groupedItems()) {
+  @for (item of groupedItems(); track item) {
+  <ng-container *ngTemplateOutlet="groupText; context: { $implicit: item }"></ng-container>
+
+  @for (navbarItem of item.items; track navbarItem) {
+  <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: navbarItem }"></ng-container>
+  } } }
+  @else {
+  <ng-container *ngTemplateOutlet="defaultRoute"></ng-container>
+  }
+</ul>
+<div style="height: 70px;"></div>
+<div class="system-info">
+  <div>
+    <span class="hidden-in-hover-trigger lpx-menu-item-text">{{defaultDataTier}}</span>
+  </div>
+  <div>
+    <span class="hidden-in-hover-trigger lpx-menu-item-text" *ngIf="tooltipRoles" [attr.title]="tooltipRoles">{{
+      displayedRoles }}</span>
+    <span class="hidden-in-hover-trigger lpx-menu-item-text" *ngIf="!tooltipRoles"> {{ displayedRoles }}</span>
+  </div>
+  <div class="lpx-menu-item-link">
+    <span class="ver hidden-in-hover-trigger lpx-menu-item-text" (click)="showSystemInfoModal()">{{ version }} <span
+        *ngIf="tenantInfo">:</span></span>
+    <a class="hidden-in-hover-trigger cursor-pointer fw-bolder" (click)="openTenantPopup()"
+      style="margin-left: 4px;">{{tenantInfo?.displayLongText}}</a>
+  </div>
+</div>
+
+<abp-modal [(visible)]="isSystemInfoModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_SystemInfo' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-system-info></app-system-info>
+  </ng-template>
+</abp-modal>
+
+<ng-template #defaultRoute>
+  @for (item of navbarItems(); track item) {
+  <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+  }
+</ng-template>
+
+<ng-template #groupText let-item>
+  @if (item.items.length) {
+  <li class="group-menu-item hidden-in-hover-trigger">
+    {{ item.group | lpxTranslate | async }}
+  </li>
+  }
+</ng-template>
+
+<ng-template #itemTemplate let-item>
+  <li class="outer-menu-item" *lpxVisible="!item.visible || item.visible(item, injector)">
+    <lpx-sub-navbar [item]="item" (expand)="onSubnavbarExpand($event, navbarItems())"
+      (routeClick)="onRouteClick($event, navbarItems())" [routerItem]="routerItem()"></lpx-sub-navbar>
+  </li>
+</ng-template>

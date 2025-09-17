@@ -1,0 +1,39 @@
+<div class="standard-title-container text-start mb-1">
+  <div class="col title">
+      <h5 [title]="selected.name">{{selected.name}}</h5>
+  </div>
+</div>
+
+<div class="media-container">
+  <div class="media" *ngFor="let standardMedia of standMedias; let idx=index">
+      <div class="media-header" *ngIf="standardMedia.headerNote">
+          <h6 [title]="standardMedia.headerNote">{{standardMedia.headerNote}}</h6>
+      </div>
+      <div class="media-body" [ngClass]="[standardMedia?.headerNote ? 'hasHeader': '', standardMedia?.footerNote ? 'hasFooter': '']">
+          @if (standardMedia.loading) {
+              <div><i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{LoadingWithThreeDot | abpLocalization}}</div>
+          } @else {
+              @if (standardMedia?.mediaType === 'link' && standardMedia?.mediaUrl) {
+                  <iframe [src]="standardMedia.safeUrl"></iframe>
+                  <a [href]="standardMedia.safeUrl" target="_blank">{{'::LABEL_ClickTheLink' | abpLocalization}}</a>
+              } @else if (standardMedia?.mediaType === 'image' && standardMedia?.mediaUrl) {
+                  <img [src]="standardMedia.mediaUrl" alt="" class="cursor-pointer" (click)="previewModalVisible = true; previewImage = standardMedia.mediaAccessUrl"/>
+              } @else if (standardMedia?.mediaType === 'file' && standardMedia?.mediaAccessUrl){
+                  <img class="cursor-pointer" *ngIf="standardMedia.isImage" (click)="previewModalVisible = true; previewImage = standardMedia.mediaAccessUrl" [src]="standardMedia.mediaAccessUrl" alt="Image" />
+                  <a *ngIf="!standardMedia.isImage" [href]="standardMedia.mediaAccessUrl" [download]="standardMedia?.fileName">{{standardMedia?.fileName}}</a>
+              }
+          }
+      </div>
+      <div class="media-footer" *ngIf="standardMedia.footerNote">
+          <h6 [title]="standardMedia.footerNote">{{standardMedia.footerNote}}</h6>
+      </div>
+  </div>
+</div>
+
+<abp-modal [(visible)]="previewModalVisible" [options]="{size: 'xl', centered: true}">
+  <ng-template #abpBody>
+      <div class="img-preview-container d-flex justify-content-center align-items-center">
+          <img class="preview-img" [src]="previewImage"/>
+      </div>
+  </ng-template>
+</abp-modal>

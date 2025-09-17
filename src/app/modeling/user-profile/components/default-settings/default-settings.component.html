@@ -1,0 +1,115 @@
+<div class="accordion" id="accordionExample">
+    <div class="accordion accordion-flush">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <div class="accordion-button">
+                    <strong>{{ 'AbpIdentity::Default Settings' | abpLocalization }}</strong>
+                </div>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show">
+                <div class="accordion-body ">
+                    <div class="form-group mb-2" style="width: 40%;">
+                        <label for="homepageSelect">{{ '::LABEL_Homepage' | abpLocalization }}</label>
+                        <!-- <select id="homepageSelect" class="form-control" [(ngModel)]="selectedHomepage"
+                            (ngModelChange)="onHomepageChange($event)">
+                            <option *ngFor="let option of homepageOptions" [value]="option.path">{{ option.title }}
+                            </option>
+                        </select> -->
+                        <ng-select [items]="homepageOptions" bindLabel="title" bindValue="path"
+                            [(ngModel)]="selectedHomepage" (change)="onHomepageChange($event)">
+                        </ng-select>
+                    </div>
+
+                    <div class="form-group mt-3 mb-2">
+                        <label for="autoHideToggle">{{ '::LABEL_HideMenu' | abpLocalization }}</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoHideToggle" [(ngModel)]="autoHide"
+                                (ngModelChange)="onAutoHideToggleChange()">
+                            <label class="form-check-label" for="autoHideToggle">{{ autoHide ? 'True' : 'Off' }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <div class="accordion-button">
+                    <strong>{{ '::LABEL_DefaultDataTier' | abpLocalization }}</strong>
+                </div>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                    <app-tree-view [nodes]="dataTierTreeNode" [hasDefault]="true" [hideCheckbox]="true"
+                        *ngIf="treeNodeReady" (defaultChange)="defaultDataTierChange($event)">
+                    </app-tree-view>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <div class="accordion-button">
+                    <strong>{{ '::LABEL_ActivityCardNotification' | abpLocalization }}</strong>
+                </div>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                    <div class="form-group mb-1 d-flex align-items-center">
+                        <div class="notification-title">{{ '::LABEL_CardOwner' | abpLocalization }}</div>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('cardOwnerEmail')">
+                            <i class="fa fa-xl"
+                                [ngClass]="notificationForm?.value.cardOwnerEmail ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ 'AbpAccount::DisplayName:Email' | abpLocalization }}</span>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('cardOwnerInApp')">
+                            <i class="fa fa-xl toggle-button"
+                                [ngClass]="notificationForm?.value.cardOwnerInApp ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ '::LABEL_InApp' | abpLocalization }}</span>
+                    </div>
+                    <div class="form-group mb-1 d-flex align-items-center">
+                        <div class="notification-title">{{ '::LABEL_TaskOwner' | abpLocalization }}</div>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('taskOwnerEmail')">
+                            <i class="fa fa-xl"
+                                [ngClass]="notificationForm?.value.taskOwnerEmail ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ 'AbpAccount::DisplayName:Email' | abpLocalization }}</span>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('taskOwnerInApp')">
+                            <i class="fa fa-xl toggle-button"
+                                [ngClass]="notificationForm?.value.taskOwnerInApp ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ '::LABEL_InApp' | abpLocalization }}</span>
+                    </div>
+                    <div class="form-group mb-1 d-flex align-items-center">
+                        <div class="notification-title">{{ '::LABEL_TeamMember' | abpLocalization }}</div>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('teamMemberEmail')">
+                            <i class="fa fa-xl"
+                                [ngClass]="notificationForm?.value.teamMemberEmail ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ 'AbpAccount::DisplayName:Email' | abpLocalization }}</span>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('teamMemberInApp')">
+                            <i class="fa fa-xl toggle-button"
+                                [ngClass]="notificationForm?.value.teamMemberInApp ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ '::LABEL_InApp' | abpLocalization }}</span>
+                    </div>
+                    <div class="form-group mb-1 d-flex align-items-center">
+                        <div class="notification-title">{{ '::LABEL_Creator' | abpLocalization }}</div>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('creatorEmail')">
+                            <i class="fa fa-xl"
+                                [ngClass]="notificationForm?.value.creatorEmail ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ 'AbpAccount::DisplayName:Email' | abpLocalization }}</span>
+                        <button type="button" class="btn btn-link ps-4 pe-0" (click)="toggle('creatorInApp')">
+                            <i class="fa fa-xl toggle-button"
+                                [ngClass]="notificationForm?.value.creatorInApp ? 'fa-toggle-on toggle-button' : 'fa-toggle-off toggle-off-button'"></i>
+                        </button>
+                        <span class="ps-1">{{ '::LABEL_InApp' | abpLocalization }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

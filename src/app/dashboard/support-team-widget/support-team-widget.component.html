@@ -1,0 +1,60 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <abp-page-title-container class="col text-start">
+        <h5>{{ selectedWidget.name | abpLocalization }}</h5>
+    </abp-page-title-container>
+    <abp-page-toolbar-container class="col widget-toolbar">
+        <div class="text-end">
+
+            <span class="me-2 cursor-pointer" (click)="add()" *abpPermission="'SupportTeam.Create'">
+                <i class="fa fa-plus fa-lg"></i>
+            </span>
+
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deleteSupportTeamWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <!-- <span class="me-2 cursor-pointer" *ngIf="false">
+                <i class="fa fa-cloud-download fa-lg"></i>
+            </span> -->
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'SupportTeam.Edit'">
+                <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+            </span>
+        </div>
+    </abp-page-toolbar-container>
+
+    <app-support-team-page #supportTeamPage [isWidget]="true" [widget]="selectedWidget"
+        [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"></app-support-team-page>
+</abp-page>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group mb-2">
+            <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+        </div>
+        <div class="form-group">
+            <label for="cells-displayName" [title]="'::INFO_DisplayRowCount' | abpLocalization">{{'::LABEL_DisplayRowCount'|abpLocalization}}</label><span> * </span>
+            <input type="number" id="cells-displayName" class="form-control" [(ngModel)]="pageSize" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="widgetTitle === '' || [null, 0].includes(pageSize)"
+            (click)="saveSettiings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>

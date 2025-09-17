@@ -1,0 +1,101 @@
+<app-modeling-template [title]="'::LABEL_ToDoTypes'" [data]="data" [objectType]="'ToDoTypes'"
+    [permissions]="{create: 'ToDoType.Create', edit: 'ToDoType.Edit', delete: 'ToDoType.Delete', copy: 'ToDoType.Copy', import: 'ToDoType.Import', export: 'ToDoType.Export'}"
+    [copyPrefix]="'::LABEL_NewToDoType'"
+    [columns]="[{displayKey:'::Name', field: 'name'},{displayKey:'::Description', field: 'description'},{displayKey:'::DisplayName', field: 'displayName'},{displayKey:'::StateModel', field: 'stateModelName'},{displayKey:'::LABEL_CardType', field: 'cardTypeName'},{displayKey:'::LABEL_CardCategory', field: 'cardCategoryName'} ]"
+    [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))" (multiDelete)="multiDelete($event)" (dataAdd)="add()"
+    (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)"
+    (import)="import($event)" (dataViewHistory)="viewHistory($event)"
+    [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (form) {
+        <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="form-group mb-2">
+                <label for="name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                <input type="text" id="name" class="form-control" formControlName="name"
+                    (input)="form.controls['displayName'].setValue($event.target.value)"
+                    autofocus />
+            </div>
+            <div class="form-group mb-2">
+                <label for="displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{ '::DisplayName' | abpLocalization }}</label><span> * </span>
+                <input type="text" id="displayName" class="form-control" formControlName="displayName" />
+            </div>
+            <div class="form-group mb-2">
+                <label for="description" [title]="'::INFO_Description' | abpLocalization">{{ '::Description' | abpLocalization }}</label>
+                <input type="text" id="description" class="form-control" formControlName="description" />
+            </div>
+            <div class="form-group mb-2">
+                <label for="state-model" [title]="'::INFO_StateModel' | abpLocalization">{{ '::StateModel' | abpLocalization }}</label><span> * </span>
+                <select class="form-control form-select" id="state-model" formControlName="stateModelId">
+                    <option [ngValue]="null"></option>
+                    <option [ngValue]="stateModel.id" *ngFor="let stateModel of stateModelData">
+                        {{ stateModel.displayName || stateModel.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group mb-2">
+                <label for="card-type" [title]="'::INFO_CardType' | abpLocalization">{{ '::LABEL_CardType' | abpLocalization }}</label><span> * </span>
+                <select class="form-control form-select" id="card-type" formControlName="cardTypeId">
+                    <option [ngValue]="null"></option>
+                    <option [ngValue]="cardType.id" *ngFor="let cardType of cardTypesData">
+                        {{ cardType.displayName || cardType.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="card-category" [title]="'::INFO_CardCategory' | abpLocalization">{{ '::LABEL_CardCategory' | abpLocalization }}</label><span> * </span>
+                <select class="form-control form-select" id="card-category" formControlName="cardCategoryId">
+                    <option [ngValue]="null"></option>
+                    <option [ngValue]="cardCategory.id" *ngFor="let cardCategory of cardCategoriesData">
+                        {{ cardCategory.displayName || cardCategory.name }}
+                    </option>
+                </select>
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'ToDoTypes'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

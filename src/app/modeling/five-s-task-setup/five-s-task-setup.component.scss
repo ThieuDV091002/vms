@@ -1,0 +1,39 @@
+.header-width {
+    width: calc(100% - 40px);
+}
+
+#taskDataTable ::ng-deep .datatable-body-cell {
+    .form-group {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .datatable-body-cell-label {
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+        width: 100% !important;
+
+        input {
+            height: 100% !important;
+        }
+    }
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+::ng-deep.confirmation .confirmation-dialog .content .message {
+    overflow-wrap: break-word !important;
+}
+
+::ng-deep .my-tooltip-class {
+    z-index: 99999999999 !important;
+    max-width: none;
+    white-space: nowrap;
+}
+
+::ng-deep .disabled label {
+    opacity: 0.5;
+}

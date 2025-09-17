@@ -1,0 +1,217 @@
+<app-modeling-template #modelingTemplate [title]="'AbpTenantManagement::Tenants'" [data]="data" [objectType]="'Tenants'"
+  [permissions]="{create: 'AbpTenantManagement.Tenants.Create', edit: 'AbpTenantManagement.Tenants.Update', delete: 'AbpTenantManagement.Tenants.Delete', copy: 'AbpTenantManagement.Tenants.Copy', import: 'AbpTenantManagement.Tenants.Import', export: 'AbpTenantManagement.Tenants.Export'}"
+  [copyPrefix]="'AbpTenantManagement::NewTenant'"
+  [columns]="[{displayKey: '::Name', field: 'name'}, {displayKey: '::Description', field: 'description'}, {displayKey: '::DisplayName', field: 'displayName'}]"
+  (customActionTrigger)="openFeaturesModal($event)" [list]="list" (dataAdd)="addTenant()"
+  (dataEdit)="editTenant($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+  (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)" (copyData)="copy($event)"
+  [columnActions]="[{ displayKey: 'AbpTenantManagement::Permission:ManageConnectionStrings', permission: 'AbpTenantManagement.Tenants.ManageConnectionStrings', func: editConnectionString ,parent:this},{ displayKey: 'AbpAccount::ResetPassword', permission: 'AbpTenantManagement.Tenants.Update', func: showResetPasswordModal ,parent:this}]"
+  [placeholder]="'::LABEL_SearchName' | abpLocalization">;
+<button ngbDropdownItem dropdown-actions >
+    自定义按钮
+  </button>
+  <button ngbDropdownItem dropdown-actions >
+    另一个按钮
+  </button>
+
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+    <h3>
+      {{
+      (selected?.id ? 'AbpTenantManagement::Edit' : 'AbpTenantManagement::NewTenant')
+      | abpLocalization
+      }}
+    </h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form [formGroup]="tenantForm" (ngSubmit)="save()" [validateOnSubmit]="true">
+      <abp-extensible-form [selectedRecord]="selected"></abp-extensible-form>
+      <div class="row">
+        <div class="form-group mb-2 col">
+          <label for="tenant-displayname" class="form-label" [title]="'::INFO_DisplayName' | abpLocalization">
+            {{'::DisplayName'|abpLocalization}}
+          </label><span> *</span>
+          <input type="text" id="tenant-displayname" class="form-control" formControlName="displayName" />
+        </div>
+        <div class="form-group mb-2 col">
+          <label for="tenant-description" class="form-label" [title]="'::INFO_Description' | abpLocalization">
+            {{'::Description'|abpLocalization}}
+          </label>
+          <input type="text" id="tenant-description" class="form-control" formControlName="description" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col">
+          <label for="tenant-displayLongText" class="form-label" [title]="'::INFO_DisplayLongText' | abpLocalization">
+            {{'::LABEL_DisplayLongText'|abpLocalization}}
+          </label><span> * </span>
+          <input type="text" id="tenant-displayLongText" class="form-control" formControlName="displayLongText" />
+        </div>
+        <div class="form-group mb-2 col">
+          <label for="tenant-application" class="form-label" [title]="'::INFO_Application' | abpLocalization">
+            {{'::LABEL_Application'|abpLocalization}}
+          </label><span> * </span>
+          <select class="form-control form-select" id="tenant-application" formControlName="application">
+            <option [ngValue]="application.id" *ngFor="let application of applicationsData">
+              {{ application.displayName }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col">
+          <label for="tenant-dataTierType" class="form-label" [title]="'::INFO_DataTierType' | abpLocalization">
+            {{'::LABEL_DataTierType'|abpLocalization}}
+          </label><span> * </span>
+          <select class="form-control form-select" id="tenant-dataTierType" formControlName="dataTierType">
+            <option ngValue="Corporate">Corporate Level</option>
+            <option ngValue="Division">Division Level</option>
+            <option ngValue="Site">Site Level</option>
+          </select>
+        </div>
+        <div class="form-group mb-2 col">
+          <label for="tenant-dataTier" class="form-label" [title]="'::INFO_DataTier' | abpLocalization">
+            {{ '::LABEL_DataTier'|abpLocalization }}
+          </label><span> * </span>
+          <select class="form-control form-select" id="tenant-dataTier" formControlName="dataTier">
+            <option [ngValue]="null"></option>
+            <ng-container *ngIf="tenantForm.controls['dataTierType'].value">
+              <option [ngValue]="dataTier.id" *ngFor="let dataTier of dataTierData">
+                {{ dataTier.displayName }}
+              </option>
+            </ng-container>
+          </select>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button abpClose type="button" class="btn btn-outline-primary">
+      {{ 'AbpTenantManagement::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" (click)="save()" [disabled]="tenantForm?.invalid">{{
+      'AbpTenantManagement::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-feature-management *abpReplaceableTemplate="{
+      inputs: {
+        providerName: { value: 'T' },
+        providerKey: { value: providerKey },
+        visible: { value: visibleFeatures, twoWay: true }
+      },
+      outputs: { visibleChange: $any(onVisibleFeaturesChange) },
+      componentKey: featureManagementKey
+    }" [(visible)]="visibleFeatures" providerName="T" [providerKey]="providerKey">
+</abp-feature-management>
+<abp-modal [(visible)]="isManageConnectionStrings" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpTenantManagement::Permission:ManageConnectionStrings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <form>
+      <div class="form-check form-switch form-group">
+        <input class="form-check-input" type="checkbox" role="switch" id="AbpTenantManagement-UseSharedDatabase"
+          [checked]="useTheSharedDatabase" (change)="useTheSharedDatabase = $event.target.checked">
+        <label class="form-check-label"
+          for="AbpTenantManagement-UseSharedDatabase" [title]="'::INFO_UsetheSharedDatabase' | abpLocalization">{{'AbpTenantManagement::DisplayName:UseSharedDatabase'|abpLocalization}}</label>
+      </div>
+      <div class="form-group" *ngIf="!useTheSharedDatabase">
+        <label
+          for="AbpTenantManagement-ConnectionStrings">{{'AbpTenantManagement::ConnectionStrings'|abpLocalization}}</label>
+        <textarea type="text" id="AbpTenantManagement-ConnectionStrings" class="form-control"
+          name="AbpTenantManagement-ConnectionStrings" [(ngModel)]="defaultConnectionString" rows="10"></textarea>
+      </div>
+    </form>
+
+
+  </ng-template>
+  <ng-template #abpFooter>
+    <button abpClose type="button" class="btn btn-outline-primary">
+      {{ 'AbpTenantManagement::Cancel' | abpLocalization }}
+    </button>
+    <!-- <button type="button" class="btn btn-primary" *ngIf="!useTheSharedDatabase"
+            (click)="testDefaultConnectionString()">
+            {{ '::Test' | abpLocalization }}
+        </button> -->
+    <abp-button iconClass="fa fa-check" (click)="updateDefaultConnectionString()" [disabled]="tenantForm?.invalid">{{
+      'AbpTenantManagement::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+      <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Close' | abpLocalization }}
+      </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'Tenants'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>
+
+
+<abp-modal [(visible)]="isResetPassword" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpAccount::ResetPassword' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <form>
+      <div class="form-group" >
+        <label for="username">{{ 'AbpAccount::Username' | abpLocalization }}</label>
+        <input type="text" id="username" class="form-control" value="admin" name="username" readonly>
+      </div>
+      <div class="form-group" >
+        <label for="password">{{ 'AbpAccount::Password' | abpLocalization }}</label>
+        <input type="password" id="password" class="form-control" [(ngModel)]="updateTenantPasswordDto.password" name="password" required>
+      </div>
+    </form>
+
+
+  </ng-template>
+  <ng-template #abpFooter>
+    <button abpClose type="button" class="btn btn-outline-primary">
+      {{ 'AbpTenantManagement::Cancel' | abpLocalization }}
+    </button>
+    <!-- <button type="button" class="btn btn-primary" *ngIf="!useTheSharedDatabase"
+            (click)="testDefaultConnectionString()">
+            {{ '::Test' | abpLocalization }}
+        </button> -->
+    <abp-button iconClass="fa fa-check" (click)="resetPassword()" [disabled]="tenantForm?.invalid">{{
+      'AbpTenantManagement::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+      <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+      <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Close' | abpLocalization }}
+      </button>
+  </ng-template>
+</abp-modal>

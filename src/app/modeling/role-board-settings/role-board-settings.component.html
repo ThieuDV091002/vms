@@ -1,0 +1,355 @@
+<app-modeling-template [title]="'::MENU_RoleBoardSetting'" [data]="data" [objectType]="'RoleBoardSettings'"
+  [permissions]="{create: 'RoleBoardSetting.Create', edit: 'RoleBoardSetting.Edit', delete: 'RoleBoardSetting.Delete'}"
+  [columns]="columns" [list]="list" (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)"
+  (multiDelete)="multiDelete($event)" [toolbarButtons]="{'import': false, 'export': false}"
+  (dataViewHistory)="viewHistory($event)" [hasLastUpdate]="true" [copyDisabled]="true"
+  [placeholder]="'::LABEL_AreaSearch' | abpLocalization" [displayField]="'areaName'">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="accordion accordion-flush">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-area"
+                      [title]="'::INFO_Area' | abpLocalization">{{'::Area'|abpLocalization}}</label><span> * </span>
+                    <ng-select [items]="areas" appendTo="body" bindValue="id" bindLabel="displayName"
+                      [typeahead]="areaInput$" [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+                      formControlName="areaId" (change)="areaChange($event)">
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#mdsettings" type="button"
+              aria-controls="mdsettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::MENU_MinorStopagesRule' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="mdsettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="d-flex align-items-center">
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="form-group mb-2">
+                      <label
+                        [title]="'::INFO_MinorStopageDuration' | abpLocalization">{{'::LABEL_RoleBoardSettingMinorStopageDuration'
+                        | abpLocalization}}</label><span> *
+                      </span>
+                      <div class="input-container">
+                        <input type="text" class="form-control" maxlength="5"
+                          (input)="inputMaxLimit($event, 5, 'minorStoppageDurationMinutes')"
+                          formControlName="minorStoppageDurationMinutes" />
+                        <span class="input-unit">mins</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-3 ms-4">
+                    <div class="form-group mb-2">
+                      <label
+                        [title]="'::INFO_MinorStopageCount' | abpLocalization">{{'::LABEL_RoleBoardSettingMinorStopageCount'
+                        | abpLocalization}}</label><span> *
+                      </span>
+                      <div class="input-container">
+                        <input type="text" class="form-control" maxlength="5"
+                          (input)="inputMaxLimit($event, 5, 'minorStoppageCount')"
+                          formControlName="minorStoppageCount" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-1">
+                    <span class="input-unit mx-2">within</span>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-3">
+                    <div class="form-group mb-2">
+                      <label [title]="'::INFO_Duration' | abpLocalization">{{'::LABEL_RoleBoardSettingDuration' |
+                        abpLocalization}}</label><span> *
+                      </span>
+                      <div class="input-container">
+                        <input type="text" class="form-control" maxlength="5"
+                          (input)="inputMaxLimit($event, 5, 'minorStoppageWithinDurationMinutes')"
+                          formControlName="minorStoppageWithinDurationMinutes" />
+                        <span class="input-unit">mins</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="form-group mb-2">
+                  <label [title]="'::INFO_DisplayInstruction' | abpLocalization">{{'::LABEL_DisplayInstruction'
+                    | abpLocalization}}</label><span> *
+                  </span>
+                  <div class="input-container">
+                    <input id="role-board-setting-msr-instruction" type="text" class="form-control"
+                      formControlName="minorStoppageTaskDisplayInstruction" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#dnrules" type="button"
+              aria-controls="dnrules" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::MENU_DowntimeNotificationRule' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="dnrules" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <app-machine-downtime-settings [(settings)]="mdSettings" [localDowntimeReasons]="localDowntimeReasons"
+                [roles]="roles">
+              </app-machine-downtime-settings>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#orderChangeSettings"
+              type="button" aria-controls="orderChangeSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::MENU_IncomingTasksOrderChangeSetting' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="orderChangeSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <app-order-change-settings [(settings)]="orderChangeSettings" [roles]="roles"></app-order-change-settings>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#FGCollectionSettings"
+              type="button" aria-controls="FGCollectionSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::MENU_IncomingTasksFGCollectionSetting' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="FGCollectionSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-window"
+                      [title]="'::INFO_FGCollectionWindow' | abpLocalization">{{'::LABEL_IncomingFGCollectionWindow'|abpLocalization}}</label><span>
+                      * </span>
+                    <div class="input-container">
+                      <input type="text" class="form-control" (input)="inputMaxLimit($event, 5, 'fgCollectionWindow')"
+                        formControlName="fgCollectionWindow" maxlength="5" />
+                      <span class="input-unit">mins</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-area"
+                      [title]="'::INFO_Role' | abpLocalization">{{'::LABEL_Role'|abpLocalization}}</label><span>
+                      * </span>
+                    <ng-select [items]="roles" appendTo="body" bindValue="name" bindLabel="name"
+                      [typeahead]="roleInput$" formControlName="fgCollectionTaskRoleName">
+                      <ng-template ng-option-tmp let-item="item">
+                        <ng-template #tipContent>{{ item.description || 'No description available' }}</ng-template>
+                        <span [ngbTooltip]="tipContent" placement="right" container="body"
+                          tooltipClass="my-tooltip-class">
+                          {{ item.displayName || item.name }}
+                        </span>
+                      </ng-template>
+                      <ng-template ng-label-tmp let-item="item">
+                        {{ item.displayName || item.name }}
+                      </ng-template>
+                    </ng-select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-ocs-instruction"
+                      [title]="'::INFO_DisplayInstruction' | abpLocalization">{{'::LABEL_DisplayInstruction'|abpLocalization}}</label><span>
+                      * </span>
+                    <input id="role-board-setting-ocs-instruction" type="text" class="form-control"
+                      formControlName="fgCollectionDisplayInstruction" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#PLCIssueSettings" type="button"
+              aria-controls="PLCIssueSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_PLCIssueSettings' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="PLCIssueSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-plc-instruction"
+                      [title]="'::INFO_DisplayInstruction' | abpLocalization">{{'::LABEL_DisplayInstruction'|abpLocalization}}</label><span>
+                      * </span>
+                    <input id="role-board-setting-plc-instruction" type="text" class="form-control"
+                      formControlName="plcIssueDisplayInstruction" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#AutoConfirmatioErrorSettings"
+              type="button" aria-controls="AutoConfirmatioErrorSettings" aria-expanded="true"
+              [class.collapsed]="isCollapse">
+              {{ '::LABEL_AutoConfirmationErrorSettings' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="AutoConfirmatioErrorSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-aces-instruction"
+                      [title]="'::INFO_DisplayInstruction' | abpLocalization">{{'::LABEL_DisplayInstruction'|abpLocalization}}</label><span>
+                      * </span>
+                    <input id="role-board-setting-aces-instruction" type="text" class="form-control"
+                      formControlName="autoConfirmationDisplayInstruction" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#ScrapIncreaseSettings"
+              type="button" aria-controls="ScrapIncreaseSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_ScrapIncreaseSettings' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="ScrapIncreaseSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-scrap-instruction"
+                      [title]="'::INFO_DisplayInstruction' | abpLocalization">{{'::LABEL_DisplayInstruction'|abpLocalization}}</label><span>
+                      * </span>
+                    <input id="role-board-setting-scrap-instruction" type="text" class="form-control"
+                      formControlName="scrapIncreaseDisplayInstruction" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#MRLoadSettings" type="button"
+              aria-controls="MRLoadingSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_RoleBoardSettingMaterialRequestLoadSettings' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="MRLoadSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="alert-remaining-time"
+                      [title]="'::INFO_AlertRemainingTimeHour' | abpLocalization">{{'::LABEL_AlertRemainingTimeHour'|abpLocalization}}</label><span>
+                      * </span>
+                    <div class="input-container">
+                      <input type="text" class="form-control"
+                        (input)="inputMaxLimit($event, 5,'alertRemainingTimeMinutes')"
+                        formControlName="alertRemainingTimeMinutes" maxlength="5" name="alert-remaining-time" />
+                      <span class="input-unit">mins</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-group">
+                    <label for="role-board-setting-material-instruction"
+                      [title]="'::INFO_DisplayInstruction' | abpLocalization">{{'::LABEL_DisplayInstruction'|abpLocalization}}</label><span>
+                      * </span>
+                    <input id="role-board-setting-material-instruction" type="text" class="form-control"
+                      formControlName="materialLoadingDisplayInstruction" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#cellSettings" type="button"
+              aria-controls="cellSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::MENU_CellSetting' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="cellSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <app-role-board-cell-settings [(settings)]="cellSettings" [cells]="cells"></app-role-board-cell-settings>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal *ngIf="isHistoryModalVisible" [(isHistoryModalVisible)]="isHistoryModalVisible"
+  [historys]="historys">
+</app-history-modal>

@@ -1,0 +1,134 @@
+<div class="h-100 ps-2 pe-2 widget-page">
+    <div class="d-flex justify-content-between">
+        <div class="text-start">
+            <h5 *ngIf="!selected.extraProperties?.hideTitle">{{ selected.name | abpLocalization }}</h5>
+        </div>
+        <div class="text-end widget-toolbar">
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+            <span class="cursor-pointer" (click)="openSettings()">
+                <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+            </span>
+        </div>
+    </div>
+
+    <div class="site-info-container">
+        <!-- <div> -->
+            <!-- <div class="site-info-title">{{'::LABEL_SafetySiteInfo' | abpLocalization}}</div> -->
+            <div class="site-info-item d-flex flex-wrap flex-column w-100">
+                <div class="site-item-container">
+                    <div>
+                        <div class="d-flex">
+                            <div class="site-item-cion">
+                                <i class="fas fa-person-falling-burst"></i>
+                            </div>
+                            <div class="site-item-text">
+                                <div class="site-info-item-value">{{YTDAndSinceLastIncident?.noOfYTDIncidents || 0}}</div>
+                                <div class="site-info-item-title">{{'::LABEL_YTDIncidents' | abpLocalization}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="site-item-container">
+                    <div>
+                        <div class="d-flex">
+                            <div class="site-item-cion">
+                                <i class="fas fa-calendar-days"></i>
+                            </div>
+                            <div class="site-item-text">
+                                @if (YTDAndSinceLastIncident?.noOfDaysSinceLastIncidents) {
+                                    <div class="site-info-item-value">{{YTDAndSinceLastIncident?.noOfDaysSinceLastIncidents}}</div>
+                                    <div class="site-info-item-title">{{'::LABEL_days' | abpLocalization}} {{'::LABEL_SinceLastIncident' | abpLocalization}}</div>
+                                } @else {
+                                    <div class="site-info-item-title">{{'::LABEL_NoIncident' | abpLocalization}}</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="site-item-container">
+                    <div>
+                        <div class="d-flex">
+                            <div class="site-item-cion">
+                                <i class="fas fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="site-item-text">
+                                <div class="site-info-item-value">{{siteInfo?.noOfUnsafeConditions}}</div>
+                                <div class="site-info-item-title">{{'::LABEL_UnsafeConditions' | abpLocalization}}</div>
+                                <div class="site-info-tips">({{'::LABEL_RollingThirtyDays' | abpLocalization}})</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="site-item-container">
+                    <div>
+                        <div class="d-flex">
+                            <div class="site-item-cion">
+                                <i class="fas fa-circle-question"></i>
+                            </div>
+                            <div class="site-item-text">
+                                <div class="site-info-item-value">{{siteInfo?.noOfSafetySuggestion}}</div>
+                                <div class="site-info-item-title">{{'::LABEL_Suggestions' | abpLocalization}}</div>
+                                <div class="site-info-tips">({{'::LABEL_RollingThirtyDays' | abpLocalization}})</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- </div> -->
+    </div>
+</div>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        @if (form) {
+        <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
+            <div class="form-group mb-2">
+                <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+                <input type="text" id="widget-name" class="form-control" formControlName="title" autofocus />
+            </div>
+            <div class="form-group mb-2">
+                <div class="d-flex">
+                    <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+                        {{ '::Label_HideTitle' | abpLocalization }}
+                    </label>
+                    <div class="col-form-label ms-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="hide-title"
+                                formControlName="hideTitle" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-2">
+                <label for="widget-name" [title]="'::INFO_RefreshRateMin' | abpLocalization">{{'::LABEL_RefreshRateMin'|abpLocalization}}</label>
+                <input type="number" id="widget-name" class="form-control" formControlName="refreshRate" autofocus />
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner"></i></div>
+        }
+
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="saveSettings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>

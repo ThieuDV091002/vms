@@ -1,0 +1,32 @@
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 2px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+
+.area-huddle-table-header-label {
+    color: var(--lpx-content-text) !important;
+    font-weight: 500;
+}
+
+
+.area-huddle-kpi-table ::ng-deep.ngx-datatable.fixed-header .datatable-header .datatable-header-inner .datatable-header-cell:not(:last-child) {
+    border-right: 1px solid var(--lpx-content-text) !important;
+}
+
+.area-huddle-kpi-table ::ng-deep.ngx-datatable.material .datatable-body .datatable-body-row .datatable-body-cell:not(:last-child) {
+    border-right: 1px solid var(--lpx-content-text) !important;
+}
+
+.area-huddle-kpi-table ::ng-deep.ngx-datatable.fixed-header .datatable-header .datatable-header-inner .datatable-header-cell {
+    border-bottom: 1px solid var(--lpx-content-text) !important;
+}
+
+.empty-row-height {
+    height: 17.06px;
+}

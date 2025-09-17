@@ -1,0 +1,52 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+:host {
+  height: 100%;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 20px 0px 0px;
+  position: relative;
+  border: 1px solid var( --lpx-widget-border-color);
+}
+
+.assessment-rule-table-container {
+  height: calc(100% - 20px);
+
+  ngx-datatable {
+    height: 100%;
+
+    ::ng-deep {
+      >div {
+        height: 100% !important;
+
+        .datatable-body {
+          height: calc(100% - 5rem) !important;
+        }
+      }
+
+      .datatable-footer {
+        overflow: hidden;
+
+        .datatable-footer-inner {
+          height: 2rem !important;
+
+          .page-count,
+          .datatable-pager {
+            height: 2rem !important;
+            line-height: 2rem !important;
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
+}
+.dropdown-toggle::after {
+  display: none !important;
+}
+

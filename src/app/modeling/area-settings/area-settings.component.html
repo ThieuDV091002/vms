@@ -1,0 +1,359 @@
+<app-modeling-template [title]="'::MENU_AreaSetting'" [data]="data" [objectType]="'AreaSettings'" [copyPrefix]="'::LABEL_NewAreaSetting'"
+    [permissions]="{create: 'AreaSetting.Create', edit: 'AreaSetting.Edit', delete: 'AreaSetting.Delete', copy: 'AreaSetting.Copy', import: 'AreaSetting.Import', export: 'AreaSetting.Export'}"
+    [columns]="columns" [customAction]="" (customActionTrigger)="openPermissionsModal($event)" [list]="list" (copyModalOpen)="copyModalOpen($event)"
+    (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+    (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+    (copyData)="copySetting($event)" [hasLastUpdate]="true" [noNameCopy]="true" [noDisplayNameCopy]="true" [placeholder]="'::LABEL_AreaSearch' | abpLocalization">
+    <div class="form-group mb-2" id="copyCustomeField">
+      <label for="areaId">{{'::LABEL_NewArea'|abpLocalization}}</label><span> * </span>
+      <ng-select
+          #copyNgSelectField
+          id="areaId"
+          [items]="areas"
+          appendTo="body"
+          bindValue="id"
+          bindLabel="displayName"
+          [typeahead]="areaInput$"
+          [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization">
+          <ng-template ng-option-tmp let-item="item">
+            {{item.displayName}}
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.displayName}}
+          </ng-template>
+        </ng-select>
+    </div>
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+    <ng-template #abpHeader>
+      <div class="d-flex justify-content-between align-items-center header-width">
+        <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+        <div>
+          <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+            {{'::LABEL_ExpandAll' | abpLocalization}}
+          </button>
+          <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+            {{'::LABEL_CollapseAll' | abpLocalization}}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+            <div class="accordion accordion-flush">
+              <!-- genaral start -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+                    aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_General' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label for="area-setting-area" [title]="'::INFO_Area' | abpLocalization">{{'::Area'|abpLocalization}}</label><span> * </span>
+                          <ng-select
+                            id="area-setting-area"
+                            [items]="areas"
+                            appendTo="body"
+                            bindValue="id"
+                            bindLabel="displayName"
+                            [typeahead]="areaInput$"
+                            [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+                            formControlName="areaId"
+                            (change)="areaChange($event)">
+                            <ng-template ng-option-tmp let-item="item">
+                              {{item.displayName}}
+                            </ng-template>
+                            <ng-template ng-label-tmp let-item="item">
+                              {{ item.displayName}}
+                            </ng-template>
+                          </ng-select>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label for="kpi-review-type" [title]="'::INFO_KPIReviewType' | abpLocalization">{{'::LABEL_KPIReviewType'|abpLocalization}}</label><span> * </span>
+                          <select id="kpi-review-type" class="form-select" formControlName="kpiReviewType">
+                            <option *ngFor="let option of kpiReviewTypeOptions" [value]="option.value">{{ option.label | abpLocalization }} </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- general end -->
+              <!-- KPI settings start -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#KPISettings"
+                    type="button" aria-controls="KPISettings" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_KPISettings' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="KPISettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label
+                            for="area-setting-YearlyInternalQNsTarget" [title]="'::INFO_YearlyInternalQNsTarget' | abpLocalization">{{'::LABEL_YearlyInternalQNsTarget'|abpLocalization}}</label><span> * </span>
+                            <div class="input-container">
+                              <input id="area-setting-YearlyInternalQNsTarget" type="number" appInputNumber [min]="0"   class="form-control" formControlName="yearlyInternalQNsTarget" maxlength="5"/>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label
+                            for="area-setting-YearlyExternalQNsTarget" [title]="'::INFO_YearlyExternalQNsTarget' | abpLocalization">{{'::LABEL_YearlyExternalQNsTarget'|abpLocalization}}</label><span> * </span>
+                            <div class="input-container">
+                              <input id="area-setting-YearlyExternalQNsTarget" type="number" appInputNumber [min]="0"  class="form-control" formControlName="yearlyExternalQNsTarget" maxlength="5"/>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label
+                            for="area-setting-padt" [title]="'::INFO_PlanvsActualDiffTol' | abpLocalization">{{'::LABEL_PlanActualDiffTol'|abpLocalization}}</label><span> * </span>
+                            <div class="input-container">
+                                <input id="area-setting-padt" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)" class="form-control" formControlName="planActualDiffTol" maxlength="3"/>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label
+                            for="area-setting-unsafeConditionTarget" [title]="'::INFO_UnsafeConditionTarget' | abpLocalization">{{'::LABEL_UnsafeConditionTarget'|abpLocalization}}</label><span> * </span>
+                            <div class="input-container">
+                              <input id="area-setting-unsafeConditionTarget" type="number" appInputNumber [min]="0"  class="form-control" formControlName="unsafeConditionTarget" maxlength="5"/>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label
+                            for="area-setting-ftt" [title]="'::INFO_FPYTargetTol' | abpLocalization">{{'::LABEL_FPYTargetTol'|abpLocalization}}</label><span> * </span>
+                            <div class="input-container">
+                                <input id="area-setting-ftt" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)"  class="form-control" formControlName="fpyTargetTol" maxlength="3"/>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group mb-2">
+                          <label
+                            for="area-setting-stt" [title]="'::INFO_SPPMTargetTol' | abpLocalization">{{'::LABEL_SPPMTargetTol'|abpLocalization}}</label><span> * </span>
+                            <div class="input-container">
+                                <input id="area-setting-stt" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)"  class="form-control" formControlName="sppmTargetTol" maxlength="3"/>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- KPI settings end -->
+              <!-- Machine Focus KPI settings start-->
+              <div class="accordion-item" [ngClass]="{'d-none': !isMachineFocus}">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#machineFocusKPI" type="button"
+                    aria-controls="machineFocusKPI" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{'::LABEL_MachineFocusKPISettings' | abpLocalization}}
+                  </button>
+                </h2>
+                <div id="machineFocusKPI" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                                <label
+                                for="area-setting-mct" [title]="'::INFO_COPQperPureMachineTarget' | abpLocalization">{{'::LABEL_MachineCOPQTarget'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-mct" type="number" appInputNumber [min]="0" class="form-control" formControlName="machineCOPQTarget" maxlength="5"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                                <label
+                                for="area-setting-mctt" [title]="'::INFO_COPQperPureMachineTargetTol' | abpLocalization">{{'::LABEL_MachineCOPQTargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-mctt" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)" class="form-control" formControlName="machineCOPQTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                                <label
+                                for="area-setting-poeet" [title]="'::INFO_POEETarget' | abpLocalization">{{'::LABEL_POEETarget'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-poeet" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)"  class="form-control" formControlName="poeeTarget" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                                <label
+                                for="area-setting-poeett" [title]="'::INFO_POEETargetTol' | abpLocalization">{{'::LABEL_POEETargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-poeett" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)"  class="form-control" formControlName="poeeTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                                <label
+                                for="area-setting-ptt" [title]="'::INFO_PerformanceTargetTol' | abpLocalization">{{'::LABEL_PerformanceTargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-ptt" type="number"  appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)" class="form-control" formControlName="performanceTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                                <label
+                                for="area-setting-udttt" [title]="'::INFO_UnplannedDowntimeTargetTol' | abpLocalization">{{'::LABEL_UDTTargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-udttt" type="number"  appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)" class="form-control" formControlName="udtTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Machine Focus KPI settings end -->
+              <!-- Labor Focus KPI settings start-->
+              <div class="accordion-item"  [ngClass]="{'d-none': isMachineFocus}">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#laborFocusKPI" type="button"
+                    aria-controls="laborFocusKPI" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_LaborFocusKPISettings' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="laborFocusKPI" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                              <label
+                                for="area-setting-lct" [title]="'::INFO_COPQperTotalManHourTarget' | abpLocalization">{{'::LABEL_LaborCOPQTarget'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-lct" type="number"  appInputNumber [min]="0" class="form-control" formControlName="laborCOPQTarget" maxlength="5"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                              <label
+                                for="area-setting-lctt" [title]="'::INFO_COPQperTotalManHourTargetTol' | abpLocalization">{{'::LABEL_LaborCOPQTargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-lctt" type="number" appInputNumber [min]="0" [max]="100"  (input)="onInputLimit($event)" class="form-control" formControlName="laborCOPQTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                              <label
+                                for="area-setting-olet" [title]="'::INFO_OLETarget' | abpLocalization">{{'::LABEL_OLETarget'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-olet" type="number" appInputNumber [min]="0" class="form-control" formControlName="oleTarget" maxlength="5"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                              <label
+                                for="area-setting-olett" [title]="'::INFO_OLETargetTol' | abpLocalization">{{'::LABEL_OLETargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-olett" type="number"  appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)" class="form-control" formControlName="oleTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                              <label
+                                for="area-setting-uppht" [title]="'::INFO_UPPHTargetTol' | abpLocalization">{{'::LABEL_UPPHTargetTol'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-uppht" type="number" appInputNumber [min]="0" [max]="100" (input)="onInputLimit($event)" class="form-control" formControlName="upphTargetTol" maxlength="3"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Labor Focus KPI settings end -->
+              <!-- Financial settings start-->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#financialSettings" type="button"
+                    aria-controls="financialSettings" aria-expanded="true" [class.collapsed]="isCollapse">
+                    {{ '::LABEL_FinancialSettings' | abpLocalization }}
+                  </button>
+                </h2>
+                <div id="financialSettings" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                  <div class="accordion-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group mb-2">
+                              <label
+                                for="area-setting-cost-center" [title]="'::INFO_CostCenter' | abpLocalization">{{'::LABEL_CostCenter'|abpLocalization}}</label>
+                                <div class="input-container">
+                                    <input id="area-setting-cost-center" type="text" class="form-control" formControlName="costCenter"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Financial settings end -->
+            </div>
+
+          </form>
+          <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'AreaSettings'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

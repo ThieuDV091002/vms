@@ -1,0 +1,29 @@
+.input-container {
+    position: relative;
+    .input-unit {
+        position: absolute;
+        top: .7rem;
+        left: 4.2rem;
+    }
+}
+/* Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.header-width {
+    width: calc(100% - 40px);
+}
+
+::ng-deep .my-tooltip-class {
+    z-index: 99999999999 !important;
+    max-width: none;
+    white-space: nowrap;
+}

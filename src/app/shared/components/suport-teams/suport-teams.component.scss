@@ -1,0 +1,14 @@
+app-suport-teams{
+    .nav-item {
+        font-size: 20px;
+        color: var(--lpx-navbar-text-color);
+        span{
+          font-size: 10px;
+          color: white;
+        }
+      }
+}
+
+.support-team-modal {
+  max-width: 92% !important;
+}

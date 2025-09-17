@@ -1,0 +1,137 @@
+<abp-modal [(visible)]="visible" [busy]="modalBusy"
+  [options]="{ size: 'xl', scrollable: false }">
+  @if (data.entityDisplayName || entityDisplayName) {
+  <ng-template #abpHeader>
+    <h4>
+      {{ 'AbpPermissionManagement::Permissions' | abpLocalization }} -
+      {{ entityDisplayName || data.entityDisplayName }}
+    </h4>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="row">
+      <div class="col-md-4 scroll-in-modal">
+        <div class="form-check mb-2">
+          <input #selectAllInAllTabsRef type="checkbox"
+            id="select-all-in-all-tabs" name="select-all-in-all-tabs"
+            class="form-check-input" [(ngModel)]="selectAllTab"
+            (click)="onClickSelectAll()"
+            [disabled]="disabledSelectAllInAllTabs" />
+          <label class="form-check-label" for="select-all-in-all-tabs">{{
+            'AbpPermissionManagement::SelectAllInAllTabs' | abpLocalization
+            }}</label>
+        </div>
+
+        <hr class="mt-2 mb-2" />
+        <div class="overflow-auto">
+          <ul class="nav nav-pills flex-column">
+            @for (group of data.groups; track $index) {
+            <li class="nav-item">
+              @if ({ assignedCount: getAssignedCount(group.name) }; as count) {
+              <a class="nav-link pointer"
+                [class.active]="selectedGroup?.name === group?.name"
+                (click)="onChangeGroup(group)"
+                (select)="setDisabled(group.permissions)">
+                <div [class.font-weight-bold]="count.assignedCount">
+                  {{ group?.displayName }}
+                  @if (count.assignedCount > 0) {
+                  <span>({{ count.assignedCount }})</span>
+                  }
+                </div>
+              </a>
+              }
+            </li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-8 scroll-in-modal">
+        <div class="ps-1">
+          <div class="form-check mb-2">
+            <input #selectAllInThisTabsRef type="checkbox"
+              id="select-all-in-this-tabs" name="select-all-in-this-tabs"
+              class="form-check-input" [(ngModel)]="selectThisTab"
+              [disabled]="disableSelectAllTab"
+              (click)="onClickSelectThisTab()" />
+            <label class="form-check-label" for="select-all-in-this-tabs">
+              {{ selectedGroup?.displayName }}
+            </label>
+          </div>
+          <!-- <hr class="my-2" /> -->
+          <ng-container
+            *ngIf="selectedGroup?.displayName === 'Identity Management'; else defaultTemplate">
+            <ng-container
+              *ngFor="let permission of selectedGroupPermissions; trackBy: trackByIndex">
+              <ng-container *ngIf="permission.name === 'AbpIdentity.Roles'">
+                <div class="form-check mb-2" style="padding-left: 3rem;">
+                  <input type="checkbox" [checked]="isRoleManagementChecked()"
+                    (change)="onRoleManagementChange($event)" class="form-check-input"/>
+                    Role Management
+                </div>
+              </ng-container>
+              <ng-container *ngIf="permission.name === 'AbpIdentity.Users'">
+                <div class="form-check mb-2" style="padding-left: 3rem;">
+                  <input type="checkbox" [checked]="isUserManagementChecked()"
+                    (change)="onUserManagementChange($event)" class="form-check-input"/>
+                  User Management
+                </div>
+              </ng-container>
+              <div class="form-check mb-2" style="padding-left: 5rem;">
+                <input #permissionCheckbox type="checkbox"
+                  [checked]="getChecked(permission.name)"
+                  [value]="getChecked(permission.name)"
+                  [attr.id]="permission.name" class="form-check-input"
+                  [disabled]="isGrantedByOtherProviderName(permission.grantedProviders)"
+                  (click)="onClickCheckbox(permission, permissionCheckbox.value)" />
+                <label class="form-check-label" [attr.for]="permission.name">{{
+                  permission.displayName }}
+                  <ng-container *ngIf="!hideBadges">
+                    <ng-container
+                      *ngFor="let provider of permission.grantedProviders; trackBy: trackByIndex">
+                      <span class="badge bg-primary text-dark">{{
+                        provider.providerName }}: {{ provider.providerKey
+                        }}</span>
+                    </ng-container>
+                  </ng-container>
+                </label>
+              </div>
+            </ng-container>
+          </ng-container>
+          <ng-template #defaultTemplate>
+            <ng-container
+              *ngFor="let permission of selectedGroupPermissions; trackBy: trackByIndex">
+              <div class="form-check mb-2" style="padding-left: 3rem;">
+                <input #permissionCheckbox type="checkbox"
+                  [checked]="getChecked(permission.name)"
+                  [value]="getChecked(permission.name)"
+                  [attr.id]="permission.name" class="form-check-input"
+                  [disabled]="isGrantedByOtherProviderName(permission.grantedProviders)"
+                  (click)="onClickCheckbox(permission, permissionCheckbox.value)" />
+                <label class="form-check-label" [attr.for]="permission.name">{{
+                  permission.displayName }}
+                  <ng-container *ngIf="!hideBadges">
+                    <ng-container
+                      *ngFor="let provider of permission.grantedProviders; trackBy: trackByIndex">
+                      <span class="badge bg-primary text-dark">{{
+                        provider.providerName }}: {{ provider.providerKey
+                        }}</span>
+                    </ng-container>
+                  </ng-container>
+                </label>
+              </div>
+            </ng-container>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" (click)="submit()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+  }
+</abp-modal>

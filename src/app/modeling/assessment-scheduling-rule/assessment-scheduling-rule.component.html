@@ -1,0 +1,279 @@
+<app-modeling-template [title]="'::MENU_AssessmentSchedulingRule'" [data]="data" [list]="list"
+  [objectType]="'AssessmentSchedulingRule'" [placeholder]="'::LABEL_AssessmentSchedulingRule_Search' | abpLocalization"
+  [permissions]="{
+    create: 'AssessmentSchedulingRule.Create',
+    edit: 'AssessmentSchedulingRule.Edit',
+    delete: 'AssessmentSchedulingRule.Delete',
+    import: 'AssessmentSchedulingRule.Import',
+    export: 'AssessmentSchedulingRule.Export'
+  }" [hasLastUpdate]="true" [copyDisabled]="true" [columns]="[
+    {displayKey:'::Name', field: 'name'},
+    {displayKey:'::LABEL_Assessment_Type', field: 'assessmentTypeName'},
+    {displayKey:'::LABEL_DataTierType', field: 'dataTierType'},
+    {displayKey:'::LABEL_ScheduleType', field: 'scheduleType'},
+  ]" (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+  (export)="export($event)" (import)="import($event)" (exportAll)="exportAll($event)"
+  (dataViewHistory)="viewHistory($event)"
+  [toolbarButtons]="{create: true, multiDelete: true, import: false, export: false}">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{ centered: true, size: 'xl' }" class="custom-modal">
+  <ng-template #abpHeader>
+    <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="row">
+        <div class="col-4">
+          <div class="form-group mb-2">
+            <label for="assessment-scheduling-rule-name"
+              [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+            <input type="text" id="assessment-scheduling-rule-name" class="form-control" formControlName="name" autofocus
+              (input)="form.controls['displayName'].setValue($event.target.value)" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="assessment-scheduling-rule-displayName"
+              [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> *
+            </span>
+            <input type="text" id="assessment-scheduling-rule-displayName" class="form-control"
+              formControlName="displayName" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="assessment-scheduling-rule-description"
+              [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+            <input type="text" id="assessment-scheduling-rule-description" class="form-control"
+              formControlName="description" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="assessment-scheduling-rule-assessment-type"
+              [title]="'::LABEL_Assessment_Type' | abpLocalization">{{'::LABEL_Assessment_Type'|abpLocalization}}</label><span>
+              * </span>
+            <ng-select #select id="assessment-scheduling-rule-assessment-type"
+              [appendTo]="'body'"
+              [items]="assessmentTypeList"
+              [searchable]="false"
+              formControlName="assessmentType"
+              bindLabel="displayName"
+              bindValue="id"
+              (change)="selectscheduleTypeChange($event)"
+              [clearable]="this.form.controls['assessmentType'].value ? true : false">
+              <ng-template ng-header-tmp>
+                  <input #search type="search" (input)="assessmentTypeFilterChange($event.target.value)" style="width: 100%;"/>
+              </ng-template>
+            </ng-select>
+          </div>
+          <div class="form-group mb-2">
+            <label for="assessment-scheduling-rule-datatier-type"
+              [title]="'::LABEL_DataTierType' | abpLocalization">{{'::LABEL_DataTierType'|abpLocalization}}</label><span>
+              * </span>
+            <select class="form-select" formControlName="dataTierType" id="assessment-scheduling-rule-datatier-type">
+              <option *ngFor="let dataTierType of dataTierTypeOptions" [ngValue]="dataTierType">
+                {{dataTierType}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group mb-2">
+            <label for="assessment-scheduling-rule-datatiers"
+              [title]="'::LABEL_DataTiers' | abpLocalization">{{'::LABEL_DataTiers'|abpLocalization}}</label><span> *
+            </span>
+            <!-- <multiple-select
+              [items]="form.controls['dataTierType'].value ? (form.controls['dataTierType'].value === 'Cell' ? cellList : areaList) : []"
+              displayName="name" valueName="id" (change)="selectedDataTiersChanges($event)"
+              [values]="form.controls['dataTiers'].value">
+            </multiple-select> -->
+            @if (form.controls['dataTierType'].value === 'Area' || !form.controls['dataTierType'].value) {
+              <ng-select
+                id="assessment-scheduling-rule-datatiers"
+                [items]="areaList"
+                appendTo="body"
+                bindValue="id"
+                bindLabel="displayName"
+                [typeahead]="areaInput$"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+                formControlName="dataTiers">
+                <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  <span class="ng-value-label">{{item.displayName }}</span>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                    <span>{{item.displayName }}</span>
+                </ng-template>
+              </ng-select>
+            }@else {
+              <ng-select
+                id="assessment-scheduling-rule-datatiers"
+                [items]="cellList"
+                appendTo="body"
+                bindValue="id"
+                bindLabel="displayName"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                [typeahead]="cellInput$"
+                [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+                formControlName="dataTiers">
+                <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                  <span class="ng-value-label">{{item.displayName}}</span>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                    <span>{{item.displayName}}</span>
+                </ng-template>
+              </ng-select>
+            }
+          </div>
+        </div>
+        <div class="col-8">
+          <app-assessment-scheduling-rule-teams [(teams)]="teams" (teamsChange)="onTeamsChange($event)">
+          </app-assessment-scheduling-rule-teams>
+          <div id="assessment-scheduling-rule-schedule" class="mt-2">
+            <div class="row">
+              <div class="col-4">
+                <div class="d-flex gap-6 align-items-center items-center vertical-align: middle">
+                  <div class="form-group mb-2 " style="min-width: 200px;">
+                    <label for="scheduleType"
+                      [title]="'::LABEL_ScheduleType' | abpLocalization">{{'::LABEL_ScheduleType'|abpLocalization}}</label><span> * </span>
+                    <select class="form-select" formControlName="scheduleType">
+                      <option *ngFor="let type of scheduleTypeOptions" [ngValue]="type">
+                        {{type}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-check form-switch right-action d-flex align-items-center gap-2" style="margin-right: 120px;white-space: nowrap;margin-top: 10px;">
+                    <label class="me-2 d-inline-block" style="white-space: nowrap;"  [title]="'::LABEL_AutoScheduling' | abpLocalization">
+                          {{ '::LABEL_AutoScheduling' | abpLocalization }}
+                    </label>
+                    <i 
+                      [ngClass]="['fa', form?.controls['autoScheduling']?.value ? 'text-success fa-toggle-on' : 'text-danger fa-toggle-off']"
+                      (click)="toggleAutoScheduling()"
+                      style="cursor: pointer; font-size: 1.5rem; position: relative;vertical-align: middle; "
+                      > </i>
+                    <label class="form-check-label" for="autoScheduling" style="display: none;"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="hasScheduleType">
+              <div class="col-4">
+                <div class="form-group mb-2" style="margin-top: 31px;">
+                  <label for="startDate"
+                    [title]="'::LABEL_StartDate' | abpLocalization">{{'::LABEL_StartDate'|abpLocalization}}</label><span>
+                    * </span>
+                  <!-- <div class="task-due-date due-date-editor">
+                    <span>{{ this.form.controls['startDate'].value | date: 'dd MMM yyyy'}}</span>
+                    <input type="date" id="startDate" class="form-control" #dateInput formControlName="startDate" [min]="today">
+                  </div> -->
+                   <input type="text" class="form-control" formControlName="startDate" [minDate]="today" bsDatepicker
+                      [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group mb-2">
+                  <label for="startTime"
+                    [title]="'::LABEL_StartTime' | abpLocalization">{{'::LABEL_StartTime'|abpLocalization}}</label><span>
+                    * </span>
+                  <timepicker
+                    formControlName="startTime"
+                    id="startTime"
+                    [minuteStep]="15">
+                  >
+                  </timepicker>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group mb-2" style="margin-top: 31px;">
+                  <label for="assessmentDuration"
+                    [title]="'::LABEL_AssessmentDuration' | abpLocalization">{{'::LABEL_AssessmentDuration'|abpLocalization}}</label><span>
+                    * </span>
+                  <input appInputNumber class="form-control" formControlName="asssessmentDuration" min="0" />
+                </div>
+              </div>
+            </div>
+            <div *ngIf="hasScheduleType && currentScheduleType !== 'ONCE'">
+              <div class="row">
+                <div class="col-4">
+                  <div class="form-group mb-2">
+                    <div class="form-group mb-2">
+                      <label for="assessment-scheduling-rule-assessment-repeat-evey"
+                        [title]="'::LABEL_RepeatEvery' | abpLocalization">{{'::LABEL_RepeatEvery'|abpLocalization}}</label><span>* </span>
+                      <input appInputNumber class="form-control" formControlName="repeatEvery" min="1"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 d-flex align-items-center">
+                  <label class="me-3 mt-1" *ngIf="currentScheduleType === 'WEEKLY'" >{{'::LABEL_RepeatEveryWeek'|abpLocalization}}</label>
+                  <label class="me-3 mt-1" *ngIf="currentScheduleType === 'MONTHLY'" >{{'::LABEL_RepeatEveryMonth'|abpLocalization}}</label>
+                  <input class="form-check-input mt-1" type="checkbox" formControlName="weekDaysOnly" (change)="weekdaysOnlyChange($event)"/>
+                  <label [title]="'::LABEL_WeekDaysOnly' | abpLocalization" class="ms-1 mt-1">{{'::LABEL_WeekDaysOnly'|abpLocalization}}</label>
+                </div>
+              </div>
+              <div class="form-group mb-2">
+                <label for="assessment-scheduling-rule-schedule-on" class="mb-1" [title]="'::LABEL_ScheduleOn' | abpLocalization">{{'::LABEL_ScheduleOn'|abpLocalization}}</label><span> * </span>
+                <div class="d-flex">
+                  <ng-container *ngFor="let day of days">
+                    <button type="button" class="btn circle-button rounded-circle me-2"
+                            [ngClass]="{'btn-outline-primary': !form.get(day.control).value, 'btn-primary': form.get(day.control).value}"
+                            (click)="toggleDay(day.control)"
+                            *ngIf="!form.get('weekDaysOnly').value || day.isWeekday">
+                      {{ day.label }}
+                    </button>
+                  </ng-container>
+                </div>
+                <div *ngIf="form.touched && form.errors?.atLeastOneDayRequired" class="text-danger">
+                  {{'::LABEL_ThisFieldIsRequired'|abpLocalization}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-5">
+                  <div class="form-group mb-2">
+                    <label for="noOfAssessmentPerDataTier"
+                      [title]="'::LABEL_NoOfAssessmentPerDataTier' | abpLocalization">{{'::LABEL_NoOfAssessmentPerDataTier'|abpLocalization}}</label><span> * </span>
+                    <select class="form-select" formControlName="noOfAssessmentPerDataTier">
+                      <option *ngFor="let option of noOfAssessmentPerDataTierOptions" [ngValue]="option">
+                        {{option}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-7">
+                  <label class="ms-2 mt-3" style="color: red">{{'::LABEL_NoOfAssessmentPerDataTierMaxValue'|abpLocalization}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+      <div class="text-start">
+        <div class="form-group" *ngIf="selected.lastAssessmentDate">
+          <label [title]="'::LABEL_LastAssessmentDate' | abpLocalization">{{'::LABEL_LastAssessmentDate'|abpLocalization}}</label>
+          <input type="text" class="form-control" [value]="selected.lastAssessmentDate | date: 'dd MMM yyyy hh:mm a'" disabled>
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid || !isTeamVaild()" (click)="save()" class="ms-2">
+          {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+      </div>
+    </div>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>

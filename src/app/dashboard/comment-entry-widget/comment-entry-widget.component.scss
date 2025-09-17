@@ -1,0 +1,63 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+
+:host ::ng-deep .page-count {
+    text-align: start;
+}
+
+:host ::ng-deep .row.entry-row {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+}
+
+.shift-comment-card {
+    padding-left: 0.1rem !important;
+    padding-right: 0.1rem !important;
+    height: 95% !important;
+}
+
+.page-button {
+    position: absolute;
+    top: 45%;
+    font-size: 1.5rem;
+    padding: 2.5rem 0rem;
+    background-color: var(--lpx-light);
+    &:hover {
+        color: var(--lpx-primary);
+        background-color: var(--lpx-content-bg);
+    }
+    &.previous {
+        left: 0rem;
+    }
+    &.next {
+        right: 0rem;
+    }
+}
+
+.loading-container {
+    position: absolute;
+    top: 57%;
+}
+
+::ng-deep.confirmation .confirmation-dialog .content .message {
+    overflow-wrap: break-word !important;
+}
+
+.shift-comment-container {
+    height: calc(100% - 50px);
+    padding-left: 15px;
+    padding-right: 15px;
+}
+

@@ -1,0 +1,217 @@
+<app-modeling-template [title]="'::MENU_ProductionReviewBoardSetting'" [data]="data"
+    [objectType]="'ProductionReviewBoardSetting'" [copyPrefix]="'::LABEL_NewProductionReviewBoardSetting'"
+    [placeholder]="'::LABEL_SearchName' | abpLocalization"
+    [permissions]="{create: 'ProductionReviewBoardSetting.Create', edit: 'ProductionReviewBoardSetting.Edit', delete: 'ProductionReviewBoardSetting.Delete', copy: 'ProductionReviewBoardSetting.Copy', import: 'ProductionReviewBoardSetting.Import', export: 'ProductionReviewBoardSetting.Export'}"
+    [columns]="columns" [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))"
+    (multiDelete)="multiDelete($event)" (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)"
+    (export)="export($event)" (exportAll)="exportAll($event)" (import)="import($event)"
+    (dataViewHistory)="viewHistory($event)">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center header-width">
+            <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                    {{'::LABEL_ExpandAll' | abpLocalization}}
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                    {{'::LABEL_CollapseAll' | abpLocalization}}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (productionReviewBoardSettingForm) {
+        <form [formGroup]="productionReviewBoardSettingForm" (ngSubmit)="save()">
+            <div class="accordion accordion-flush">
+                <!-- genaral start -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general"
+                            type="button" aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+                            {{ '::LABEL_General' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group mb-2">
+                                        <label for="activity-card-type-name"
+                                            [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span>
+                                            * </span>
+                                        <input type="text" id="activity-card-type-name" class="form-control"
+                                            formControlName="name" autofocus
+                                            (input)="productionReviewBoardSettingForm.controls['displayName'].setValue($event.target.value)" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group mb-2">
+                                        <label for="activity-card-type-displayName"
+                                            [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span>
+                                            *</span>
+                                        <input type="text" id="activity-card-type-displayName" class="form-control"
+                                            formControlName="displayName" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group mb-2">
+                                        <label for="activity-card-type-description"
+                                            [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                                        <input type="text" id="activity-card-type-description" class="form-control"
+                                            formControlName="description" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-group mb-2">
+                                        <label
+                  [title]="'::INFO_ProductionReviewType' | abpLocalization">{{'::LABEL_ProductionReviewType'|abpLocalization}}</label> <span>
+                                            * </span>
+                                        <select class="form-select" formControlName="reviewType">
+                                            <option value="Hourly">{{'::LABEL_ProductionReviewTypeHourly'|abpLocalization}}</option>
+                                            <option value="WholeDay">{{'::LABEL_ProductionReviewTypeWholeDay'|abpLocalization}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group List start -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#groupList"
+                            type="button" aria-controls="groupList" aria-expanded="true" [class.collapsed]="isCollapse">
+                            {{ '::LABEL_GroupList' | abpLocalization }} <span class="text-danger">*</span>
+                        </button>
+                    </h2>
+                    <div id="groupList" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row fw-bold border-bottom pb-2 mb-2">
+                                <div class="col-6">{{ '::LABEL_FieldName' | abpLocalization }}</div>
+                                <div class="col-3">{{ '::LABEL_GroupLevel' | abpLocalization }}</div>
+                                <div class="col-3">{{ '::LABEL_DisplaySequence' | abpLocalization }}</div>
+                            </div>
+                            <div class="row align-items-center mb-2" *ngFor="let r of groupRows; let i = index">
+                                <div class="col-6">{{ r.localization | abpLocalization}}</div>
+                                <div class="col-3">
+                                    <select 
+                                        class="form-select" 
+                                        [(ngModel)]="groupRows[i].groupLevel"
+                                        [ngModelOptions]="{standalone: true}">
+                                        <option value="" disabled selected></option>
+                                        <option *ngFor="let lv of groupLevels" [value]="lv">{{ lv }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-3">
+                                    <input 
+                                        class="form-control" 
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        [(ngModel)]="groupRows[i].displaySeq" 
+                                        [ngModelOptions]="{standalone: true}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Group List end -->
+
+                <!-- Display List start -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#displayList"
+                            type="button" aria-controls="displayList" aria-expanded="true" [class.collapsed]="isCollapse">
+                             {{ '::LABEL_DisplayList' | abpLocalization }} <span class="text-danger">*</span>
+                        </button>
+                    </h2>
+                    <div id="displayList" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <!-- selected list -->
+                            <div cdkDropList class="list-group mb-3" (cdkDropListDropped)="dropDisplay($event)">
+                                <div class="list-group-item d-flex justify-content-between align-items-center selectable"
+                                     *ngFor="let f of selectedDisplayFields; let i = index"
+                                     cdkDrag cdkDragLockAxis="y"
+                                     [class.active]="hoveredIndex === i"
+                                     (mouseenter)="hoveredIndex = i"
+                                     (mouseleave)="hoveredIndex = null">
+                                    <div class="d-flex align-items-center">
+                                        <span cdkDragHandle class="drag-handle" [title]="'::LABEL_Drag' | abpLocalization" [attr.aria-label]="'::LABEL_DragHandle' | abpLocalization">
+                                            <i class="fa fa-bars me-2" aria-hidden="true"></i>
+                                        </span>
+                                        <span>{{ f | abpLocalization }}</span>
+                                    </div>
+                                    <button type="button" class="btn btn-link text-danger p-0" (click)="removeDisplayField(i)" [title]="'::LABEL_Remove' | abpLocalization" [attr.aria-label]="'::LABEL_Remove' | abpLocalization">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                    <ng-template cdkDragPreview>
+                                        <div class="list-group-item preview">
+                                            <i class="fa fa-bars me-2" aria-hidden="true"></i>
+                                            {{ f | abpLocalization }}
+                                        </div>
+                                    </ng-template>
+                                    <ng-template cdkDragPlaceholder>
+                                        <div class="list-group-item placeholder"></div>
+                                    </ng-template>
+                                </div>
+                            </div>
+
+                            <div class="text-muted small mb-2">{{ '::LABEL_DragDropReorderFields' | abpLocalization }}</div>
+
+                            <div class="input-group">
+                                <select class="form-select" [(ngModel)]="addDisplayFieldSelection" [ngModelOptions]="{standalone: true}">
+                                    <option value="" disabled selected>{{ '::Select' | abpLocalization }}</option>
+                                    @for (opt of displayFieldOptions; track $index) {
+                                        <option [value]="opt" [disabled]="selectedDisplayFields.includes(opt)">{{ opt | abpLocalization }}</option>
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-outline-primary" (click)="addDisplayField(addDisplayFieldSelection)">{{ '::LABEL_AddColumn' | abpLocalization }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Display List end -->
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="productionReviewBoardSettingForm?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal *ngIf="isHistoryModalVisible" [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm *ngIf="importConfirmVisible" [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData" [objectType]="'ProductionReviewBoardSetting'" (customeImport)="customeImport($event)">
+</app-import-confirm>

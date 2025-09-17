@@ -1,0 +1,26 @@
+<div class="datatable-footer-inner" [ngClass]="{ 'selected-count': selectedMessage }" [style.height.px]="footerHeight">
+  <div class="page-count d-flex align-items-center">
+    <div class="selected-count-wrapper">
+      <span *ngIf="selectedMessage"> {{ selectedCount?.toLocaleString() }} {{'::LABEL_Selected' | abpLocalization}} / </span>
+      {{ rowCount?.toLocaleString() }} {{'::LABEL_Total' | abpLocalization}}
+    </div>
+    <div class="ms-2" *ngIf="showPageSizeSelect">
+      <select class="form-select form-select-sm" [(ngModel)]="maxResultCount" (ngModelChange)="maxResultCountChange()">
+        <option value="10">10 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="15">15 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="20">20 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="30">30 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="50">50 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="100">100 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="200">200 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="500">500 / {{'::LABEL_Page' | abpLocalization}}</option>
+        <option value="1000">1000 / {{'::LABEL_Page' | abpLocalization}}</option>
+      </select>
+    </div>
+  </div>
+
+  <datatable-pager [pagerLeftArrowIcon]="pagerLeftArrowIcon" [pagerRightArrowIcon]="pagerRightArrowIcon"
+    [pagerPreviousIcon]="pagerPreviousIcon" [pagerNextIcon]="pagerNextIcon" [page]="curPage" [size]="pageSize"
+    [count]="rowCount" [hidden]="!isVisible" (change)="pageChange($event)">
+  </datatable-pager>
+</div>

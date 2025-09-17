@@ -1,0 +1,32 @@
+<div class="modal-header d-flex justify-content-end">
+  <button class="btn" (click)="closeScanner()">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+
+<div class="modal-body">
+  <zxing-scanner #scanner [torch]="torchEnabled" [enable]="scannerEnabled" [device]="currentDevice?.deviceId"
+    [formats]="formatsEnabled" (camerasFound)="onCamerasFound($event)"
+    (scanSuccess)="handleScanSuccess($event)"></zxing-scanner>
+  <div class="scan-overlay">
+    <div class="scan-line"></div>
+  </div>
+  <div class="permission-message" *ngIf="!hasPermission">
+    <p>Please enable camera access to use the scanner.</p>
+  </div>
+</div>
+
+
+<div class="modal-footer">
+  <button class="btn" (click)="toggleTorch()">
+    <i class="fas" [ngClass]="{'fa-lightbulb': torchEnabled, 'fa-lightbulb-o': !torchEnabled}"></i>
+  </button>
+  <!-- Camera selection -->
+  <div class="camera-select" *ngIf="availableDevices.length > 1">
+    <select [(ngModel)]="currentDevice" (change)="changeCamera(currentDevice)">
+      <option *ngFor="let device of availableDevices" [ngValue]="device">
+        {{ device.label }}
+      </option>
+    </select>
+  </div>
+</div>

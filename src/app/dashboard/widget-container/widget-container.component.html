@@ -1,0 +1,182 @@
+<app-standard-widget *ngIf="widget?.widgetName === 'standard'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (updateChange)="widgetUpdate.emit($event)" [queryId]="queryId"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  (expandChange)="expandChange.emit($event)">
+</app-standard-widget>
+
+<app-support-team-widget *ngIf="widget?.widgetName === 'supportTeam'" [selectedWidget]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier" [queryId]="queryId">
+</app-support-team-widget>
+
+<app-link-widget *ngIf="widget?.widgetName === 'links'" [selectedWidget]="widget" [index]="index" [queryId]="queryId"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)">
+</app-link-widget>
+
+<app-power-bi-widget *ngIf="widget?.widgetName === 'powerBI'" [selected]="widget" [index]="index" [expandChart]="expandChart"
+  [selectedDataTier]="selectedDataTier" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)" [queryId]="queryId" [isWidget]="true" isWidget="true">
+</app-power-bi-widget>
+
+<app-url-widget *ngIf="widget?.widgetName === 'Hyperlink'" [selected]="widget" [index]="index" [expandChart]="expandChart"
+  [selectedDataTier]="selectedDataTier" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)" [queryId]="queryId">
+</app-url-widget>
+
+<app-comment-entry-widget *ngIf="widget?.widgetName === 'shiftComment'" [selected]="widget" [expandChart]="expandChart"
+  [index]="index" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier" [queryId]="queryId">
+</app-comment-entry-widget>
+
+<app-comment-display-widget *ngIf="widget?.widgetName === 'commentPage'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier" [queryId]="queryId">
+</app-comment-display-widget>
+
+<app-activity-card-widget *ngIf="widget?.widgetName === 'activityCard'" [viewMode]="homePage || queryId"
+  [selectedWidget]="widget" [index]="index" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)">
+</app-activity-card-widget>
+
+<app-production-data-management *ngIf="widget?.widgetName === 'laborData'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [type]="'laborData'" [queryId]="queryId">
+</app-production-data-management>
+
+<app-production-data-management *ngIf="widget?.widgetName === 'productionQtyData'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [type]="'productionQtyData'" [queryId]="queryId">
+</app-production-data-management>
+
+<app-production-data-management *ngIf="widget?.widgetName === 'scrapQtyData'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [type]="'scrapQtyData'" [queryId]="queryId">
+</app-production-data-management>
+
+<app-production-data-management *ngIf="widget?.widgetName === 'reworkQtyData'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [type]="'reworkQtyData'" [queryId]="queryId">
+</app-production-data-management>
+
+<app-production-data-management *ngIf="widget?.widgetName === 'downtimeData'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [type]="'downtimeData'" [queryId]="queryId">
+</app-production-data-management>
+
+<app-production-data-management *ngIf="widget?.widgetName === 'breaktimeData'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" [type]="'breaktimeData'" [queryId]="queryId">
+</app-production-data-management>
+
+<app-safety-site-info-widget *ngIf="widget?.widgetName === 'safetySiteInfo'" [selected]="widget" [index]="index" [queryId]="queryId"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)">
+</app-safety-site-info-widget>
+
+<app-zero-incident-by-days-widget *ngIf="widget?.widgetName === 'zeroIncidentByDays'" [selected]="widget"
+  [index]="index" [expandChart]="expandChart" [selectedDataTier]="selectedDataTier" [queryId]="queryId"
+  (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [type]="'incident'">
+</app-zero-incident-by-days-widget>
+
+<app-zero-incident-by-days-widget *ngIf="widget?.widgetName === 'unsafeConditionCount'" [selected]="widget"
+  [index]="index" [expandChart]="expandChart" [selectedDataTier]="selectedDataTier" [queryId]="queryId"
+  (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [type]="'unsafe'">
+</app-zero-incident-by-days-widget>
+
+<app-quality-calendar-widget *ngIf="widget?.widgetName === 'qualityCalendar'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" [selectedDataTier]="selectedDataTier" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)" [type]="'quality'" [queryId]="queryId" [isFPY]="isFPY" [dataTierTreeNode]="haveAccessTreeNode">
+</app-quality-calendar-widget>
+
+<app-quality-calendar-widget *ngIf="widget?.widgetName === 'performanceCalendar'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" [selectedDataTier]="selectedDataTier" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)" [type]="'performance'" [queryId]="queryId" [isUPPH]="isUPPH" [dataTierTreeNode]="haveAccessTreeNode">
+</app-quality-calendar-widget>
+
+<app-quality-calendar-widget *ngIf="widget?.widgetName === 'availabilityCalendar'" [selected]="widget" [index]="index"
+  [expandChart]="expandChart" [selectedDataTier]="selectedDataTier" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)" [type]="'availability'" [queryId]="queryId" [dataTierTreeNode]="haveAccessTreeNode">
+</app-quality-calendar-widget>
+
+<app-assessment-widget *ngIf="widget?.widgetName === 'myAssessment'" [viewMode]="homePage || queryId"
+  [selectedWidget]="widget" [index]="index" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)"
+  (updateChange)="widgetUpdate.emit($event)">
+</app-assessment-widget>
+
+<app-assessment-rule *ngIf="widget?.widgetName === 'assessmentRule'" [selectedWidget]="widget" [index]="index"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier" [queryId]="queryId">
+</app-assessment-rule>
+
+<app-todo-list-manage-widget *ngIf="widget?.widgetName === 'todoListManage'" [selectedWidget]="widget" [index]="index" [queryId]="queryId"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  (updateChange)="widgetUpdate.emit($event)">
+</app-todo-list-manage-widget>
+
+<app-broadcast-message-management *ngIf="widget?.widgetName === 'broadcastMessageManagement'" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+[expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-broadcast-message-management>
+
+<app-broadcast-message-view *ngIf="widget?.widgetName === 'broadcastMessageView'" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+[expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (broadcastMsgListChange)="broadcastMsgListChange.emit()" (updateChange)="widgetUpdate.emit($event)"  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-broadcast-message-view>
+
+<app-cell-huddle-chart-widget *ngIf="widget?.widgetName === 'cellHuddleQualityChart'" [type]="'Quality'" [isFPY]="isFPY" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+[expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [dataTierTreeNode]="haveAccessTreeNode">
+</app-cell-huddle-chart-widget>
+
+<app-cell-huddle-chart-widget *ngIf="widget?.widgetName === 'cellHuddlePerformanceChart'" [type]="'Performance'" [isUPPH]="isUPPH" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+[expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [dataTierTreeNode]="haveAccessTreeNode">
+</app-cell-huddle-chart-widget>
+
+<app-cell-huddle-chart-widget *ngIf="widget?.widgetName === 'cellHuddleAvailabilityChart'"  [type]="'Availability'" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+[expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [dataTierTreeNode]="haveAccessTreeNode">
+</app-cell-huddle-chart-widget>
+
+<app-area-huddle-chart *ngIf="widget?.widgetName === 'areaHuddleCOPQChart'" [type]="'COPQ'" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [dataTierTreeNode]="haveAccessTreeNode">
+</app-area-huddle-chart>
+
+<app-area-huddle-chart *ngIf="widget?.widgetName === 'areaHuddlePOEEChart'" [type]="'POEE'" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)" [dataTierTreeNode]="haveAccessTreeNode">
+</app-area-huddle-chart>
+
+<app-area-huddle-qn-table *ngIf="widget?.widgetName === 'areaHuddleQNTable'" [selected]="widget" [index]="index" [queryId]="queryId" [selectedDataTier]="selectedDataTier"
+[expandChart]="expandChart" (expandChange)="expandChange.emit($event)" (updateChange)="widgetUpdate.emit($event)">
+</app-area-huddle-qn-table>
+
+<app-kanban-board *ngIf="widget?.widgetName === 'kanBanBoard'" [class.has-header]="!queryId" [queryId]="queryId" [selected]="widget" [index]="index" (updateChange)="widgetUpdate.emit($event)"
+  [selectedDataTier]="selectedDataTier" [defaultDataTierLevel]="defaultDataTierLevel">
+</app-kanban-board>
+
+<app-area-huddle-kpi-table *ngIf="widget?.widgetName === 'areaHuddleKPITable'" [selectedDataTier]="selectedDataTier" [index]="index" [queryId]="queryId" [selected]="widget"
+(updateChange)="widgetUpdate.emit($event)" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" [dataTierTreeNode]="haveAccessTreeNode">
+</app-area-huddle-kpi-table>
+
+<app-my-todo-list-widget *ngIf="widget?.widgetName === 'mytodoList'" [selectedWidget]="widget" [index]="index" [queryId]="queryId"
+  [expandChart]="expandChart" (expandChange)="expandChange.emit($event)"
+  [dataTierTreeNode]="haveAccessTreeNode" [selectedDataTier]="selectedDataTier"
+  (updateChange)="widgetUpdate.emit($event)"></app-my-todo-list-widget>
+
+  <app-top-downtime-reasons-chart-widget *ngIf="widget?.widgetName === 'topFiveDowntimeReasons'" [selectedDataTier]="selectedDataTier" [index]="index" [queryId]="queryId" [selected]="widget" [productionDataParams]="productionDataParams"
+(updateChange)="widgetUpdate.emit($event)" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)">
+</app-top-downtime-reasons-chart-widget>
+
+<app-top-performance-products-chart-widget *ngIf="widget?.widgetName === 'topFiveProductPerformanceReasons'" [selectedDataTier]="selectedDataTier" [index]="index" [queryId]="queryId" [selected]="widget" [productionDataParams]="productionDataParams"
+(updateChange)="widgetUpdate.emit($event)" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)">
+</app-top-performance-products-chart-widget>
+
+<app-top-scrap-reasons-chart-widget *ngIf="widget?.widgetName === 'topFiveScrapReasons'" [selectedDataTier]="selectedDataTier" [index]="index" [queryId]="queryId" [selected]="widget" [productionDataParams]="productionDataParams"
+(updateChange)="widgetUpdate.emit($event)" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)">
+</app-top-scrap-reasons-chart-widget>
+
+
+<app-production-review-table *ngIf="widget?.widgetName === 'productionReviewTable'" [selectedDataTier]="selectedDataTier" [index]="index" [queryId]="queryId" [selected]="widget" [productionDataParams]="productionDataParams"
+(updateChange)="widgetUpdate.emit($event)" [expandChart]="expandChart" (expandChange)="expandChange.emit($event)" [isYesterday]="isYesterdayInProductionReview">
+</app-production-review-table>

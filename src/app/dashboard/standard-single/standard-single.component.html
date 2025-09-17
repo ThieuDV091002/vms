@@ -1,0 +1,228 @@
+<div class="widget-page h-100">
+  <div class="standard-title-container text-start mb-1">
+    <div class="col title">
+      <h5 [title]="selected.name">{{selected.name}}</h5>
+    </div>
+    <div class="col widget-toolbar">
+      <div class="text-end">
+        <span class="me-1 cursor-pointer" [class.cursor-progress]="favoriteUpdating" (click)="favorite()" *abpPermission="'Standard.Update'">
+          @if(selected.isFavorite) {
+          <i class="fa fa-star"></i>
+          } @else {
+          <i class="fa fa-star-o"></i>
+          }
+        </span>
+
+        <span *abpPermission="'Standard.Update'" class="me-1 cursor-pointer" (click)="openEditStandardMediaModal()">
+          <i class="fa fa-edit"></i>
+        </span>
+        <span *abpPermission="'Standard.Delete'" class="me-1 cursor-pointer" (click)="deleteStandard()">
+          <i class="fa fa-trash"></i>
+        </span>
+
+        <span class="me-1 cursor-pointer" (click)="expand()">
+          @if (expandChart) {
+          <i class="fa fa-compress"></i>
+          } @else {
+          <i class="fa fa-expand"></i>
+          }
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="media-container">
+    <div class="media" *ngFor="let standardMedia of standMedias; let idx=index">
+      <div class="media-header" *ngIf="standardMedia.headerNote">
+        <h6 [title]="standardMedia.headerNote">{{standardMedia.headerNote}}</h6>
+      </div>
+      <div class="media-body"
+        [ngClass]="[standardMedia?.headerNote ? 'hasHeader': '', standardMedia?.footerNote ? 'hasFooter': '']">
+        <!-- <span class="media-placeholder" *ngIf="!standardMedia.mediaUrl">Load Link/File/Image</span> -->
+        @if (standardMedia.loading) {
+        <div><i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{LoadingWithThreeDot | abpLocalization}}
+        </div>
+        } @else {
+        @if (standardMedia?.mediaType === 'link' && standardMedia?.mediaUrl) {
+        <iframe [src]="standardMedia.safeUrl"></iframe>
+        <a [href]="standardMedia.safeUrl" target="_blank">{{'::LABEL_ClickTheLink' | abpLocalization}}</a>
+        } @else if (standardMedia?.mediaType === 'image' && standardMedia?.mediaUrl) {
+        <img [src]="standardMedia.mediaUrl" alt="" class="cursor-pointer standardImage"
+          (click)="getPreviewImage(standardMedia.mediaUrl)" />
+        } @else if (standardMedia?.mediaType === 'file' && standardMedia?.mediaAccessUrl){
+        <img class="cursor-pointer standardImage" *ngIf="standardMedia.isImage"
+          (click)="getPreviewImage(standardMedia.mediaUrl)"
+          [src]="standardMedia.mediaAccessUrl" alt="Image" />
+        <a *ngIf="!standardMedia.isImage" [href]="standardMedia.mediaAccessUrl"
+          [download]="standardMedia?.fileName">{{standardMedia?.fileName}}</a>
+        }
+        }
+      </div>
+      <div class="media-footer" *ngIf="standardMedia.footerNote">
+        <h6 [title]="standardMedia.footerNote">{{standardMedia.footerNote}}</h6>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<abp-modal [(visible)]="editStandardMediaModal" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3>{{'::Edit' | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="edit-standard">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button"
+            role="tab" aria-controls="general" aria-selected="true">
+            {{ '::LABEL_General' | abpLocalization }}
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="data-tier-tab" data-bs-toggle="tab" data-bs-target="#dataTier" type="button"
+            role="tab" aria-controls="dataTier" aria-selected="false">
+            {{ '::LABEL_DataTier' | abpLocalization }}<span> *</span>
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div class="form-group row mb-1">
+            <div class="col-md-3">
+              <label for="name" class="col-form-label" [title]="'::INFO_Name' | abpLocalization">{{'::Name' |
+                abpLocalization}}</label><span> * </span>
+              <input type="text" class="standard-title form-control" [(ngModel)]="editStandardObj.name" />
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-7">
+              <label class="me-2 col-form-label"
+                [title]="'::INFO_Category' | abpLocalization">Category</label><span>*</span>
+              <ng-select [items]="categories" [multiple]="true" bindLabel="displayName" [closeOnSelect]="false"
+                [(ngModel)]="editCateogries">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.displayName }}
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Standard Medias</label>
+            <div class="media-container">
+              <div class="media" *ngFor="let standardMedia of editStandMediasObj; let idx=index">
+                <div class="media-action">
+                  <a (click)="addMedia()"
+                    *ngIf="idx === editStandMediasObj.length-1 && editStandMediasObj.length < 3"><i
+                      class="fa fa-plus"></i></a>
+                  <a><i class="fa fa-trash" (click)="deleteMedia(idx)"></i></a>
+                </div>
+                <div class="media-header mb-1">
+                  <label class="col-form-label mx-1" [title]="'::INFO_HeaderNotes' | abpLocalization">Header
+                    Notes</label>
+                  <div>
+                    <input type="text" class="form-control" [(ngModel)]="standardMedia.headerNote" />
+                  </div>
+                </div>
+                <div class="media-body mb-1">
+                  @if (selectedIndex === idx && uploading) {
+                  <div><i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{'::LABEL_Uploading' |
+                    abpLocalization}}</div>
+                  } @else {
+                  <div class="media-body-action">
+                    <a class="me-1" (click)="addMediaContent(standardMedia, 'link')"><i class="fa fa-link"></i></a>
+                    <a class=" me-1" (click)="selectedIndex=idx; addMediaContent(standardMedia, 'file')"><i
+                        class="fa fa-folder-open-o"></i></a>
+                    <a *ngIf="!isWeb"><i class="fa fa-camera"></i></a>
+                  </div>
+                  <!-- <span class="media-placeholder" *ngIf="!standardMedia.mediaUrl">Load Link/File/Image</span> -->
+                  @if (standardMedia?.mediaType === 'link' && standardMedia?.mediaUrl) {
+                  <!-- {{standardMedia.safeUrl}} -->
+                  <iframe [src]="standardMedia.safeUrl"></iframe>
+                  } @else if (standardMedia?.mediaType === 'image' && standardMedia?.mediaUrl) {
+                  <img [src]="standardMedia.mediaUrl" alt="" />
+                  } @else if (standardMedia?.mediaType === 'file' && standardMedia?.mediaAccessUrl){
+                  <img *ngIf="standardMedia.isImage" [src]="standardMedia.mediaAccessUrl" alt="Image" />
+                  <a *ngIf="!standardMedia.isImage" [href]="standardMedia.mediaAccessUrl"
+                    [download]="standardMedia?.fileName">{{standardMedia?.fileName}}</a>
+                  }
+                  }
+                </div>
+                <div class="media-footer">
+                  <label class="col-form-label mx-1" [title]="'::INFO_FooterNotes' | abpLocalization">Footer
+                    Notes</label>
+                  <div>
+                    <input type="text" class="form-control" [(ngModel)]="standardMedia.footerNote" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="dataTier" role="tabpanel" aria-labelledby="dataTier-tab">
+          <!-- {{ '::LABEL_DataTier' | abpLocalization }} -->
+          <app-tree-view [nodes]="dataTierTreeNode"></app-tree-view>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button class="btn btn-primary"
+      [disabled]="!editStandardObj.name || !editCateogries.length || !hasAssignedDataTiers() || uploading"
+      (click)="saveStandard()">
+      <i class="fa fa-check"></i>
+      {{'::Save' | abpLocalization}}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="addMediaModal">
+  <ng-template #abpHeader>
+    <h3>{{'::Add' | abpLocalization}}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    @if (mediaType === 'link') {
+    <div class="form-group">
+      <label>{{'::LABEL_Link' | abpLocalization}} </label>
+      <input type="text" class="form-control" [(ngModel)]="mediaContent"
+        [placeholder]="'::LABEL_Link' | abpLocalization" />
+    </div>
+    } @else {
+    <div class="form-group">
+      <label>{{'::File' | abpLocalization}} </label>
+      <input type="file" class="form-control" (change)="onFileChange($event)" accept="*" />
+    </div>
+    }
+    <div class="form-group mt-2" *ngIf="mediaType !== 'link' ">
+      <!-- <input type="checkbox" class="form-check-input" id="disclaimer" #disclaimer/> -->
+      <label for="disclaimer" class="form-label text-danger"><span class="fa fa-info-circle"></span>
+        {{'::LABEL_UploadDisclaimer' | abpLocalization}} </label>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button class="btn btn-primary" (click)="saveMedia()">
+      <i class="fa fa-check"></i>
+      {{'::Save' | abpLocalization}}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="previewModalVisible" [options]="{size: 'fullscreen'}" (keydown.esc)="previewModalVisible = false">
+        <ng-template #abpHeader>
+          <button (click)="previewModalVisible = false" class="btn  btn-icon btn-active-color-primary close-button">
+            <i class="fa fa-times"></i>
+          </button>
+        </ng-template>
+        <ng-template #abpBody>
+            <div class="attachment-preview">
+            <img [src]="previewImage" class="previewImage" />
+            </div>
+        </ng-template>
+    </abp-modal>

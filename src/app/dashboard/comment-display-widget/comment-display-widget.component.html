@@ -1,0 +1,189 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+  <abp-page-title-container class="col text-start p-0">
+    <div class="d-flex">
+      <h5 class="m-0 text-nowrap" *ngIf="!selected.extraProperties?.hideTitle">
+        {{ selected.name | abpLocalization }}
+        <span *ngIf="filter">(Filtered By: <span> {{filter?.productionDate}}, {{filter?.shift}},
+            {{filter?.interval}}</span> )</span>
+
+      </h5>
+    </div>
+  </abp-page-title-container>
+  <abp-page-toolbar-container class="col p-0 widget-toolbar">
+    <div class="text-end mb-2">
+      <span class="me-2 cursor-pointer" (click)="toggleView()" *abpPermission="'Comment.Edit'">
+        <i [class]="listView ? 'fa fa-list': 'fa fa-table'" class="fa-lg"></i>
+      </span>
+
+      <span class="advanced-filter-icon me-2" (click)="showAdvancedFilter = !showAdvancedFilter" *abpPermission="'Comment.Edit'">
+        <img [class.filter-show-full]="filterSearchHasValue" [class.filter-show-empty]="!filterSearchHasValue"
+          [ngClass]="showAdvancedFilter ? 'd-none' : ''" alt="Filter Show" />
+        <img [class.filter-hidden-full]="filterSearchHasValue" [class.filter-hidden-empty]="!filterSearchHasValue"
+          [ngClass]="showAdvancedFilter ? '' : 'd-none'" alt="Filter Hidden" />
+      </span>
+      @if (currentShift) {
+      <span class="me-2 cursor-pointer add-comment-icon" (click)="add()" *abpPermission="'Comment.Create'">
+        <i class="fa fa-plus fa-lg"></i>
+      </span>
+      }
+
+      @if (!queryId) {
+      <span class="me-2 cursor-pointer" (click)="deleteCommentWidget()" *abpPermission="'Dashboard.Update'">
+        <i class="fa fa-trash fa-lg"></i>
+      </span>
+      }
+
+      <span class="me-2 cursor-pointer" (click)="download()" *abpPermission="'Comment.Export'">
+        <i class="fa fa-cloud-download fa-lg"></i>
+      </span>
+
+      <span class="me-2 cursor-pointer expand-icon" (click)="expand()">
+        <i [class]="expandChart ? 'fa fa-compress fa-lg' : 'fa fa-expand fa-lg'"></i>
+      </span>
+      <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'Comment.Edit'">
+        <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+      </span>
+    </div>
+  </abp-page-toolbar-container>
+  <div id="collapseComment" [ngClass]="showAdvancedFilter ? '' : 'd-none'">
+    <div class="row ps-2 pe-2" [formGroup]="filterForm">
+      <div class="col">
+        <div class="form-group text-start">
+          <label for="filter-production-date">{{ '::LABEL_ProductionDate'|abpLocalization }}</label>
+          <input type="text" id="filter-production-date" class="form-control" formControlName="productionDate"
+            bsDatepicker [bsConfig]="{ dateInputFormat: 'DD MMM YYYY', adaptivePosition: true, containerClass: 'theme-dark-blue' }" />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group text-start">
+          <label for="filter-shift">{{ '::LABEL_Shift' | abpLocalization }}</label>
+          <search-select id="filter-shift" [items]="shiftData" displayName="shiftDisplayName" valueName="shiftId"
+            (change)="filterSelectChange($event, 'shift')" [value]="filterForm.controls['shift'].value">
+          </search-select>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group text-start">
+          <label for="filter-shiftInterval">{{ '::LABEL_ShiftInterval' | abpLocalization }}</label>
+          <search-select id="filter-shiftInterval" [items]="shiftIntervaltData" displayName="name" valueName="id"
+            (change)="filterSelectChange($event, 'shiftInterval')" [value]="filterForm.controls['shiftInterval'].value">
+          </search-select>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group text-start">
+          <label for="filter-cell">{{ '::Cell' | abpLocalization }}</label>
+          <search-select id="filter-cell" [items]="haveAccessCellData" displayName="displayName" valueName="id"
+            (change)="filterSelectChange($event, 'cell')" [value]="filterForm.controls.cell.value">
+          </search-select>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group text-start">
+          <label for="filter-comment">{{'::LABEL_CommentText'|abpLocalization}}</label>
+          <input type="text" id="filter-comment" class="form-control" formControlName="comment" />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group text-start">
+          <label for="filter-location-workCenter">{{'::LABEL_Location'|abpLocalization}}</label>
+          <input type="text" id="filter-location-workCenter" class="form-control" formControlName="location" />
+        </div>
+      </div>
+
+    </div>
+    <div class="d-flex pt-1 ps-2 pe-2 pb-1 justify-content-end">
+      <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="clearFilterData()">
+        {{ 'AbpUi::Clear' | abpLocalization }}
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" (click)="filterData()">
+        {{ 'AbpUi::PagerSearch' | abpLocalization }}
+      </button>
+    </div>
+  </div>
+  <div class="comment-card" [style]="showAdvancedFilter ? 'height: 90%' : 'height: 100%'">
+    <ngx-datatable default [rows]="data?.items" [count]="data.totalCount" [headerHeight]="0"
+      [limit]="this.selected?.extraProperties.pageSize" [reorderable]="true" [list]="list" [scrollbarH]="false"
+      [scrollbarV]="true" #myTable style="height: 100%;">
+      <ngx-datatable-column [name]="'AbpUi::Actions' | abpLocalization" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div class="d-flex justify-content-between w-100 fw-semibold">
+            <div class="text-danger">
+              <span>{{ row.productionDate | date: 'dd MMM yyyy' }}</span>,
+              <span>{{ row.shift?.displayName | abpLocalization }}</span>
+              <span *ngIf="row.shiftIntervals"> ({{ row.shiftIntervals }})</span>,
+              <span *ngIf="row.cellName">{{ row.cellName }}</span>
+              <span *ngIf="row.location"> ({{ row.location }})</span>
+            </div>
+            <div class="d-flex">
+              <div>
+                <span> {{ row.lastModifierName ? row.lastModifierName : row.creatorName }}</span>,
+                <span>
+                  {{ formatDate(row.lastModificationTime ? row.lastModificationTime : row.creationTime) | date: 'dd MMM yyyy, hh:mm:ss a' }}
+                </span>
+              </div>
+              <div ngbDropdown container="body" class="d-inline-block ps-1 pe-1">
+                <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 25px;" data-toggle="dropdown"
+                  aria-haspopup="true" ngbDropdownToggle></i>
+                <div ngbDropdownMenu aria-labelledby="dropdown">
+                  <button ngbDropdownItem *abpPermission="'Comment.Edit'"
+                    (click)="editOrDelete({id: row.id, action: 'edit', comment: row.commentText})">
+                    {{ 'AbpActions::Edit' | abpLocalization }}
+                  </button>
+                  <button ngbDropdownItem *abpPermission="'Comment.Delete'"
+                    (click)="editOrDelete({id: row.id, action: 'delete', comment: row.commentText})">
+                    {{ '::Delete' | abpLocalization }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <span>{{ row.commentText }}</span>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</abp-page>
+
+<app-add-comment-data *ngIf="isModalVisible" [selectedComment]="selectedComment" [areaData]="areaData"
+  [currentShift]="currentShift" [showInterval]="true" [openModal]="isModalVisible" (closeEvent)="closeAddModal()"
+  (refreshList)="refreshTableList()"></app-add-comment-data>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+      <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+    </div>
+    <div class="form-group mb-2">
+      <div class="d-flex">
+        <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+          {{ '::Label_HideTitle' | abpLocalization }}
+        </label>
+        <div class="col-form-label ms-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="role-hide-title" [(ngModel)]="hideTitle" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="pageSize" [title]="'::INFO_DisplayRowCount' | abpLocalization">{{'::LABEL_DisplayRowCount'|abpLocalization}}</label>
+      <input type="number" id="pageSize" class="form-control" [(ngModel)]="pageSize" />
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+      (click)="saveSettings()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>

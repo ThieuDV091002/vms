@@ -1,0 +1,132 @@
+:host {
+  height: 100%;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 20px 0px 0px;
+  position: relative;
+  border: 1px solid var( --lpx-widget-border-color);
+}
+
+.advanced-filter-icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  img {
+    height: 20px;
+    width: auto;
+  }
+}
+
+.card .quick-filter {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  a {
+    margin-left: .5rem;
+    cursor: pointer;
+    color: var(--bs-link-color);
+    text-decoration: underline;
+    padding: 0 0.5rem;
+    border-radius: 3px;
+
+    &.active {
+      background: var(--lpx-primary);
+      color: #fff !important;
+    }
+  }
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+::ng-deep .assign-user-select .ng-select-container {
+  padding: 7px !important;
+}
+
+::ng-deep .bs-datepicker-container {
+  z-index: 1050;
+}
+
+.input-expiryDateAndTime {
+  position: relative;
+}
+
+.input-expiryDateAndTime .icon,
+.input-expiryDateAndTime input {
+  cursor: pointer;
+}
+
+.input-expiryDateAndTime .icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.view-standard-modal {
+  max-width: 92% !important;
+}
+
+.page-icon {
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.page-icon.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.large-icon {
+  font-size: 2rem;
+}
+
+.to-do-list-table-container {
+  height: calc(100% - 100px);
+
+  ngx-datatable {
+    height: 100%;
+
+    ::ng-deep {
+      >div {
+        height: 100% !important;
+
+        .datatable-body {
+          height: calc(100% - 5rem) !important;
+        }
+      }
+
+      .datatable-footer {
+        overflow: hidden;
+
+        .datatable-footer-inner {
+          height: 2rem !important;
+
+          .page-count,
+          .datatable-pager {
+            height: 2rem !important;
+            line-height: 2rem !important;
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+.show-advanced-filter {
+  height: calc(100% - 340px) !important;
+}
+
+::ng-deep .my-tooltip-class {
+    z-index: 99999999999 !important;
+    max-width: none;
+    white-space: nowrap;
+}

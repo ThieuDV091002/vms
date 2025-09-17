@@ -1,0 +1,31 @@
+app-navbar-routes {
+
+
+  .system-info {
+    margin-left: 5px;
+    position: fixed;
+    bottom: 0px;
+    left: 0;
+    width: 270px;
+    background: var(--lpx-navbar-color);
+    font-size: smaller;
+  }
+
+  .ver {
+    cursor: pointer;
+
+  }
+
+  .ver:hover {
+    background-color: var(--lpx-navbar-active-bg-color);
+    color: var(--lpx-brand);
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+lpx-menu-filter {
+    display: none !important;
+}

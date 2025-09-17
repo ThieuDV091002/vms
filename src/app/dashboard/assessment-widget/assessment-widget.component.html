@@ -1,0 +1,114 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+  <abp-page-title-container class="col text-start">
+    <h5>{{ selectedWidget.name }}</h5>
+  </abp-page-title-container>
+  <abp-page-toolbar-container class="col widget-toolbar">
+    <div class="text-end">
+      <span class="me-2 cursor-pointer" *abpPermission="'Dashboard.Update'" (click)="deleteWidget()">
+        <i class="fa fa-trash fa-lg"></i>
+      </span>
+      <span class="me-2 cursor-pointer" (click)="expand()">
+        @if (expandChart) {
+        <i class="fa fa-compress fa-lg"></i>
+        } @else {
+        <i class="fa fa-expand fa-lg"></i>
+        }
+      </span>
+      <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'Assessment.Edit'">
+        <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+      </span>
+    </div>
+  </abp-page-toolbar-container>
+  <div class="card px-3 m-0 h-100">
+    <div class="quick-filter">
+      <span>{{'::LABEL_QuickFilters' | abpLocalization}}:</span>
+      @if(assessmentTypes.length > 0) {
+      <span class="ms-1">[</span>
+      @for (type of assessmentTypes; track type) {
+      <a (click)="filterByAssessmentType(type.id)" [class.active]="isAssessmentTypeSelect(type.id)">{{type.name}}</a>
+      }
+      <span class="mx-1">]</span>
+      }
+      <span class="ms-1">[</span>
+      <a (click)="filterByOwner()" [class.active]="isOwnerFilterActive">{{ '::LABEL_Owner' | abpLocalization}}</a>
+      <a (click)="filterByTeamMember()" [class.active]="isTeamMemberFilterActive">{{ '::LABEL_TeamMember' |
+        abpLocalization}}</a>
+      <span class="mx-1">]</span>
+    </div>
+    <hr class="my-1" />
+    <ngx-datatable #myTable default [rows]="assessmentData?.items"
+      [limit]="+selectedWidget.extraProperties?.pageSize || 10" [count]="assessmentData?.totalCount" [list]="list"
+      [scrollbarH]="true" [columnMode]="'force'">
+       <ngx-datatable-column [sortable]="false" [width]="80" [canAutoResize]="false">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <button type="button" class="btn btn-primary mb-1" (click)="onPerform(row)">
+            {{ '::LABEL_Perform' | abpLocalization }}
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Owner' | abpLocalization" [width]="100" [canAutoResize]="false" prop="ownerName" [sortable]="false">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_AssessmentDate' | abpLocalization" [comparator]="dateComparator"
+        prop="assessmentDate" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.assessmentDate | date: 'dd MMM yyyy' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column *ngIf="isTeamMemberFilterActive" [name]="'::LABEL_UserGroup' | abpLocalization"
+        prop="userGroupName" [sortable]="false">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_DataTierName' | abpLocalization" prop="datatierName" [sortable]="false">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Assessment_Type' | abpLocalization" prop="assessmentTypeName"
+        [sortable]="false" [width]="200" [canAutoResize]="true">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_ScheduleType' | abpLocalization" prop="scheduleName" [sortable]="false">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_AssessmentTime' | abpLocalization" [comparator]="dateComparator"
+        prop="assessmentTime" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ convertTimeFormat( row.assessmentTime ) }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Status' | abpLocalization" prop="statusName" [width]="110"
+        [sortable]="false">
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+      <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+    </div>
+    <div class="form-group">
+      <label for="cells-displayName"
+        [title]="'::INFO_RowCount' | abpLocalization">{{'::LABEL_RowCount'|abpLocalization}}</label>
+      <input type="number" id="cells-displayName" class="form-control" [(ngModel)]="pageSize" />
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+      (click)="saveSettiings()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isAssessmentCardVisible" [options]="{ centered: true}">
+  <ng-template #abpBody>
+    <div class="text-center mt-1">
+      <label class="h3 mb-0" style="font-size: 1.05rem; text-align:center; margin-top: 20px;">{{ selectedAssessment.name }}</label>
+    </div>
+    <app-assessment-card [assessmentCard]="selectedAssessment" (isAssessmentCardVisibleChange)="closeAssessmentCard()">
+    </app-assessment-card>
+  </ng-template>
+</abp-modal>

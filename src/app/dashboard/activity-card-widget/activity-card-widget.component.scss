@@ -1,0 +1,64 @@
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+:host ::ng-deep .row.entry-row {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+.add-action-card i{
+    color: #40c461;
+}
+.add-idea-card i{
+    color: #FFD43B;;
+}
+.add-red-tag-card i{
+    color: #af2c2c;
+}
+.add-support-card i{
+    color: #f0b638;
+}
+.card .quick-filter {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    a {
+        margin-left: .5rem;
+        cursor: pointer;
+        color: var(--bs-link-color);
+        text-decoration: underline;
+        padding: 0 0.5rem;
+        border-radius: 3px;
+        &.active {
+            background: var(--lpx-primary);
+            color: #fff!important;
+        }
+    }
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.ngx-datatable {
+    height: calc(100% - 4.5rem);
+    overflow-y: auto;
+}
+:host ::ng-deep .page-count {
+    text-align: start;
+}
+.icon-combine {
+    .base-icon {
+        margin-left: 0.2rem;
+        margin-top: .1rem;
+    }
+    .cover-icon {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}

@@ -1,0 +1,148 @@
+<div class="lpx-settings setting-icon" id="lpx-settings">
+    <div id="appearance" class="setting-icon" data-lpx-setting-icon="appearance" data-lpx-setting-id="settings-context-menu" tabindex="0"
+         (click)="onSettingIconClick('appearance')">
+        <div class="setting">
+            <i [class]="currentAppearanceIcon"></i>
+        </div>
+    </div>
+
+    <div id="containerWidth" class="setting-icon" data-lpx-setting-icon="containerWidth" data-lpx-setting-id="settings-context-menu" tabindex="0"
+         (click)="onSettingIconClick('containerWidth')">
+        <div class="setting">
+            <i [class]="currentContainerIcon"></i>
+        </div>
+    </div>
+
+
+    <div id="helpCenter" class="setting-icon" data-lpx-setting-icon="helpCenter" data-lpx-setting-id="settings-context-menu" tabindex="0"
+    (click)="onSettingIconClick('helpCenter')">
+   <div class="setting">
+       <i [class]="currentHelpIcon"></i>
+   </div>
+</div>
+
+    <div id="language" class="setting-icon" data-lpx-setting-icon="language" data-lpx-setting-id="settings-context-menu" tabindex="0"
+         (click)="onSettingIconClick('language')">
+        <div class="setting">
+            <span>{{currentLanguage}}</span>
+        </div>
+    </div>
+
+   
+
+    <div class="setting-icon" tabindex="0" (click)="show()">
+        <i class="bi bi-gear-wide-connected" aria-hidden="true" data-lpx-ctx-toggle="settings-context-menu"></i>
+    </div>
+    
+    <div class="lpx-context-menu" [class.show]="menuActive" data-lpx-context-menu="settings-context-menu">
+        <ul class="lpx-nav-menu" id="settings-routes">
+            <li class="outer-menu-item main-menu-item" [class.highlighted]="generalSettingsHighlight">
+                <a class="lpx-menu-item-link lpx-menu-item" (click)="onGeneralSettingsClick()">
+                    <span class="lpx-menu-item-icon">
+                        <i class="lpx-icon outer-icon bi bi-gear-wide-connected"></i>
+                    </span>
+                    <span class="lpx-menu-item-text">{{ '::MENU_GeneralSettings' | abpLocalization }}</span>
+                    <span>
+                        <i class="lpx-icon bi bi-x outer-icon dd-icon"></i>
+                    </span>
+                </a>
+            </li>
+
+            <li class="outer-menu-item main-menu-item" [class.highlighted]="appearanceHighlight">
+                <a class="lpx-menu-item-link lpx-menu-item" (click)="onAppearanceClick()">
+                    <span class="lpx-menu-item-icon">
+                        <i class="lpx-icon bi bi-palette-fill"></i>
+                    </span>
+                    <span class="lpx-menu-item-text hidden-in-hover-trigger">{{ '::MENU_Appearance' | abpLocalization }}</span>
+                    <i class="dd-icon hidden-in-hover-trigger lpx-caret" [class.bi-chevron-up]="appearanceActive" [class.bi-chevron-down]="!appearanceActive"></i>
+                </a>
+                <ul class="lpx-inner-menu hidden-in-hover-trigger" [class.collapsed]="!appearanceActive">
+                    <li class="lpx-inner-menu-item" *ngFor="let theme of themes" 
+                        [class.selected]="currentTheme?.styleName === theme.styleName"
+                        (click)="onThemeChange(theme)">
+                        <a class="lpx-menu-item-link lpx-menu-item">
+                            <span class="lpx-menu-item-icon">
+                                <i [class]="'lpx-icon ' + theme.icon"></i>
+                            </span>
+            <span class="lpx-menu-item-text hidden-in-hover-trigger">{{ '::MENU_' + themeKeyMap[theme.styleName] + 'Theme' | abpLocalization }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="outer-menu-item main-menu-item" [class.highlighted]="containerHighlight">
+                <a class="lpx-menu-item-link lpx-menu-item" (click)="onContainerClick()">
+                    <span class="lpx-menu-item-icon">
+                        <i class="lpx-icon bi bi-aspect-ratio"></i>
+                    </span>
+                    <span class="lpx-menu-item-text hidden-in-hover-trigger">{{ '::MENU_ContainerWidth' | abpLocalization }}</span>
+                    <i class="dd-icon hidden-in-hover-trigger lpx-caret" [class.bi-chevron-up]="containerActive" [class.bi-chevron-down]="!containerActive"></i>
+                </a>
+                <ul class="lpx-inner-menu hidden-in-hover-trigger" [class.collapsed]="!containerActive">
+                    <li class="lpx-inner-menu-item" *ngFor="let container of containerTypes"
+                        [class.selected]="currentContainer?.layoutClass === container.layoutClass"
+                        (click)="onWidthChange(container)">
+                        <a class="lpx-menu-item-link lpx-menu-item">
+                            <span class="lpx-menu-item-icon">
+                                <i [class]="'lpx-icon ' + container.icon"></i>
+                            </span>
+            <span class="lpx-menu-item-text hidden-in-hover-trigger">{{ '::MENU_' + (containerKeyMap[container.layoutClass] || container.layoutClass) + 'Layout' | abpLocalization }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+          
+            <li class="outer-menu-item main-menu-item" [class.highlighted]="helpHighlight">
+                <a class="lpx-menu-item-link lpx-menu-item" (click)="toggleMenu()">
+                    <span class="lpx-menu-item-icon">
+                        <i class="lpx-icon bi bi-question-circle"></i>
+                    </span>
+                    <span class="lpx-menu-item-text hidden-in-hover-trigger">{{ '::MENU_HelpCenter' | abpLocalization }}</span>
+                    <i class="dd-icon hidden-in-hover-trigger lpx-caret" [class.bi-chevron-up]="isActive" [class.bi-chevron-down]="!isActive"></i>
+                </a>
+                <ul class="lpx-inner-menu hidden-in-hover-trigger" [class.collapsed]="!isActive">
+                    <ng-container *ngFor="let item of helpItems.items">
+                        <li class="lpx-inner-menu-item" 
+                            [class.with-divider]="item.title === 'MENU_SendFeedback'"
+                            [class.selected]="helpSelectedItem === item.title">
+                            <a class="lpx-menu-item-link lpx-menu-item" [href]="item.link" target="_blank">
+                                <span class="lpx-menu-item-icon">
+                                    <i [class]="'lpx-icon ' + item.icon"></i>
+                                </span>
+                                <span class="lpx-menu-item-text hidden-in-hover-trigger">
+                                    <span class="d-block">{{ item.title | abpLocalization }}</span>
+                                    <small class="text-muted d-block">{{ item.title + 'Description' | abpLocalization }}</small>
+                                </span>
+                            </a>
+                        </li>
+                    </ng-container>
+                </ul>
+            </li>
+
+          
+            <li class="outer-menu-item main-menu-item" [class.highlighted]="languageHighlight">
+                <a class="lpx-menu-item-link lpx-menu-item" (click)="onLanguageClick()">
+                    <span class="lpx-menu-item-icon">
+                        <i class="lpx-icon bi bi-globe"></i>
+                    </span>
+                    <span class="lpx-menu-item-text hidden-in-hover-trigger">{{ '::MENU_LanguageOptions' | abpLocalization }}</span>
+                    <i class="dd-icon hidden-in-hover-trigger lpx-caret" [class.bi-chevron-up]="languageActive" [class.bi-chevron-down]="!languageActive"></i>
+                </a>
+                <ul class="lpx-inner-menu hidden-in-hover-trigger" [class.collapsed]="!languageActive">
+                    <li class="lpx-inner-menu-item" *ngFor="let lang of languages" 
+                        (click)="onLanguageChange(lang)">
+                        <a class="lpx-menu-item-link lpx-menu-item">
+                            <span class="lpx-menu-item-text hidden-in-hover-trigger">
+                                {{(lang.selected ? '✓ ' : '') + (lang.displayName || lang.cultureName)}}
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+          
+
+        </ul>
+    </div>
+</div>

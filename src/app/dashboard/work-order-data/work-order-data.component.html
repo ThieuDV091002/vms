@@ -1,0 +1,127 @@
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{ centered: true, size: 'xl' }"
+    (visibleChange)="close($event)">
+    <ng-template #abpHeader>
+        <h3>{{ (selectedComment?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (form) {
+        <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
+            <div class="row">
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="area">{{ '::Area' | abpLocalization }}</label><span> * </span>
+                    <search-select id="area" [items]="areaData" displayName="displayName" valueName="id"
+                        (change)="selectChange($event, 'area')" [value]="this.form.controls['area'].value">
+                    </search-select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="cell">{{ '::Cell' | abpLocalization }}</label><span> * </span>
+                    <search-select id="cell" [items]="cellData" displayName="displayName" valueName="id"
+                        (change)="selectChange($event, 'cell')" [value]="this.form.controls['cell'].value">
+                    </search-select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="workCenter">{{ '::WorkCenter' | abpLocalization }}</label><span> * </span>
+                    <search-select id="workCenter" [items]="workCenterData" displayName="displayName" valueName="id"
+                        (change)="selectChange($event, 'workCenter')" [value]="this.form.controls['workCenter'].value">
+                    </search-select>
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-running-order">{{'::Label_CurrentRunningOrder'|abpLocalization}}</label>
+                    <input type="text" id="current-running-order" class="form-control"
+                        formControlName="currentRunningOrder" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-running-order-qty">{{'::Label_CurrentRunningOrderQty'|abpLocalization}}</label>
+                    <input type="text" id="lcurrent-running-order-qty" class="form-control"
+                        formControlName="currentRunningOrderQty" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-running-product">{{'::Label_CurrentRunningProduct'|abpLocalization}}</label>
+                    <input type="text" id="current-running-product" class="form-control"
+                        formControlName="currentRunningProduct" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-order-uph">{{'::Label_CurrentRunningUPH'|abpLocalization}}</label>
+                    <input type="text" id="current-order-uph" class="form-control" formControlName="currentOrderUPH" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-running-base-qty">{{'::Label_CurrentRunningBaseQty'|abpLocalization}}</label>
+                    <input type="text" id="current-running-base-qty" class="form-control" formControlName="currentRunningBaseQty" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-staff-needed">{{'::Label_CurrentRunningStaffNeeded'|abpLocalization}}</label>
+                    <input type="text" id="current-staff-needed" class="form-control"
+                        formControlName="currentStaffNeeded" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="current-operation">{{'::LABEL_CurrentOperation'|abpLocalization}}</label>
+                    <input type="text" id="current-operation" class="form-control"
+                        formControlName="currentOperation" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="work-order">{{'::Label_WorkOrder'|abpLocalization}}</label><span> * </span>
+                    <input type="text" id="work-order" class="form-control" formControlName="workOrder" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="work-order-qty">{{'::Label_WorkOrderQty'|abpLocalization}}</label><span> * </span>
+                    <input appInputNumber [min]="0" id="work-order-qty" class="form-control" formControlName="workOrderQty" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="product">{{ '::LABEL_Product' | abpLocalization }}</label><span> * </span>
+                    <ng-select
+                    id="product"
+                    [items]="productData"
+                    appendTo="body"
+                    bindValue="id"
+                    bindLabel="displayName"
+                    [typeahead]="productInput$"
+                    [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+                    formControlName="product">
+                    <ng-template ng-option-tmp let-item="item">
+                      {{item.displayName}}
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                      {{ item.displayName}}
+                    </ng-template>
+                  </ng-select>
+                </div>
+
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="uph">{{'::Label_UPH'|abpLocalization}}</label><span> * </span>
+                    <input appInputNumber [min]="0" id="uph" class="form-control" formControlName="UPH" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                  <label for="base-qty">{{'::Label_BaseQty'|abpLocalization}}</label><span> * </span>
+                  <input appInputNumber [min]="0" id="base-qty" class="form-control" formControlName="baseQty" />
+              </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="staff-needed">{{'::Label_StaffNeeded'|abpLocalization}}</label>
+                    <input appInputNumber [min]="0" id="staff-needed" class="form-control" formControlName="staffNeeded" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="operation">{{'::LABEL_Operation'|abpLocalization}}</label>
+                    <input type="text" id="operation" class="form-control" formControlName="operation" />
+                </div>
+                <div class="form-group col col-12 col-md-4 mb-2">
+                    <label for="record-timestamp">{{'::Label_RecordTimestamp'|abpLocalization}}</label><span> * </span>
+                    <input type="text" id="record-timestamp" class="form-control" formControlName="recordTimestamp"
+                        bsDatepicker
+                        [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, withTimepicker: true, keepDatepickerOpened: true, rangeInputFormat : 'DD MMM YYYY hh:mm:ss a', dateInputFormat: 'DD MMM YYYY hh:mm:ss a'}" />
+                </div>
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" (click)="close()">
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>

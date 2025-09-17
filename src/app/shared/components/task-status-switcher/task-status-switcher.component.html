@@ -1,0 +1,50 @@
+<div #container class="status-container"
+  [ngClass]="{
+      'completed': currentStatus === TASK_STATUS_CONFIG.statuses.completed,
+      'not-selected': currentStatus === TASK_STATUS_CONFIG.statuses.new,
+      'incomplete': currentStatus === TASK_STATUS_CONFIG.statuses.incomplete,
+      'cancelled': currentStatus === TASK_STATUS_CONFIG.statuses.cancelled
+      }"
+  [ngStyle]="{'border-color': borderColor}"
+   (click)="onContainerClick($event)">
+  <ng-container *ngIf="currentStatus === TASK_STATUS_CONFIG.statuses.completed">
+    <div class="draggable" cdkDrag cdkDragBoundary=".status-container"
+      (cdkDragEnded)="onDragEnded($event)">
+      <i class="fas fa-check-circle" style="color: #63E6BE;"></i>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="currentStatus === TASK_STATUS_CONFIG.statuses.new">
+    <div class="icon fixed left">
+      <i class="fas fa-check" style="color: #858585;"></i>
+    </div>
+    <div class="draggable" cdkDrag cdkDragBoundary=".status-container"
+      (cdkDragEnded)="onDragEnded($event)">
+      <i class="far fa-circle" style="color: #858585;"></i>
+    </div>
+    <div class="icon fixed right">
+      <i class="fas fa-times" style="color: #858585;"></i>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="currentStatus === TASK_STATUS_CONFIG.statuses.incomplete">
+    <div class="draggable" cdkDrag cdkDragBoundary=".status-container"
+      (cdkDragEnded)="onDragEnded($event)">
+      <i class="fas fa-times-circle" style="color: #ff0000;"></i>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="currentStatus === TASK_STATUS_CONFIG.statuses.cancelled">
+    <div class="icon fixed left">
+      <i class="fas fa-check" style="color: #d1d1d1;"></i>
+    </div>
+    <div class="draggable">
+      <i class="far fa-circle" style="color: #d1d1d1;"></i>
+    </div>
+    <div class="icon fixed right">
+      <i class="fas fa-times" style="color: #d1d1d1;"></i>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isKnownStatus(currentStatus)">
+    <div class="status-text">
+      {{ currentStatus }}
+    </div>
+  </ng-container>
+</div>

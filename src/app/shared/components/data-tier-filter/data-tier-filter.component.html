@@ -1,0 +1,103 @@
+<form [formGroup]="dataTierFilter" novalidate class="data-tier-filter">
+  <div class="filter-bar">
+    <label class="col-form-label">{{'::Area' | abpLocalization}}</label>
+    <div>
+      @if (!multiple) {
+        <select class="form-select" [disabled]="!this.areas || this.areas.length === 0" formControlName="area">
+          <option [ngValue]="null"></option>
+          <option *ngFor="let area of areas" [ngValue]="area">{{area.name}}</option>
+        </select>
+      } @else {
+        <ng-select
+          [readonly]="!this.areas || this.areas.length === 0"
+          [multiple]="multiple"
+          [items]="areas"
+          [appendTo]="'body'"
+          [closeOnSelect]="false"
+          bindLabel="name"
+          formControlName="areas"
+        >
+        <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+          @for (item of items | slice: 0 : 1; track item) {
+            <div class="ng-value">
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+              <span class="ng-value-label">{{ item.name }}</span>
+            </div>
+          }
+          @if (items.length > 1) {
+            <div class="ng-value">
+              <span class="ng-value-label">{{ items.length - 1 }} more...</span>
+            </div>
+          }
+        </ng-template>
+      </ng-select>
+      }
+    </div>
+  </div>
+  <div class="filter-bar" *ngIf="dataTierFilter.get('area').value && this.cells &&this.cells?.length > 0 && ['Cell', 'WorkCenter'].includes(dataTierLevel)">
+    <label class="col-form-label">{{'::Cell' | abpLocalization}}</label>
+    <div>
+      @if (!multiple) {
+        <select class="form-select" formControlName="cell">
+          <option [ngValue]="null"></option>
+          <option *ngFor="let cell of cells" [ngValue]="cell">{{cell.name}}</option>
+        </select>
+      } @else {
+        <ng-select
+          [items]="cells"
+          [multiple]="multiple"
+          [closeOnSelect]="false"
+          [appendTo]="'body'"
+          bindLabel="name"
+          formControlName="cells">
+          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+            @for (item of items | slice: 0 : 1; track item) {
+              <div class="ng-value">
+                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                <span class="ng-value-label">{{ item.name }}</span>
+              </div>
+            }
+            @if (items.length > 1) {
+              <div class="ng-value">
+                <span class="ng-value-label">{{ items.length - 1 }} more...</span>
+              </div>
+            }
+          </ng-template>
+        </ng-select>
+      }
+    </div>
+  </div>
+  <div class="filter-bar" *ngIf="dataTierFilter.get('cell').value && this.workCenters?.length > 0 && dataTierLevel === 'WorkCenter'">
+    <label class="col-form-label">{{'::WorkCenter' | abpLocalization}}</label>
+    <div>
+      @if (!multiple) {
+        <select class="form-select" formControlName="workCenter">
+          <option [ngValue]="null"></option>
+          <option *ngFor="let workCenter of workCenters" [ngValue]="workCenter">{{workCenter.name}}</option>
+        </select>
+      } @else {
+        <ng-select
+          [items]="workCenters"
+          [multiple]="multiple"
+          [closeOnSelect]="false"
+          [appendTo]="'body'"
+          bindLabel="name"
+          formControlName="workCenters">
+          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+            @for (item of items | slice: 0 : 1; track item) {
+              <div class="ng-value">
+                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                <span class="ng-value-label">{{ item.name }}</span>
+              </div>
+            }
+            @if (items.length > 1) {
+              <div class="ng-value">
+                <span class="ng-value-label">{{ items.length - 1 }} more...</span>
+              </div>
+            }
+          </ng-template>
+        </ng-select>
+      }
+    </div>
+  </div>
+</form>

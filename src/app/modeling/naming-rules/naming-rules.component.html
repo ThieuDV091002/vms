@@ -1,0 +1,121 @@
+<app-modeling-template [title]="'::Areas'" [data]="data" [objectType]="'Area'"
+  [permissions]="{create: 'Area.Create', edit: 'Area.Edit', delete: 'Area.Delete', copy: 'Area.Copy', import: 'Area.Import', export: 'Area.Export'}"
+  [copyPrefix]="'::LABEL_NewArea'"
+  [columns]="[{displayKey:'::Name', field: 'name'},{displayKey:'::Description', field: 'description'},{displayKey:'::DisplayName', field: 'displayName'},{displayKey:'::Site', field: 'siteName'}]"
+  [toolbarButtons]="{move: true}" [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))"
+  (multiDelete)="multiDelete($event)" (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)"
+  (export)="export($event)" (exportAll)="exportAll($event)" (import)="import($event)"
+  (dataViewHistory)="viewHistory($event)" (filterChange)="searchByfilter($event)" filterType="Master"
+  [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div class="form-group mb-2">
+            <label for="areas-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span>
+              * </span>
+            <input type="text" id="areas-name" class="form-control" formControlName="name"
+              (input)="form.controls['displayName'].setValue($event.target.value)"
+              autofocus />
+          </div>
+          <div class="form-group mb-2">
+            <label for="areas-displayName"
+              [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> *
+            </span>
+            <input type="text" id="areas-displayName" class="form-control" formControlName="displayName" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="areas-description"
+              [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+            <input type="text" id="areas-description" class="form-control" formControlName="description" />
+          </div>
+          <div class="form-group">
+            <label for="areas-site" [title]="'::INFO_Site' | abpLocalization">{{
+              '::Site'|abpLocalization}}</label><span> * </span>
+            <select class="form-control form-select" id="areas-site" formControlName="site">
+              <option [ngValue]="null"></option>
+              <option [ngValue]="site.id" *ngFor="let site of siteData">
+                {{ site.displayName || site.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isMoveModalVisible" [busy]="modalBusy">
+  <ng-template #abpHeader>
+    <h3>{{ '::Move' | abpLocalization }} {{ '::Site' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div>
+      {{ selectedAreasIdList.length }} {{ '::Label_MoveToSite' | abpLocalization }}
+    </div>
+    <div class="form-group pt-2">
+      <label for="site">{{'::LABEL_NewSite'|abpLocalization}}</label>
+      <select class="form-control form-select" id="site" title="site" [(ngModel)]="moveToSite" autofocus>
+        <option [ngValue]="null"></option>
+        <option [ngValue]="site.id" *ngFor="let site of siteData">
+          {{ site.displayName || site.name }}
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, ''].includes(moveToSite)" (click)="moveToNewSite()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'Area'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

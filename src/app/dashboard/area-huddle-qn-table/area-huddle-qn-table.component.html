@@ -1,0 +1,45 @@
+<div class="h-100 widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+    <div class="d-flex justify-content-end align-items-center position-relative pb-1" style="height: 25px;">
+        <div class="position-absolute start-50 translate-middle" style="top: 12px;">
+            <h5 class="mb-0">{{ '::LABEL_QNs' | abpLocalization }} </h5>
+        </div>
+        <div class="text-end widget-toolbar">
+            @if (!queryId) {
+            <span class="me-2 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash fa-lg"></i>
+            </span>
+            }
+            <span class="me-2 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress fa-lg"></i>
+                } @else {
+                <i class="fa fa-expand fa-lg"></i>
+                }
+            </span>
+        </div>
+    </div>
+    <div class="area-qn-table-container">
+        <table class="table table-bordered text-center qn-table m-0">
+            <thead>
+                <tr>
+                    <th>{{ '::LABEL_QNs' | abpLocalization }}</th>
+                    <th>{{ '::LABEL_YearlyLimit' | abpLocalization }}</th>
+                    <th>{{ '::LABEL_YTDTotal' | abpLocalization }}</th>
+                    <th>{{ '::LABEL_MTDTotal' | abpLocalization }}</th>
+                    <th>{{ '::LABEL_Open' | abpLocalization }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of qnData; track $index) {
+                <tr>
+                    <td>{{ item.qnType || 0 }}</td>
+                    <td>{{ item.yearlyTarget || 0 }}</td>
+                    <td>{{ item.yearToDateTotal || 0 }}</td>
+                    <td>{{ item.monthToDateTotal || 0 }}</td>
+                    <td>{{ item.openCount || 0 }}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,108 @@
+app-links {
+  .nav-item {
+    font-size: 20px;
+    color: var(--lpx-navbar-text-color);
+
+    span {
+      font-size: 10px;
+      color: white;
+    }
+  }
+
+  lpx-context-menu {
+    background-color: var(--lpx-navbar-color);
+  }
+
+  .list-group-item {
+    padding: var(--bs-accordion-btn-padding-y) var(--bs-accordion-btn-padding-x) 0, 0 !important;
+    font-size: 0.8em !important;
+
+    span {
+      padding: 0 var(--bs-accordion-btn-padding-x) 0 var(--bs-accordion-btn-padding-x) !important;
+    }
+  }
+
+  .list-group-item:hover {
+    color: var(--lpx-navbar-active-text-color);
+    background-color: var(--lpx-navbar-active-bg-color);
+  }
+
+  .accordion-body {
+    padding: 0px 0px 0px 0px !important;
+    text-align: start;
+  }
+
+  .accordion-header-title {
+    margin-left: 10px;
+    font-weight: bold;
+  }
+
+  #link-title.accordion-button::after {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
+  #link-title {
+    i {
+      font-size: 1.2rem;
+    }
+
+    span {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.link-modal {
+  max-width: 92% !important;
+
+  .modal-content {
+    .modal-header {
+      padding-bottom: 0.1rem !important;
+
+      h3 {
+        margin: 0 !important;
+      }
+    }
+
+    ngx-datatable {
+      height: 100% !important;
+
+      >div {
+        height: 100% !important;
+
+        .datatable-body {
+          overflow-x: hidden !important;
+
+          .datatable-body-row datatable-body-cell.datatable-body-cell {
+            padding-top: 0.1rem !important;
+            padding-bottom: 0.1rem !important;
+
+            .datatable-body-cell-label {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.datatable-container {
+  height: 42vh;
+
+  @media (min-width: 1024px) and (max-width: 1024px) {
+    height: 60vh;
+  }
+
+  @media (min-width: 1280px) and (max-width: 1280px) {
+    height: 56vh;
+  }
+}
+
+.favoriteColor {
+  color: var(--lpx-brand);
+}

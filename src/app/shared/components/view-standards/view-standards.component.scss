@@ -1,0 +1,153 @@
+:host {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  padding: 5px;
+  border: 1px solid var(--bs-card-color);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.standard-title-container {
+  .title {
+      white-space: nowrap;
+      overflow: hidden;
+  }
+  h5 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+  }
+}
+
+.media-header, .media-footer {
+  h6 {
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+}
+
+img.preview-img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.cursor-progress {
+  cursor: progress;
+}
+
+.standard-title-container {
+  display: flex;
+  text-align: left;
+  justify-content: space-between;
+  .standard-title {
+      width: auto;
+  }
+  ng-select {
+      display: inline-block;
+  }
+}
+
+:host ::ng-deep .row.entry-row {
+  height: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.dashboard-iframe {
+  height: 400px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  .name-edit {
+      padding: 0.3rem 1.25rem;
+  }
+}
+
+.nav.nav-tabs {
+  margin-bottom: 0;
+}
+
+.edit-standard .media-container .media {
+  overflow: initial!important;
+}
+
+
+.media-container {
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  height: calc(100% - 30px);
+  .media {
+      position: relative;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      .media-action {
+          position: absolute;
+          top: 0;
+          right: 0.75rem;
+          width: 1rem;
+          white-space: wrap;
+          a, span {
+              cursor: pointer;
+          }
+      }
+  }
+  .media-body {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      flex-direction: column;
+      &.hasHeader, .hasFooter {
+          height: calc(100% - 20px);
+      }
+      &.hasHeader.hasFooter {
+          height: calc(100% - 40px);
+      }
+      iframe {
+          width: 100%;
+          height: 100%;
+      }
+      img {
+          max-height: 100%;
+          max-width: 100%;
+      }
+      .media-body-action {
+          position: absolute;
+          top: 0;
+          right: 0;
+          a {
+              display: inline-block;
+              width: 1rem;
+              text-align: center;
+              cursor: pointer;
+          }
+      }
+  }
+  .media-header, .media-footer {
+      height: 18px;
+  }
+}
+
+:host.expand-widget {
+  height: auto!important;
+  .media {
+      .media-body {
+          min-height: 400px!important;
+      }
+  }
+}
+
+.tab-content {
+  padding: 0!important;
+}

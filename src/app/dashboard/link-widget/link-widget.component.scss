@@ -1,0 +1,108 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+:host {
+    height: 100%;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    padding: 20px 0px 0px;
+    position: relative;
+    border: 1px solid var( --lpx-widget-border-color);
+}
+
+:host ::ng-deep .page-count {
+    text-align: start;
+}
+
+:host ::ng-deep .row.entry-row {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+::ng-deep .ng-placeholder {
+    top: 16px !important;
+}
+
+::ng-deep .ng2-tag-input.ng2-tag-input--focused {
+    border-bottom: 0 !important;
+}
+
+::ng-deep .ng2-tag-input {
+    border-bottom: 0 !important;
+    padding: 0 !important;
+    min-height: 28px !important;
+}
+
+::ng-deep .ng2-tag-input__text-input {
+    background: var(--lpx-content-bg) !important;
+    height: 28px !important;
+    color: var(--lpx-card-title-text-color) !important;
+    margin-top: 2px !important;
+}
+
+::ng-deep tag {
+    height: 30px !important;
+    line-height: 30px !important;
+    margin: .2rem .3rem 0 0 !important;
+    font-size: 0.875rem !important;
+    background: var(--lpx-card-bg) !important;
+    color: var(--lpx-card-title-text-color) !important;
+    border-radius: 2px !important;
+    font-weight: 500 !important;
+    font-family: Inter, sans-serif !important;
+    letter-spacing: 0 !important;
+}
+
+::ng-deep tag:not(.readonly):not(.tag--editing):focus {
+    background: var(--lpx-card-bg) !important;
+    color: var(--lpx-card-title-text-color) !important;
+    font-weight: 500 !important;
+}
+
+::ng-deep delete-icon svg {
+    height: 20px !important;
+    vertical-align: middle !important;
+
+    path {
+        fill: var(--lpx-card-title-text-color) !important;
+    }
+}
+
+ngx-datatable {
+    height: 96%;
+
+    ::ng-deep {
+        >div {
+            height: 100% !important;
+
+            .datatable-body {
+                height: calc(100% - 4.1rem) !important;
+            }
+        }
+
+        .datatable-footer {
+            overflow: hidden;
+
+            .datatable-footer-inner {
+                height: 2rem !important;
+
+                .page-count,
+                .datatable-pager {
+                    height: 2rem !important;
+                    line-height: 2rem !important;
+                }
+            }
+        }
+    }
+}
+
+.link-table-container {
+    height: calc(100% - 110px);
+}
+
+.favoriteColor {
+    color: var(--lpx-brand);
+}

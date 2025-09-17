@@ -1,0 +1,7 @@
+{
+    "angular.enable-strict-mode-prompt": false,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "mlxcrpvwdopd04",
+        "projectKey": "ufe_ufe-webapp_a07294ca-efb3-4aab-bdac-2a1ac6f7db82"
+    }
+}

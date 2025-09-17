@@ -1,0 +1,119 @@
+<app-modeling-template [title]="'::MENU_UserQuery'" [data]="data" [list]="list" [objectType]="'UserQueries'"
+    [copyPrefix]="'::LABEL_NewUserQuery'"
+    [permissions]="{create: 'UserQuery.Create', edit: 'UserQuery.Edit', delete: 'UserQuery.Delete', copy: 'UserQuery.Copy', import: 'UserQuery.Import', export: 'UserQuery.Export'}"
+    [columns]="columns" [hasLastUpdate]="true" [customAction]="" (dataAdd)="add()" (dataEdit)="edit($event)"
+    (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)" (dataViewHistory)="viewHistory($event)" [noDisplayNameCopy]="true"
+    (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)" (copyData)="copy($event)"
+    (customActionTrigger)="openPermissionsModal($event)" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+
+<abp-modal [(visible)]="isModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general"
+                        type="button" role="tab" aria-controls="general" aria-selected="true">
+                        {{ '::General' | abpLocalization }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="parameters-tab" data-bs-toggle="tab" data-bs-target="#parameters"
+                        type="button" role="tab" aria-controls="parameters" aria-selected="false"
+                        (click)="extractParameters()">
+                        {{ '::LABEL_Parameters' | abpLocalization }}
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                    <div class="form-group mb-2">
+                        <label for="userQuery-name" [title]="'::INFO_Name' | abpLocalization">{{ '::Name' | abpLocalization }}</label><span> * </span>
+                        <input type="text" id="userQuery-name" class="form-control" formControlName="name" autofocus />
+                    </div>
+                    <div class="form-group">
+                        <label for="userQuery-queryText" [title]="'::INFO_QueryText' | abpLocalization">{{ '::LABEL_QueryText' | abpLocalization }}</label><span> *
+                        </span>
+                        <textarea id="userQuery-queryText" class="form-control" rows="8"
+                            placeholder="Enter sql text here..." formControlName="queryText">
+                        </textarea>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="parameters" role="tabpanel" aria-labelledby="parameters-tab">
+                    <ngx-datatable [rows]="form.get('parameters').value" class="material" rowHeight="auto">
+                        <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="name"></ngx-datatable-column>
+                        <ngx-datatable-column [name]="'::LABEL_ParametersType' | abpLocalization" prop="valueType">
+                            <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row"
+                                let-value="value">
+                                <span (dblclick)="editType(rowIndex)" *ngIf="!editing[rowIndex + '-valueType']">
+                                    {{ value === 0 ? 'String' : 'Number' }}
+                                </span>
+                                <select *ngIf="editing[rowIndex + '-valueType']"
+                                    (blur)="saveType(rowIndex, $event.target.value)" [value]="value">
+                                    <option value="0">String</option>
+                                    <option value="1">Number</option>
+                                </select>
+                            </ng-template>
+                        </ngx-datatable-column>
+                        <ngx-datatable-column [name]="'::LABEL_ParametersValue' | abpLocalization" prop="defaultValue">
+                            <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row"
+                                let-value="value">
+                                <span (dblclick)="editValue(rowIndex)" *ngIf="!editing[rowIndex + '-defaultValue']">
+                                    {{ value }}
+                                </span>
+                                <ng-container *ngIf="editing[rowIndex + '-defaultValue']">
+                                    <input *ngIf="row.valueType === 0" type="text"
+                                        (blur)="saveValue(rowIndex, $event.target.value)" [value]="value" />
+                                    <input *ngIf="row.valueType === 1" type="number"
+                                        (blur)="saveValue(rowIndex, $event.target.value)" [value]="value" />
+                                </ng-container>
+                            </ng-template>
+                        </ngx-datatable-column>
+                    </ngx-datatable>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="test()">{{ 'AbpIdentity::Test' |
+            abpLocalization }}</abp-button>
+        <button type="button" class="btn btn-outline-primary" abpClose>{{ 'AbpIdentity::Cancel' | abpLocalization
+            }}</button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{ 'AbpIdentity::Save' |
+            abpLocalization }}</abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'UserQueries'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

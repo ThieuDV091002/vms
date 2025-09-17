@@ -1,0 +1,118 @@
+<app-modeling-template [title]="'::MENU_StateModel'" [data]="data" [objectType]="'StateModels'"
+  [permissions]="{create: 'StateModel.Create', edit: 'StateModel.Edit', delete: 'StateModel.Delete', copy: 'StateModel.Copy', import: 'StateModel.Import', export: 'StateModel.Export'}"
+  [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()" [copyPrefix]="'::LABEL_NewStateModel'"
+  (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)" [noDisplayNameCopy]="true"
+  (dataViewHistory)="viewHistory($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)" (copyData)="copy($event, edit.bind(this))"
+  [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="accordion accordion-flush">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="state-model-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                    <input type="text" id="state-model-name" class="form-control" formControlName="name" autofocus />
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="state-model-displayName" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                    <input type="text" id="state-model-description" class="form-control"
+                      formControlName="description" />
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="default-state" [title]="'::INFO_DefaultState' | abpLocalization">{{ '::LABEL_DefaultState'|abpLocalization}}</label><span> * </span>
+                    <ng-select [items]="states" appendTo="body" bindValue="id" bindLabel="displayName"
+                      formControlName="defaultState"></ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#transition" type="button"
+              aria-controls="transition" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::StateTransition' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="transition" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <app-state-model-transition [transitions]="selected.transitions" [states]="states"
+                (transitionsChange)="updateTransitions($event)"></app-state-model-transition>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'StateModels'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

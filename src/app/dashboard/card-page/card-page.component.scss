@@ -1,0 +1,27 @@
+.card-page.card {
+    padding: 0 .5rem!important;
+    app-card-editor {
+        ::ng-deep {
+            .card {
+                margin-bottom: 0!important;
+                // padding: 0!important;
+            }
+            .card-body.card-content {
+                padding: 0!important;
+                margin-right: -0px !important;
+                padding-right: 8px !important;
+            }
+            .accordion.accordion-flush {
+                max-height: calc(100vh - 12.2rem)!important;
+                height: calc(100vh - 12.2rem)!important;
+                &.assessment {
+                    max-height: calc(100vh - 17.1rem)!important;
+                    height: calc(100vh - 17.1rem)!important;
+                }
+            }
+            .close-editor {
+                display: none;
+            }
+        }
+    }
+}

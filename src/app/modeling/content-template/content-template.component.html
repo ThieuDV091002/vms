@@ -1,0 +1,80 @@
+<app-modeling-template [title]="'::MENU_ContentTemplate'" [data]="data"
+  [objectType]="'ContentTemplates'"
+  [copyPrefix]="'::LABEL_ContentTemplate'"
+  [permissions]="{create: 'ContentTemplate.Create', edit: 'ContentTemplate.Edit', delete: 'ContentTemplate.Delete', copy: 'ContentTemplate.Copy', import: 'ContentTemplate.Import', export: 'ContentTemplate.Export'}"
+  [columns]="columns" [list]="list" (dataAdd)="add()" (dataEdit)="edit($event)"
+  (dataDelete)="delete($event)"
+  (multiDelete)="multiDelete($event)" (dataViewHistory)="viewHistory($event)"
+  (export)="export($event)"
+  (exportAll)="exportAll($event)" (import)="import($event)"
+  (copyData)="copy($event, edit.bind(this))"
+  [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <h3 class="m-0">{{ (currentContentTemplate?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="mb-2">
+        <label for="content-template-name"  [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+        <input type="text" id="content-template-name" class="form-control" formControlName="name" (input)="form.controls['displayName'].setValue($event.target.value)" autofocus />
+      </div>
+      <div class="mb-2">
+        <label for="content-template-displayName"  [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> * </span>
+        <input type="text" id="content-template-displayName" class="form-control" formControlName="displayName" />
+      </div>
+      <div class="mb-2">
+        <label for="content-template-description"  [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+        <input type="text" id="content-template-description" class="form-control" formControlName="description" />
+      </div>
+      <div class="mb-2">
+        <label for="content-template-subject"  [title]="'::LABEL_Subject' | abpLocalization">{{'::LABEL_Subject'|abpLocalization}}</label>
+        <textarea id="content-template-subject" class="form-control" formControlName="subject" rows="3"></textarea>
+      </div>
+      <div class="mb-2">
+        <label for="content-template-content"  [title]="'::LABEL_Content' | abpLocalization">{{'::LABEL_Content'|abpLocalization}}</label><span> * </span>
+        <textarea id="content-template-content" class="form-control" formControlName="content" rows="8"></textarea>
+      </div>
+    </form>
+    <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner"
+        aria-hidden="true"></i></div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid"
+      (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail
+      [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-import-confirm [(importConfirmVisible)]="importConfirmVisible"
+  [existingData]="existingData"
+  [objectType]="'ContentTemplates'" (customeImport)="customeImport($event)">
+</app-import-confirm>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>

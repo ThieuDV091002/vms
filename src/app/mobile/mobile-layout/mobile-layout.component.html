@@ -1,0 +1,28 @@
+<div class="mobile-layout">
+  <!-- header -->
+  <div class="top-bar">
+    @if(!hideBackButton) {
+      <button class="btn" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+    }
+    <h5 class="m-0">{{ title }}</h5>
+    <div class="dropdown">
+      <button class="btn" (click)="toggleMenu()" *ngIf="showMenu">
+        <i class=" fas fa-bars"></i>
+      </button>
+      <div class="dropdown-menu" [class.show]="isMenuOpen">
+        <ng-content select="[menu-item]"></ng-content>
+      </div>
+    </div>
+  </div>
+  <!-- content -->
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- bottom -->
+  <div class="bottom-bar">
+    <ng-content select="[bottom-bar]"></ng-content>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+::ng-deep.confirmation .confirmation-dialog .content .message {
+    overflow-wrap: break-word !important;
+}
+
+::ng-deep .ngx-datatable .datatable-footer {
+    overflow: hidden !important;
+}
+
+.header-width {
+    width: calc(100% - 40px);
+}

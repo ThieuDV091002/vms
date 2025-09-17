@@ -1,0 +1,192 @@
+<app-modeling-template [title]="'::LABEL_Applications'" [data]="data" [objectType]="'Application'"
+    [copyPrefix]="'::LABEL_NewApplication'"
+    [permissions]="{create: 'Applications.Create', edit: 'Applications.Edit', delete: 'Applications.Delete', copy: 'Applications.Copy', export: 'Applications.Export', import: 'Applications.Import'}"
+    [columns]="[{displayKey:'::Name', field: 'name'},{displayKey:'::Description', field: 'description'},{displayKey:'::DisplayName', field: 'displayName'}]"
+    [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))" (multiDelete)="multiDelete($event)"
+    (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)"
+    (exportAll)="exportAll($event)" (import)="import($event)" (dataViewHistory)="viewHistory($event)"
+    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                    {{'::LABEL_ExpandAll' | abpLocalization}}
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                    {{'::LABEL_CollapseAll' | abpLocalization}}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <div class="accordion" id="accordionExample">
+            <div class="accordion accordion-flush">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_General' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            @if (form) {
+                            <form [formGroup]="form" (ngSubmit)="save()">
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="general" role="tabpanel"
+                                        aria-labelledby="general-tab">
+                                        <div class="form-group mb-2">
+                                            <label for="application-name"
+                                                [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span>
+                                                *
+                                            </span>
+                                            <input type="text" id="application-name" class="form-control"
+                                                formControlName="name"
+                                                (input)="form.controls['displayName'].setValue($event.target.value)"
+                                                autofocus />
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="application-displayName"
+                                                [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span>
+                                                * </span>
+                                            <input type="text" id="application-displayName" class="form-control"
+                                                formControlName="displayName" />
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="application-url"
+                                                [title]="'::INFO_Url' | abpLocalization">{{'::LABEL_Url'|abpLocalization}}</label>
+                                            <input type="text" id="application-url" class="form-control"
+                                                formControlName="url" />
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="application-description"
+                                                [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                                            <input type="text" id="application-description" class="form-control"
+                                                formControlName="description" />
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="application-icon"
+                                                [title]="'::INFO_Icon' | abpLocalization">{{'::IconClass'|abpLocalization}}</label>
+                                            <input #fileInput id="application-icon" type="file" class="form-control"
+                                                (change)="onFileChange($event)" accept="image/*" />
+                                            <div *ngIf="iconUrl" class="mt-2">
+                                                <img [src]="iconUrl" alt="icon"
+                                                    style="max-width: 100px; max-height: 100px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            } @else {
+                            <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item" *abpPermission="'OpenIdApplication'">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
+                            [class.collapsed]="isCollapse">
+                            {{ 'AbpOpenIddict::Authorization' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            @if (openIdAppsForm && openIdAppsForm.length > 0) {
+                                <ul class="nav nav-tabs mb-1" id="openIdTabs" role="tablist">
+                                    <li class="nav-item" *ngFor="let group of openIdAppsForm; let i = index" role="presentation">
+                                        <button class="nav-link"
+                                            [class.active]="activeOpenIdTabIndex === i"
+                                            id="tab-{{i}}"
+                                            type="button"
+                                            role="tab"
+                                            [attr.aria-controls]="'tabpanel-'+i"
+                                            [attr.aria-selected]="activeOpenIdTabIndex === i"
+                                            (click)="activeOpenIdTabIndex = i">
+                                            {{ group.value.clientId || ('Tab ' + (i+1)) }}
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="openIdTabContent">
+                                    <div class="tab-pane fade"
+                                        *ngFor="let group of openIdAppsForm; let i = index"
+                                        [class.show]="activeOpenIdTabIndex === i"
+                                        [class.active]="activeOpenIdTabIndex === i"
+                                        id="tabpanel-{{i}}"
+                                        role="tabpanel"
+                                        [attr.aria-labelledby]="'tab-'+i">
+                                        <form [formGroup]="group">
+                                            <div class="form-group mb-2">
+                                                <label>{{ 'clientId' | abpLocalization }}</label>
+                                                <input type="text" class="form-control form-control-sm" formControlName="clientId" readonly />
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label>{{ 'postLogoutRedirectUris' | abpLocalization }}</label>
+                                                <input type="text" class="form-control form-control-sm" formControlName="postLogoutRedirectUris" />
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label>{{ 'redirectUris' | abpLocalization }}</label>
+                                                <textarea class="form-control form-control-sm"
+                                                    [value]="group.value.redirectUris ? group.value.redirectUris.join('\n') : ''"
+                                                    (input)="onRedirectUrisInput(group, $event.target.value)"
+                                                    rows="3"></textarea>
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label>{{ 'scopes' | abpLocalization }}</label>
+                                                <input type="text" class="form-control form-control-sm" formControlName="scopes" readonly />
+                                            </div>
+                                            <div class="text-end mt-2">
+                                                <button type="button" class="btn btn-primary btn-sm" (click)="updateOpenIdApplication(group)" [disabled]="modalBusy || group.invalid">
+                                                    {{ 'AbpUi::Apply' | abpLocalization }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal *ngIf="isHistoryModalVisible" [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm *ngIf="importConfirmVisible" [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData" [objectType]="'Application'" (customeImport)="customeImport($event)">
+</app-import-confirm>

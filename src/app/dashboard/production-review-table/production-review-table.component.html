@@ -1,0 +1,259 @@
+<div class="widget-page h-100" [ngClass]="{'widget-fullscreen': expandChart}">
+    <div class="production-review-table-title d-flex justify-content-between align-items-center">
+        <div class="p-1">
+            <h5 class="m-0 text-nowrap" *ngIf="!selected.extraProperties?.hideTitle">
+                {{ selected.name | abpLocalization }}
+            </h5>
+        </div>
+        <div class="actions widget-toolbar pe-1">
+            <span class="me-1 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+                <i class="fa fa-trash"></i>
+            </span>
+            <span class="me-1 cursor-pointer" (click)="expand()">
+                @if (expandChart) {
+                <i class="fa fa-compress"></i>
+                } @else {
+                <i class="fa fa-expand"></i>
+                }
+            </span>
+            <span class="cursor-pointer" (click)="openEditSettings()"><i class="fa fa-cog"></i></span>
+        </div>
+    </div>
+
+    <!-- Dynamic Production Review Table -->
+    <div class="production-review-table">
+        <!-- Table 1 -->
+        <ngx-datatable #dynamicTable [rows]="productionReviewDataL1" [limit]="expandChart ? 20 : 8" [summaryHeight]="35"
+            [count]="productionReviewDataL1.length" [scrollbarH]="true" [summaryRow]="true" [summaryPosition]="'bottom'" default>
+
+            <!-- Dynamic Columns for L1 Group Keys -->
+            @for (column of displayL1Columns; track column.key) {
+            <ngx-datatable-column [name]="column.displayName | abpLocalization" [prop]="column.prop" [sortable]="false"
+                [width]="column.width" [canAutoResize]="false"
+                [summaryTemplate]="column.isFirstGroupColumn ? totalTemplate : totalTemplateNullValue">
+
+                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                    @if (column.isLastGroupColumn && settings.L2GroupKey.length > 0) {
+                    <!-- Group column with expand functionality (only for last group column) -->
+                    <span class="cursor-pointer" (click)="toggleExpandRow(row, expanded, dynamicTable)">
+                        {{ getGroupDisplayName(row, column) }}
+                    </span>
+                    <a href="javascript:void(0)" class="expand-icon" [class.datatable-icon-right]="!expanded"
+                        [class.datatable-icon-down]="expanded" title="Expand/Collapse Row"
+                        (click)="toggleExpandRow(row, expanded, dynamicTable)">
+                    </a>
+                    } @else {
+                    <!-- Group column without expand functionality -->
+                    <span>{{ getGroupDisplayName(row, column) }}</span>
+                    }
+                </ng-template>
+
+                <!-- Summary template for group columns -->
+                <ng-template #totalTemplate>
+                    <span style="height: auto;">{{ '::Total' | abpLocalization }}</span>
+                </ng-template>
+                <ng-template #totalTemplateNullValue>
+                    <span style="height: auto;"></span>
+                </ng-template>
+            </ngx-datatable-column>
+            }
+            <!-- Dynamic Columns for L1 Data Columns -->
+            @for (column of displayColumns; track column.key) {
+            <ngx-datatable-column [name]="column.displayName | abpLocalization" [prop]="column.prop" [sortable]="false"
+                [width]="column.width" [canAutoResize]="false" [summaryTemplate]="dataSummaryTemplate">
+
+                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                    <!-- Data column -->
+                    <span [ngClass]="getKpiClass(row, column)" [class.alert-color]="isNegativeValue(row, column)"
+                        *ngIf="isValidValue(row[column.prop])">
+                        {{ formatValue(row[column.prop], column) }}
+                    </span>
+                </ng-template>
+                <!-- Summary template for data columns -->
+                <ng-template #dataSummaryTemplate>
+                    <span [ngClass]="getKpiClass(totalData, column)"
+                        [class.alert-color]="isNegativeValue(totalData, column)"
+                        *ngIf="isValidValue(totalData[column.prop])" style="height: auto;">
+                        {{ formatValue(totalData[column.prop], column) }}
+                    </span>
+                </ng-template>
+            </ngx-datatable-column>
+            }
+            <!-- Table 1 Detail -->
+            <ngx-datatable-row-detail [rowHeight]="'auto'" *ngIf="settings.L2GroupKey.length > 0">
+                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                    <div class="data-detail">
+                        <!-- Table 2 -->
+                        <ngx-datatable #dynamicTableL2 [id]="getL1RowKey(row)" [rows]="row?.l2Data" [footerHeight]="0"
+                            default>
+                            <!-- Dynamic Columns for L2 Group Keys -->
+                            @for (column of displayL2Columns; track column.key) {
+                            <ngx-datatable-column [name]="column.displayName | abpLocalization" [prop]="column.prop"
+                                [sortable]="false" [width]="column.width" [canAutoResize]="false">
+
+                                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                                    @if (column.isLastGroupColumn && settings.L3GroupKey.length > 0) {
+                                    <span class="cursor-pointer"
+                                        (click)="toggleExpandL2Row(row, expanded, dynamicTableL2)">
+                                        {{ getGroupDisplayName(row, column) }}
+                                    </span>
+                                    <a href="javascript:void(0)" class="expand-icon"
+                                        [class.datatable-icon-right]="!expanded" [class.datatable-icon-down]="expanded"
+                                        title="Expand/Collapse Row"
+                                        (click)="toggleExpandL2Row(row, expanded, dynamicTableL2)">
+                                    </a>
+                                    } @else {
+                                    <span>{{ getGroupDisplayName(row, column) }}</span>
+                                    }
+                                </ng-template>
+                            </ngx-datatable-column>
+                            }
+                            <!-- Dynamic Columns for L2 Data Columns -->
+                            @for (column of displayColumns; track column.key) {
+                            <ngx-datatable-column [name]="column.displayName | abpLocalization" [prop]="column.prop"
+                                [sortable]="false" [width]="column.width" [canAutoResize]="false">
+
+                                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                                    <!-- Data column -->
+                                    <span [ngClass]="getKpiClass(row, column)"
+                                        [class.alert-color]="isNegativeValue(row, column)"
+                                        *ngIf="isValidValue(row[column.prop])">
+                                        {{ formatValue(row[column.prop], column) }}
+                                    </span>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            }
+                            <!-- Table 2 Detail -->
+                            <ngx-datatable-row-detail [rowHeight]="'auto'" *ngIf="settings.L3GroupKey.length > 0">
+                                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                                    <div class="data-detail">
+                                        <!-- Table 3 -->
+                                        <ngx-datatable #dynamicTableL3 [id]="getL3RowKey(row)" [rows]="row?.l3Data"
+                                            [footerHeight]="0" default>
+                                            <!-- Dynamic Columns for L3 Group Keys -->
+                                            @for (column of displayL3Columns; track column.key) {
+                                            <ngx-datatable-column [name]="column.displayName | abpLocalization"
+                                                [prop]="column.prop" [sortable]="false" [width]="column.width"
+                                                [canAutoResize]="false">
+
+                                                <ng-template let-row="row" let-expanded="expanded"
+                                                    ngx-datatable-cell-template>
+                                                    <span>{{ getGroupDisplayName(row, column) }}</span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            }
+                                            <!-- Dynamic Columns for L3 Data Columns -->
+                                            @for (column of displayColumns; track column.key) {
+                                            <ngx-datatable-column [name]="column.displayName | abpLocalization"
+                                                [prop]="column.prop" [sortable]="false" [width]="column.width"
+                                                [canAutoResize]="false">
+
+                                                <ng-template let-row="row" let-expanded="expanded"
+                                                    ngx-datatable-cell-template>
+                                                    <!-- Data column -->
+                                                    <span [ngClass]="getKpiClass(row, column)"
+                                                        [class.alert-color]="isNegativeValue(row, column)"
+                                                        *ngIf="isValidValue(row[column.prop])">
+                                                        {{ formatValue(row[column.prop], column) }}
+                                                    </span>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            }
+                                        </ngx-datatable>
+                                    </div>
+                                </ng-template>
+                            </ngx-datatable-row-detail>
+                        </ngx-datatable>
+                    </div>
+                </ng-template>
+            </ngx-datatable-row-detail>
+        </ngx-datatable>
+    </div>
+</div>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        <div class="form-group mb-2">
+            <label for="widget-name">{{ '::LABEL_Name' | abpLocalization }}</label>
+            <input type="text" id="widget-name" class="form-control" [(ngModel)]="editSettings.name" />
+        </div>
+        <div class="form-group mb-2">
+            <label for="setting">{{ '::LABEL_ProductionReviewBoardSetting' | abpLocalization }}</label>
+            <select id="setting" class="form-control" [(ngModel)]="editSettings.productionReviewBoardSettingId">
+                <option *ngFor="let setting of productionReviewBoardSettings" [value]="setting.id">
+                    {{ setting.name }}
+                </option>
+            </select>
+        </div>
+        <div class="form-check mb-2">
+            <input type="checkbox" id="hide-title" class="form-check-input" [(ngModel)]="editSettings.hideTitle" />
+            <label for="hide-title" class="form-check-label">{{ '::Label_HideTitle' | abpLocalization }}</label>
+        </div>
+        <div class="form-group mb-2">
+            <label for="refresh-rate"
+                [title]="'::INFO_RefreshRateMin' | abpLocalization">{{'::LABEL_RefreshRateMin'|abpLocalization}}</label>
+            <input type="number" min="0" id="refresh-rate" class="form-control"
+                [(ngModel)]="editSettings.refreshRate" />
+        </div>
+        <div class="form-group mb-2">
+            <label for="auto-reset-idle-time"
+                [title]="'::INFO_AutoResetIdleTime' | abpLocalization">{{'::LABEL_AutoResetIdleTime'|abpLocalization}}</label>
+            <input type="text" id="auto-reset-idle-time" class="form-control"
+                [(ngModel)]="editSettings.autoResetIdleTime" />
+        </div>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <!-- [disabled]="!settings?.name" -->
+        <abp-button iconClass="fa fa-check" (click)="saveSettings()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+
+<abp-modal [(visible)]="isProductionReviewSettingsModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ '::Select' | abpLocalization }}</h3>
+    </ng-template>
+    <ng-template #abpBody>
+        @if(productionReviewBoardSettings.length === 0) {
+        <p>{{ '::LABEL_NoProductionReviewSettingsAvailableMessage' | abpLocalization }}</p>
+        <p>{{ '::LABEL_ProductionReviewCreateConfigurationMessage' | abpLocalization : modelingSettingUrl }}</p>
+        <p>{{ '::LABEL_ProductionReviewBoardRefreshPageMessage' | abpLocalization }}</p>
+        } @else {
+        <div class="form-group mb-2">
+            <label
+                for="production-review-board-setting">{{'::LABEL_ProductionReviewBoardSetting'|abpLocalization}}</label>
+            <select id="production-review-board-setting" class="form-control"
+                [(ngModel)]="settings.productionReviewBoardSettingId">
+                <option *ngFor="let setting of productionReviewBoardSettings" [value]="setting.id">
+                    {{ setting.name }}
+                </option>
+            </select>
+        </div>
+        {{ '::LABEL_ProductionReviewBoardSelectSettingMessage' | abpLocalization }}
+        }
+    </ng-template>
+    <ng-template #abpFooter>
+        @if(productionReviewBoardSettings.length > 0) {
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="!settings?.productionReviewBoardSettingId"
+            (click)="saveCurrentProductionReviewBoardSetting(true)">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+        } @else {
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+        }
+
+    </ng-template>
+</abp-modal>

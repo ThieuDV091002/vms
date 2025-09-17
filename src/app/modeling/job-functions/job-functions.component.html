@@ -1,0 +1,96 @@
+<app-modeling-template [title]="'::LABEL_JobFunctions'" [data]="data" [objectType]="'JobFunction'"
+    [copyPrefix]="'::LABEL_NewJobFunction'"
+    [permissions]="{create: 'JobFunction.Create', edit: 'JobFunction.Edit', delete: 'JobFunction.Delete', copy: 'JobFunction.Copy', import: 'JobFunction.Import', export: 'JobFunction.Export'}"
+    [columns]="[{displayKey:'::Name', field: 'name'}, {displayKey: '::DisplayName', field: 'displayName'}, {displayKey: '::Description', field: 'description'},{displayKey: '::LABEL_Color', field: 'color'}]"
+    [list]="list" [hasLastUpdate]="true" (copyData)="copy($event, edit.bind(this))" (multiDelete)="multiDelete($event)" (dataAdd)="add()"
+    (dataEdit)="edit($event)" (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+    (dataViewHistory)="viewHistory($event)" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        @if (jobFunctionForm) {
+        <form [formGroup]="jobFunctionForm" (ngSubmit)="save()">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general"
+                        type="button" role="tab" aria-controls="general" aria-selected="true">
+                        {{ '::General' | abpLocalization }}
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                    <div class="form-group mb-2">
+                        <label for="job-function-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                        <input type="text" id="job-function-name" class="form-control" formControlName="name" autofocus
+                            (input)="jobFunctionForm.controls['displayName'].setValue($event.target.value)"/>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="job-function-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> *
+                        </span>
+                        <input type="text" id="job-function-displayName" class="form-control"
+                            formControlName="displayName" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="job-function-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                        <input type="text" id="job-function-description" class="form-control"
+                            formControlName="description" />
+                    </div>
+                    <div class="form-group">
+                        <label for="job-function-color" [title]="'::INFO_Color' | abpLocalization">{{ '::LABEL_Color'|abpLocalization}}</label><span> * </span>
+                        <div class="color-picker">
+                            <input type="text" id="job-function-color" class="form-control"
+                                formControlName="color" />
+                            <input type="color" class="color-selector" [value]="selectedAlertColor"
+                                (input)="updateColor($event.target.value)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+        }
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="jobFunctionForm?.invalid" (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm
+    *ngIf="importConfirmVisible"
+    [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData"
+    [objectType]="'JobFunction'"
+    (customeImport)="customeImport($event)">
+</app-import-confirm>

@@ -1,0 +1,30 @@
+.accordion-header {
+  button {
+    font-weight: bold;
+    padding: 15px 0;
+  }
+
+  button[aria-expanded="true"] {
+    border: none;
+    border-bottom: 1px 0 1px 0 solid var(--lpx-border-color) !important;
+  }
+}
+
+.accordion-item {
+  border: none;
+  border-top: 1px solid var(--lpx-border-color) !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.header-width {
+  width: calc(100% - 40px);
+}

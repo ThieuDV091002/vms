@@ -1,0 +1,203 @@
+<app-mobile-layout [showMenu]="false" [hideBackButton]="hideBackButton"
+  title="{{(card?.id ? '::Edit' : '::Create') | abpLocalization}} {{'::LABEL_Card' | abpLocalization}}">
+  <!-- <button menu-item class="btn btn-link">
+    aa111111111111111111
+  </button>
+  <button menu-item class="btn btn-link">
+    ab1111111111111111111
+  </button>
+  <button menu-item class="btn btn-link">
+    ac11111111111111
+  </button> -->
+  <div class="card">
+    <div class="row p-1" [formGroup]="cardForm">
+      <div class="col-12">
+        <div class="form-group">
+          <label [title]="'::INFO_ActivityCardType' | abpLocalization">{{'::LABEL_ActivityCardType' |
+            abpLocalization}}</label><span> * </span>
+          <ng-select [items]="cardTypes" [appendTo]="'body'" bindLabel="displayName" bindValue="id"
+            formControlName="cardTypeId" placeholder="{{'::LABEL_CardType'|abpLocalization}}"
+            (change)="onCardTypeChange($event)" [clearable]="false">
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="selectedCardType && selectedCardType?.categoryField !== 'Hidden'">
+        <div class="form-group mb-2">
+          <label for="card-categories"
+            [title]="'::INFO_Category' | abpLocalization">{{'::LABEL_Category'|abpLocalization}}</label><span
+            *ngIf="selectedCardType?.categoryField === 'Required'"> * </span>
+          <ng-select id="card-categories" [items]="cardCategories" appendTo="body" bindLabel="displayName"
+            bindValue="id" formControlName="categoryId" (change)="getReasons($event?.reasonsDataSource)"
+            placeholder="Select Category">
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="selectedCardType && selectedCardType?.reasonField !== 'Hidden'">
+        <div class="form-group mb-2">
+          <label for="reasons"
+            [title]="'::INFO_Reason' | abpLocalization">{{'::LABEL_Reason'|abpLocalization}}</label><span
+            *ngIf="selectedCardType?.reasonField === 'Required'"> * </span>
+          <ng-select id="reasons" [items]="reasons" appendTo="body" bindLabel="displayName" formControlName="reasonCode"
+            bindValue="id" placeholder="Select Reason">
+          </ng-select>
+        </div>
+      </div>
+      @if (selectedCardType && selectedCardType?.assessmentField !== 'Hidden') {
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label for="assessment-type"
+            [title]="'::INFO_AssessmentType' | abpLocalization">{{'::LABEL_AssessmentType'|abpLocalization}}</label><span
+            *ngIf="selectedCardType?.assessmentField === 'Required'"> *</span>
+          <ng-select id="assessment-type" [items]="assessmentTypes" appendTo="body" bindLabel="displayName"
+            bindValue="id" formControlName="assessmentTypeId" (selectionChange)="onAssessmentTypeChange($event?.id)"
+            placeholder="Select Assessment Type"></ng-select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label for="assessment-question"
+            [title]="'::INFO_AssessmentQuestionGuideline' | abpLocalization">{{'::LABEL_AssessmentQuestionGuideline'|abpLocalization}}</label><span
+            *ngIf="selectedCardType?.assessmentField === 'Required'"> *</span>
+
+          <ng-select id="assessment-question" [items]="assessmentQuestions" appendTo="body" bindLabel="question"
+            bindValue="id" formControlName="assessmentQuestionId" placeholder="Select Assessment Question"></ng-select>
+        </div>
+      </div>
+      }
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label for="short-description"
+            [title]="'::INFO_ShortDescription' | abpLocalization">{{'::LABEL_ShortDescription'|abpLocalization}}</label><span>
+            * </span>
+          <input type="text" class="form-control" id="short-description" formControlName="instructions" />
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label for="long-description"
+            [title]="'::INFO_Details' | abpLocalization">{{'::Details'|abpLocalization}}</label><span> *</span>
+          <textarea type="text" [rows]="6" id="long-description" class="form-control"
+            formControlName="longInstruction"></textarea>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="selectedCardType && selectedCardType?.priorityField !== 'Hidden'">
+        <div class="form-group mb-2">
+          <label for="card-priorities"
+            [title]="'::INFO_Priority' | abpLocalization">{{'::LABEL_Priority'|abpLocalization}}</label>
+          <span *ngIf="selectedCardType?.priorityField === 'Required'"> * </span>
+          <ng-select id="card-priorities" [items]="cardPriorities" appendTo="body" bindLabel="displayName"
+            bindValue="id" formControlName="priorityId" placeholder="Select Priority">
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label for="data-tier-type"
+            [title]="'::INFO_DataTierType' | abpLocalization">{{'::LABEL_DataTierType'|abpLocalization}}</label><span>
+            *
+          </span>
+          <ng-select id="data-tier-type" [items]="dataTierTypes" appendTo="body" [readonly]="card?.id"
+            formControlName="dataTierType" (change)="getDataTiers()" placeholder="Select Data Tier Type">
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label for="data-tier"
+            [title]="'::INFO_DataTier' | abpLocalization">{{'::LABEL_DataTier'|abpLocalization}}</label><span> *
+          </span>
+          <ng-select id="data-tier" [items]="dataTiers" appendTo="body" bindLabel="displayName" bindValue="id"
+            formControlName="dataTierId" placeholder="Select Data Tier" [readonly]="card?.id">
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="selectedCardType && selectedCardType?.locationField !== 'Hidden'">
+        <div class="form-group mb-2">
+          <label for="location"
+            [title]="'::INFO_Location' | abpLocalization">{{'::LABEL_Location'|abpLocalization}}</label>
+          <span *ngIf="selectedCardType?.locationField === 'Required'"> * </span>
+          <input type="text" class="form-control" id="location" formControlName="location" />
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card-owner mb-2">
+          <label for="card-owners"
+            [title]="'::INFO_CardOwner' | abpLocalization">{{'::LABEL_CardOwner'|abpLocalization}}</label>
+          <ng-select id="card-owners" [items]="users" appendTo="body" bindValue="id"
+            [typeahead]="userSearchInput$" formControlName="assignedOwnerId" placeholder="Select Card Owner">
+            <ng-template ng-option-tmp let-item="item">
+              <span [ngbTooltip]="item.email" 
+                    placement="right" 
+                    container="body" 
+                    tooltipClass="my-tooltip-class">
+                {{ getUserDisplayName(item) }}
+              </span>
+            </ng-template>
+            <ng-template ng-label-tmp let-item="item">
+              {{ getUserDisplayName(item) }}
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-group mb-2">
+          <label
+            [title]="'::INFO_ActivityCardAttachment' | abpLocalization">{{'::MENU_ActivityCardAttachment'|abpLocalization}}</label>
+          <input #fileInput id="upload-file" type="file" class="form-control"
+            (change)="onFileChange($event); fileInput.value = ''" accept="image/*" />
+          <div class="attachment-content mt-2" style="min-height: 200px; max-height: 400px; overflow-y: auto;">
+            <div class="attachment-title d-flex justify-content-end mb-2">
+              <button class="btn btn-sm" type="button" [disabled]="!selectedAttachments.length"
+                (click)="deleteAttachments()">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+
+            <div class="photo-grid">
+              @if (generalAttachments.length > 0) {
+              @for (attachment of generalAttachments; track attachment) {
+              <div class="photo-item m-2" [class.selected]="attachmentCheck.checked">
+                <img class="img-thumbnail"
+                  (click)="isAttachmentPreviewOpen = true; previewAttachmentId = attachment.fileId"
+                  [src]="attachmentMap.get(attachment.fileId)"
+                  style="width: 100px; height: 80px; object-fit: cover; cursor: pointer;" />
+                <div class="form-check mt-1">
+                  <input class="form-check-input" type="checkbox" #attachmentCheck
+                    (change)="onAttachmentSelectionChange($event, attachment.fileId)" />
+                  <label class="form-check-label">{{ '::Select' | abpLocalization }}</label>
+                </div>
+              </div>
+              }
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div bottom-bar>
+    <div class="col-12 d-flex justify-content-between">
+      <button class="btn btn-secondary" (click)="returnToAssessment()">
+        {{'AbpUi::Cancel'|abpLocalization}}
+      </button>
+      <button class="btn btn-primary" (click)="createCard()"
+        [disabled]="!cardForm.valid || !conditionalFieldValid()">{{'AbpUi::Submit'|abpLocalization}}</button>
+    </div>
+  </div>
+</app-mobile-layout>
+
+<abp-modal [(visible)]="isAttachmentPreviewOpen" [options]="{size: 'fullscreen'}">
+  <ng-template #abpHeader>
+    <button (click)="isAttachmentPreviewOpen = false"
+      class="btn btn-icon btn-active-color-primary close-button cursor-pointer">
+      <i class="fa fa-times"></i>
+    </button>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="attachment-preview">
+      <img [src]="attachmentMap.get(previewAttachmentId)" />
+    </div>
+  </ng-template>
+</abp-modal>

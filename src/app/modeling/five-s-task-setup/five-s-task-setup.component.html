@@ -1,0 +1,354 @@
+<app-modeling-template [title]="'::LABEL_ToDoSetups'" [data]="data" [objectType]="'ToDoSetup'"
+    [permissions]="{create: 'ToDoListSetup.Create', edit: 'ToDoListSetup.Edit', delete: 'ToDoListSetup.Delete', copy: 'ToDoListSetup.Copy', import: 'ToDoListSetup.Import', export: 'ToDoListSetup.Export'}"
+    [columns]="[{displayKey:'::Name', field: 'name'},{displayKey:'::Description', field: 'description'},{displayKey:'::DisplayName', field: 'displayName'}]"
+    [list]="list" [hasLastUpdate]="true" (copyData)="copy($event)" [copyPrefix]="'::LABEL_NewToDoSetup'"
+    [customAction]="{displayKey: '::LABEL_GenerateTasks', permission: 'ToDoListSetup.Create'}"
+    (multiDelete)="multiDelete($event)" (dataAdd)="add()" (dataEdit)="edit($event)" (dataDelete)="deleteData($event)"
+    (customActionTrigger)="generateToDoList($event)" (export)="export($event)" (import)="importData($event)"
+    (dataViewHistory)="viewHistory($event)" (copyModalOpen)="copyModalOpen($event)"
+    [placeholder]="'::LABEL_SearchName' | abpLocalization" [importAndExportOnlyJson]="true"
+    (exportAll)="exportAll($event)">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{ size: 'xl', centered: true }">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center header-width">
+            <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                    {{'::LABEL_ExpandAll' | abpLocalization}}
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                    {{'::LABEL_CollapseAll' | abpLocalization}}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #abpBody>
+        @if (form) {
+        <form [formGroup]="form" (ngSubmit)="save()">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion accordion-flush">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                                [class.collapsed]="isCollapse">
+                                {{ '::LABEL_General' | abpLocalization }}
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <div class="row">
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="task-name" [title]="'::INFO_Name' | abpLocalization">{{ '::LABEL_Name' |
+                                        abpLocalization }}</label><span> * </span>
+                                    <input type="text" id="task-name" class="form-control" formControlName="name"
+                                        (input)="form.controls['displayName'].setValue($event.target.value)"
+                                        autofocus />
+                                </div>
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="type" [title]="'::INFO_Type' | abpLocalization">{{ '::LABEL_Type' |
+                                        abpLocalization }}</label><span> * </span>
+                                    <select class="form-select" formControlName="toDoTypeId" id="type">
+                                        <option [ngValue]="null"></option>
+                                        <option *ngFor="let toDoType of toDoTypesData" [ngValue]="toDoType.id">
+                                            {{ toDoType.displayName || toDoType.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="displayName"
+                                        [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span>
+                                        * </span>
+                                    <input type="text" id="displayName" class="form-control"
+                                        formControlName="displayName" />
+                                </div>
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="description"
+                                        [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                                    <input type="text" id="description" class="form-control"
+                                        formControlName="description" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
+                                [class.collapsed]="isCollapse">
+                                {{ '::LABEL_Schedule' | abpLocalization }}
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <div class="row">
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="shift"
+                                        [title]="'::INFO_Shift' | abpLocalization">{{'::LABEL_Shift'|abpLocalization}}</label><span>
+                                        * </span>
+                                    <multiple-select id="shift" [items]="shiftData" displayName="displayName"
+                                        valueName="id" (change)="selectedChanges($event)"
+                                        [values]="form.controls.shift.value">
+                                    </multiple-select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="scheduleStartDate"
+                                        [title]="'::INFO_ScheduleStartDate' | abpLocalization">{{ '::LABEL_ScheduleStartDate' | abpLocalization }}</label><span>
+                                        * </span>
+                                    <input type="text" id="scheduleStartDate" class="form-control" bsDatepicker
+                                        [bsConfig]="{ dateInputFormat: 'DD MMM YYYY', adaptivePosition: true, containerClass: 'theme-dark-blue' }"
+                                        formControlName="scheduleStartDate" 
+                                        [minDate]="today"/>
+                                </div>
+                                <div class="form-group mb-2 col-12 col-md-6">
+                                    <label for="completion-date"
+                                        [title]="'::INFO_ScheduleCompletionDate' | abpLocalization">{{'::LABEL_ScheduleCompletionDate'|abpLocalization}}</label>
+                                    <input type="text" id="completion-date" class="form-control" bsDatepicker
+                                        [bsConfig]="{ dateInputFormat: 'DD MMM YYYY', adaptivePosition: true, containerClass: 'theme-dark-blue' }"
+                                        formControlName="scheduleCompletionDate" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <bs5-quartz-cron [tabs]="tabs" [hideTabs]="true" [activeTab]="activeTab"
+                                        formControlName="scheduleCronExpression"
+                                        [localization]="localization"></bs5-quartz-cron>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"
+                                [class.collapsed]="isCollapse">
+                                {{ '::LABEL_ToDoList' | abpLocalization }}
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <ngx-datatable [rows]="toDoList" [count]="toDoList.length" [limit]="10" default
+                                        id="taskDataTable">
+                                        <ngx-datatable-column [width]="25" [sortable]="false" [canAutoResize]="false">
+                                            <ng-template let-row="row" let-rowIndex="rowIndex"
+                                                ngx-datatable-cell-template>
+                                                <div ngbDropdown container="body" class="d-inline-block">
+                                                    <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer"
+                                                        style="width: 25px;" data-toggle="dropdown" aria-haspopup="true"
+                                                        ngbDropdownToggle></i>
+                                                    <div ngbDropdownMenu aria-labelledby="dropdown">
+                                                        <button ngbDropdownItem (click)="delete(rowIndex, 'toDo')">
+                                                            {{ '::Delete' | abpLocalization }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                        <ngx-datatable-column [name]="('::LABEL_ToDo' | abpLocalization) + ' * '"
+                                            [maxWidth]="300" [sortable]="false">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <div class="form-group">
+                                                    <input type="text" id="task-name" class="form-control"
+                                                        [(ngModel)]="row.toDo" [ngModelOptions]="{standalone: true}" />
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                        <ngx-datatable-column [name]="'::LABEL_InfoCenter' | abpLocalization"
+                                            [sortable]="false">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <div class="form-group">
+                                                    <multiple-select [items]="standardsData" displayName="name"
+                                                        valueName="id"
+                                                        (change)="multipleSelectedChanges($event, row, 'standards')"
+                                                        [values]="row.standards">
+                                                    </multiple-select>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column [name]="'::Links' | abpLocalization" [maxWidth]="300"
+                                            [sortable]="false">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <div class="form-group">
+                                                    <ng-select id="links" [items]="linksOptions" [multiple]="true"
+                                                        appendTo="body" bindLabel="label" bindValue="value"
+                                                        [hideSelected]="true" [addTag]="true" [(ngModel)]="row.links"
+                                                        [ngModelOptions]="{standalone: true}">
+                                                        <ng-template ng-header-tmp>
+                                                            <div>
+                                                                <label for="link-name">{{'::Name' |
+                                                                    abpLocalization}}</label>
+                                                                <input type="text" id="link-name"
+                                                                    class="form-control mb-1" [(ngModel)]="linkName"
+                                                                    [ngModelOptions]="{standalone: true}" />
+                                                                <label for="link-url">{{'::LABEL_Url' |
+                                                                    abpLocalization}}</label>
+                                                                <input type="text" id="link-url"
+                                                                    class="form-control mb-1" [(ngModel)]="linkUrl"
+                                                                    [ngModelOptions]="{standalone: true}" />
+                                                                <button class="btn btn-sm btn-primary"
+                                                                    (click)="addLinkOptions()">{{'::Add' |
+                                                                    abpLocalization}}</button>
+                                                            </div>
+                                                        </ng-template>
+                                                    </ng-select>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                    </ngx-datatable>
+                                </div>
+                                <div class="form-group col col-12 col-md-12 mb-2 d-flex">
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            (click)="create('toDo')">
+                                            {{ '::Create' | abpLocalization }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour"
+                                [class.collapsed]="isCollapse">
+                                {{ '::LABEL_AssigneeList' | abpLocalization }}
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <ngx-datatable [rows]="assigneeList" [count]="assigneeList.length" [limit]="10"
+                                        default id="taskDataTable">
+                                        <ngx-datatable-column [width]="25" [sortable]="false" [canAutoResize]="false">
+                                            <ng-template let-row="row" let-rowIndex="rowIndex"
+                                                ngx-datatable-cell-template>
+                                                <div ngbDropdown container="body" class="d-inline-block">
+                                                    <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer"
+                                                        style="width: 25px;" data-toggle="dropdown" aria-haspopup="true"
+                                                        ngbDropdownToggle></i>
+                                                    <div ngbDropdownMenu aria-labelledby="dropdown">
+                                                        <button ngbDropdownItem (click)="delete(rowIndex, 'assignee')">
+                                                            {{ '::Delete' | abpLocalization }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                        <ngx-datatable-column [name]="'::LABEL_User' | abpLocalization" [maxWidth]="300"
+                                            [sortable]="false">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <div class="form-group">
+                                                    <ng-select id="assignees" [items]="users" appendTo="body"
+                                                        bindLabel="userName" bindValue="id"
+                                                        [typeahead]="userSearchInput$"
+                                                        (ngModelChange)="selectUser($event, row)"
+                                                        [ngModelOptions]="{standalone: true}" [(ngModel)]="row.userId">
+                                                        <ng-template ng-option-tmp let-item="item">
+                                                            <ng-template #tipContent>{{ item.email }}</ng-template>
+                                                            <span [ngbTooltip]="tipContent" placement="right"
+                                                                container="body" tooltipClass="my-tooltip-class">
+                                                                {{ getUserDisplayName(item) }}
+                                                            </span>
+                                                        </ng-template>
+                                                        <ng-template ng-label-tmp let-item="item">
+                                                            {{ getUserDisplayName(item) }}
+                                                        </ng-template>
+                                                    </ng-select>
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                        <ngx-datatable-column [name]="'::LABEL_ExpiryDateAndTime' | abpLocalization"
+                                            [maxWidth]="220" [sortable]="false">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <div class="form-group">
+                                                    <input type="text" id="expiry-date-time" class="form-control"
+                                                        [ngModelOptions]="{standalone: true}"
+                                                        [(ngModel)]="row.expiryDateTime" bsDatepicker
+                                                        [bsConfig]="{adaptivePosition: true, containerClass: 'theme-dark-blue', withTimepicker: false, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                                                </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                        <ngx-datatable-column [name]="'::LABEL_DataTierType' | abpLocalization"
+                                            prop="dataTierType" [maxWidth]="150"></ngx-datatable-column>
+                                        <ngx-datatable-column [name]="'::LABEL_DataTier' | abpLocalization"
+                                            prop="dataTier"></ngx-datatable-column>
+
+                                    </ngx-datatable>
+                                </div>
+                                <div class="form-group col col-12 col-md-12 mb-2 d-flex">
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            (click)="create('assignee')">
+                                            {{ '::Create' | abpLocalization }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive"
+                                [class.collapsed]="isCollapse">
+                                {{ '::LABEL_DataTier' | abpLocalization }}&nbsp;<span> * </span>
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                            <span *ngIf="!form.controls['shift'].value?.length" class="text-danger mb-2 mt-2" style="display:block;">
+                                {{ '::LABEL_SelectShiftReminder' | abpLocalization }}
+                            </span>
+                            <span *ngIf="form.controls['shift'].value?.length && statement" class="text-danger mb-2 mt-2" style="display:block;">
+                                {{ '::LABEL_ReminderStatement' | abpLocalization }}
+                            </span>                      
+                            <app-tree-view [nodes]="dataTierTreeNode" [enforceDisabledCheck]="true"></app-tree-view>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+        } @else {
+        <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+        }
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid || !hasAssignedDataTiers() || checkToDolist()"
+            (click)="save()">
+            {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+    </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+    <ng-template #abpHeader>
+    </ng-template>
+    <ng-template #abpBody>
+        <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+    </ng-template>
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Close' | abpLocalization }}
+        </button>
+    </ng-template>
+</abp-modal>
+
+<app-history-modal *ngIf="isHistoryModalVisible" [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>
+
+<app-import-confirm *ngIf="importConfirmVisible" [(importConfirmVisible)]="importConfirmVisible"
+    [existingData]="existingData" [objectType]="'ToDoSetup'" (customeImport)="customeImport($event)">
+</app-import-confirm>

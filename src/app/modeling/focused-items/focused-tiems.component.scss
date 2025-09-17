@@ -1,0 +1,22 @@
+ng-select {
+    line-height: 1.45!important;
+}
+
+::ng-deep {
+  .selected-count-wrapper {
+    color: var(--ufe-btn-color, #ac1a8a);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.selected-items-modal {
+  .no-data-message {
+    text-align: center;
+    padding: 20px;
+    color: var(--ufe-btn-color, #ac1a8a);
+  }
+}

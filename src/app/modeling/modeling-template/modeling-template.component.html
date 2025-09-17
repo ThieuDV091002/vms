@@ -1,0 +1,296 @@
+<abp-page [title]="title | abpLocalization" [toolbar]="data.items">
+  <abp-page-toolbar-container class="col">
+    <div class="text-end pt-1">
+      <!-- tooltip -->
+      @if (toolbarButtons?.move) {
+      <button *abpPermission="permissions?.create" placement="bottom" class="btn btn-primary btn-sm action-button"
+        type="button" (click)="move()" [disabled]="selected.length === 0">
+        <i class="fas fa-angle-double-right"></i>
+        <span>{{ '::Move' | abpLocalization }}</span>
+      </button>
+      }
+      @if (!toolbarButtons || !toolbarButtons.hasOwnProperty('import') || toolbarButtons?.import) {
+      <button *abpPermission="permissions?.import" class="btn btn-outline-primary btn-sm action-button" type="button"
+        (click)="selectImportFile.value='';selectImportFile.click()">
+        <i class="fa fa-file-import" aria-hidden="true"></i>
+        <span>{{ '::Import' | abpLocalization }}</span>
+      </button>
+      <input type="file" #selectImportFile class="d-none" (change)="onFileChange($event)"
+        [accept]="importAndExportOnlyJson ? acceptFileType[FileType.Json] : (acceptFileType[FileType.Json] + ',' + acceptFileType[FileType.Excel])" />
+      }
+      @if(selected.length === 0){
+      @if(!toolbarButtons || !toolbarButtons.hasOwnProperty('export') || toolbarButtons?.export) {
+      <div ngbDropdown *abpPermission="permissions?.export" class="d-inline-block">
+        <button class="btn btn-outline-primary btn-sm action-button dropdown-toggle" type="button"
+          data-toggle="dropdown" aria-haspopup="true" ngbDropdownToggle tooltip="{{ '::ExportAll' | abpLocalization }}">
+          <i class="fa fa-download" aria-hidden="true"></i>
+          <span>{{ '::ExportAll' | abpLocalization }}</span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdown">
+          <button ngbDropdownItem (click)="exportAllClick(FileType.Json)">
+            {{ '::ToJson' | abpLocalization }}
+          </button>
+          <button ngbDropdownItem (click)="exportAllClick(FileType.Excel)" *ngIf="!importAndExportOnlyJson">
+            {{ '::ToExcel' | abpLocalization }}
+          </button>
+        </div>
+      </div>
+      }
+      <button *abpPermission="permissions?.export" class="btn btn-outline-primary btn-sm action-button" type="button"
+        (click)="isTableHovered=!isTableHovered">
+        <i class="fa fas fa-check" aria-hidden="true"></i>
+        <span>{{ '::Select' | abpLocalization }}</span>
+
+      </button>
+      }
+      @if ((!toolbarButtons || !toolbarButtons.hasOwnProperty('export') || toolbarButtons?.export)&&selected.length > 0)
+      {
+
+      <div ngbDropdown *abpPermission="permissions?.export" class="d-inline-block">
+        <button class="btn btn-outline-primary btn-sm dropdown-toggle action-button" type="button"
+          data-toggle="dropdown" aria-haspopup="true" ngbDropdownToggle [disabled]="selected.length === 0">
+          <i class="fa fa-download" aria-hidden="true"></i>
+          <span>{{ '::Export' | abpLocalization }}</span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdown">
+          <button ngbDropdownItem (click)="exportClick(FileType.Json)">
+            {{ '::ToJson' | abpLocalization }}
+          </button>
+          <button ngbDropdownItem (click)="exportClick(FileType.Excel)" *ngIf="!importAndExportOnlyJson">
+            {{ '::ToExcel' | abpLocalization }}
+          </button>
+        </div>
+      </div>
+      }
+      <!-- tooltip -->
+      @if (!toolbarButtons || !toolbarButtons.hasOwnProperty('create') || toolbarButtons?.create) {
+      <button *abpPermission="permissions?.create" placement="bottom" class="btn btn-primary btn-sm action-button"
+        type="button" (click)="add()">
+        <i class="fa fa-plus me-1" aria-hidden="true"></i>
+        <span>{{ 'AbpIdentity::Permission:Create' | abpLocalization }}</span>
+      </button>
+      }
+
+      @if ((!toolbarButtons || !toolbarButtons.hasOwnProperty('multiDelete') || toolbarButtons?.multiDelete)
+      &&selected.length > 0) {
+      <button *abpPermission="permissions?.delete" class="btn btn-danger btn-sm action-button" type="button"
+        (click)="multiDeleteClick()" [disabled]="selected.length === 0">
+        <i class="fa fa-trash" aria-hidden="true"></i>
+        <span>{{ '::Delete' | abpLocalization }}</span>
+      </button>
+      }
+
+    </div>
+  </abp-page-toolbar-container>
+
+  <div class="card" style="margin-bottom: 0px;">
+    <div class="card-body">
+      <div id="data-tables-table-filter" class="data-tables-filter mb-1">
+        <div class="input-group input-group-sm">
+          <span class="advanced-filter-icon me-2" (click)="toggleSort()" *ngIf="showAdvancendFilter">
+            <img [class.filter-show-full]="filterSearchHasValue" [class.filter-show-empty]="!filterSearchHasValue"
+              [ngClass]="isSorted ? 'd-none' : ''" alt="Filter Show" style="height: 20px; width: auto;" />
+            <img [class.filter-hidden-full]="filterSearchHasValue" [class.filter-hidden-empty]="!filterSearchHasValue"
+              [ngClass]="isSorted ? '' : 'd-none'" alt="Filter Hidden" style="height: 20px; width: auto;" />
+          </span>
+          <input #searchInput type="search" class="form-control" [placeholder]="placeholder" title="search"
+            (change)="filterType === 'Master' ? search($event.target.value) :list.filter = $event.target.value.trim()"
+            (keydown.enter)="filterType === 'Master' ? search($event.target.value) :list.filter = $event.target.value.trim()" />
+          <button class="btn btn-primary" type="button"
+            (click)="filterType === 'Master' ? search(searchInput.value) :list.get()">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+        <ng-content select="#advanced-filter" *ngIf="showAdvancendFilterText"></ng-content>
+      </div>
+      <ngx-datatable [rows]="data.items" [count]="data.totalCount" [displayCheck]="displayCheck"
+        [selectionType]="'checkbox'" [selected]="getSelectedItemsForCurrentPage()" [list]="list"
+        (select)="onSelect($event)" (sort)="onSort($event)" default [limit]="pageSize"
+        [scrollbarV]="pageSize === 10 ? false : true" scrollbarH="false">
+        <ngx-datatable-column *abpPermission="permissions?.canDeleteOrExport" name="" [checkboxable]="true"
+          [headerCheckboxable]="data.items.length" [width]="30" [headerClass]="getCheckboxClass()"
+          [cellClass]="getCheckboxClass()" [sortable]="false" [canAutoResize]="false"></ngx-datatable-column>
+        <ngx-datatable-column [width]="40" [sortable]="false" [canAutoResize]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <div ngbDropdown container="body" class="d-inline-block">
+              <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 30px;" data-toggle="dropdown"
+                aria-haspopup="true" ngbDropdownToggle></i>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                <button ngbDropdownItem *abpPermission="permissions?.edit" (click)="edit(row)">
+                  {{ '::Edit' | abpLocalization }}
+                </button>
+                @if (!copyDisabled) {
+                <button ngbDropdownItem *abpPermission="permissions?.copy" type="button" (click)="copyDataClick(row)">
+                  {{ '::Copy' | abpLocalization }}
+                </button>
+                }
+                <ng-content select="#schedulerSettingActions" #schedulerSettingActions></ng-content>
+                @if (!startDisabled) {
+                <button ngbDropdownItem (click)="start(row)">
+                  {{ '::LABEL_Start' | abpLocalization }}
+                </button>
+                }
+                @if (!stopDisabled) {
+                <button ngbDropdownItem (click)="stop(row)">
+                  {{ '::LABEL_Stop' | abpLocalization }}
+                </button>
+                }
+                @if (!executeHistoryDisabled) {
+                <button ngbDropdownItem (click)="viewExecutionHistory(row)">
+                  {{ '::LABEL_ExecutionHistory' | abpLocalization }}
+                </button>
+                }
+                @if (customAction) {
+                <button ngbDropdownItem (click)="customActionClick(row)" *abpPermission="customAction.permission">
+                  {{ customAction.displayKey | abpLocalization }}
+                </button>
+                }
+                <button ngbDropdownItem [disabled]="!getPermission(item.permission)" (click)="performFunc(item, row)"
+                  *ngFor="let item of columnActions">
+                  {{ item.displayKey | abpLocalization }}</button>
+                <button ngbDropdownItem *abpPermission="permissions?.delete" (click)="delete(row)">
+                  {{ '::Delete' | abpLocalization }}
+                </button>
+                <button ngbDropdownItem (click)="viewHistory(row)">
+                  {{ '::ViewHistory' | abpLocalization }}
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        @for (column of columns; track column) {
+        <ngx-datatable-column [name]="column.displayKey | abpLocalization" [prop]="column.field"
+          [sortable]="column.field !== 'iconClass' && column.field !== 'color' && !column.sortDisable">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            @if (column.field === 'iconClass') {
+            <i [ngClass]="row[column.field]"></i>
+            }
+            @else if (column.field === 'color' && (['JobFunction', 'States', 'ActivityCardPriority',
+            'ActivityCardCategory'].includes(objectType))) {
+            @if (row[column.field]) {
+            <div class="color-box" [style.background-color]="row[column.field]"></div>
+            }
+            }
+            @else if (column.field === 'cardColor') {
+            @if (row[column.field]) {
+            <div class="color-box" [style.background-color]="row[column.field]"></div>
+            }
+            }@else if (column.field === 'name') {
+            <span class="name-field">{{row[column.field]}}</span>
+            }
+            @else {
+            @if(column.altField) {
+            {{row[column.altField]}}
+            }
+            @else if (column.options) {
+            {{row[column.options][column.field]}}
+            }
+            @else if(column.field === 'lastPublishTime') {
+            @if (row[column.field]) {
+            {{formatDate(row[column.field]) | date: 'dd MMM yyyy hh:mm:ss a'}}
+            }
+            } @else {
+            {{column.type==='date' ? (formatDate(row[column.field]) | date: 'dd MMM yyyy hh:mm:ss a') : row[column.field]}}
+            }
+            }
+          </ng-template>
+        </ngx-datatable-column>
+        }
+        @if (hasLastUpdate) {
+        <ngx-datatable-column [name]="'::LastUpdateBy' | abpLocalization" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            @if (row.lastModifier) {
+            {{row.lastModifier}}
+            }@else {
+            {{ userMap[row.lastModifierId ? row.lastModifierId : row.creatorId] }}
+            }
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [name]="'::LastUpdateTime' | abpLocalization" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{formatDate(row.lastModificationTime ? row.lastModificationTime : row.creationTime) | date: 'dd MMM yyyy hh:mm:ss a' }}
+          </ng-template>
+        </ngx-datatable-column>
+        }
+        <ngx-datatable-footer>
+          <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+            let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+            <app-datatable-footer [rowCount]="rowCount" [pageSize]="pageSize" [offset]="offset" [list]="list"
+              [selectedCount]="Object.keys(allSelected).length" (page)="pageChange($event)"
+              (click)="showSelectedItems($event)">
+            </app-datatable-footer>
+          </ng-template>
+        </ngx-datatable-footer>
+
+        <abp-modal [(visible)]="isSelectedItemsModalOpen" [busy]="false">
+          <ng-template #abpHeader>
+            <h3>{{ '::LABEL_SelectedItems' | abpLocalization }}</h3>
+          </ng-template>
+
+          <ng-template #abpBody>
+            <div class="selected-items-modal">
+              @if (Object.keys(allSelected).length === 0) {
+              <div class="no-data-message">
+                {{ '::LABEL_NoSelectedItems' | abpLocalization }}
+              </div>
+              } @else {
+              <div class="selected-item" *ngFor="let item of Object.values(allSelected)">
+                {{item[displayField] || item.name || item.userName}}
+              </div>
+              }
+            </div>
+          </ng-template>
+
+          <ng-template #abpFooter>
+            <button type="button" class="btn btn-primary" (click)="isSelectedItemsModalOpen = false">
+              {{ 'AbpIdentity::Close' | abpLocalization }}
+            </button>
+          </ng-template>
+        </abp-modal>
+      </ngx-datatable>
+    </div>
+  </div>
+</abp-page>
+<abp-modal [(visible)]="isModalOpen">
+  <ng-template #abpHeader>
+    <h3>{{'::CopyInstance' | abpLocalization}}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <div [formGroup]="form">
+      @if (copyFields.length) {
+      @for (copyfield of copyFields; track copyfield) {
+      <div class="form-group mb-2" [class.mb-2]="$index < (copyFields.length - 1)">
+        <label>{{copyPrefix | abpLocalization}} {{ copyfield.displayKey | abpLocalization}} </label><span
+          *ngIf="copyfield.required"> * </span>
+        <input type="text" class="form-control form-control-sm" [formControlName]="copyfield.field" />
+      </div>
+      }
+      } @else {
+      <div *ngIf="!noNameCopy" class="form-group mb-2">
+        <label>{{copyPrefix | abpLocalization}} {{'AbpIdentity::DisplayName:Name' | abpLocalization}} </label><span> *
+        </span>
+        <input type="text" class="form-control form-control-sm" #newNameInput formControlName="name"
+          (input)="form.controls['displayName'].setValue($event.target.value)" />
+      </div>
+      <div *ngIf="!noDisplayNameCopy" class="form-group mb-2">
+        <label>{{'::DisplayName' | abpLocalization}}</label><span> *
+        </span>
+        <input type="text" class="form-control form-control-sm" #displayNameInput formControlName="displayName" />
+      </div>
+      }
+      <ng-content select="#copyCustomeField" #copyCustomeField></ng-content>
+    </div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-sm btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <button class="btn btn-sm btn-primary" [disabled]="!form.valid || isTreeViewAval()"
+      (click)="isModalOpen=false;saveCopyData()">
+      <i class="fa fa-check"></i>
+      {{'AbpIdentity::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

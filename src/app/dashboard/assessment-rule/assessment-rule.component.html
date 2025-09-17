@@ -1,0 +1,203 @@
+<abp-page class="widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+  <abp-page-title-container class="col text-start ms-3">
+    <h5>{{ selectedWidget.name | abpLocalization }}</h5>
+  </abp-page-title-container>
+  <abp-page-toolbar-container class="col widget-toolbar">
+
+    <div class="text-end me-3">
+      <span class="me-2 cursor-pointer" (click)="deleteWidget()" *abpPermission="'Dashboard.Update'">
+        <i class="fa fa-trash fa-lg"></i>
+      </span>
+      <span class="me-2 cursor-pointer" (click)="expand()">
+        @if (expandChart) {
+        <i class="fa fa-compress fa-lg"></i>
+        } @else {
+        <i class="fa fa-expand fa-lg"></i>
+        }
+      </span>
+      <span class="cursor-pointer" (click)="openSettings()" *abpPermission="'AssessmentSchedulingRule.Edit'">
+        <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+      </span>
+    </div>
+
+  </abp-page-toolbar-container>
+  <div class="card m-0 h-100">
+    <div class="card-body">
+      <div class="input-group input-group-sm mb-1">
+        <input #searchInput type="search" class="form-control"
+          [placeholder]="'::LABEL_AssessmentSchedulingRule_Search'|abpLocalization" title="search"
+          (change)=" search($event.target.value.trim())" (keydown.enter)="search($event.target.value.trim())" />
+        <button class="btn btn-primary" type="button" (click)=" search(searchInput.value) ">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+      <div class="assessment-rule-table-container">
+        <ngx-datatable [rows]="data?.items" [count]="data.totalCount" [headerHeight]="40"
+          [limit]="this.selectedWidget?.extraProperties.pageSize" [reorderable]="true" [list]="list"
+          [columnMode]="'force'" style="height: 100%;" default #myTable>
+          <ngx-datatable-column [width]="40" [sortable]="false" [canAutoResize]="false">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <div ngbDropdown container="body" class="d-inline-block">
+                <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 30px;" data-toggle="dropdown"
+                  aria-haspopup="true" ngbDropdownToggle></i>
+                <div ngbDropdownMenu aria-labelledby="dropdown">
+                  <button ngbDropdownItem *abpPermission="'AssessmentSchedulingRule.Edit'" (click)="onGenerate(row)"
+                    >
+                    {{ '::LABEL_Generate' | abpLocalization }}</button>
+
+                  <button ngbDropdownItem  *abpPermission="'AssessmentSchedulingRule.Delete'" (click)="onDelete(row)">
+                    {{ '::Delete' | abpLocalization }}
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="name" [width]="220"> </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::LABEL_Assessment_Type' | abpLocalization" prop="assessmentTypeName"
+            [width]="140"> </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::LABEL_DataTierType' | abpLocalization" prop="dataTierType" [width]="80">
+          </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::LABEL_ScheduleType' | abpLocalization" prop="scheduleType" [width]="80">
+          </ngx-datatable-column>
+          <ngx-datatable-column [name]="'::LABEL_LastAssessmentDate' | abpLocalization" prop="lastAssessmentDate"
+            [width]="180">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              {{ row.lastAssessmentDate | date:'dd MMM yyyy' }}
+            </ng-template>
+          </ngx-datatable-column>
+          <!-- <ngx-datatable-column [name]="'::Actions' | abpLocalization" [width]="200">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <button class="btn btn-success btn-sm d-inline-block me-2" (click)="onGenerate(row)">
+                {{ '::LABEL_Generate' | abpLocalization }}
+              </button>
+              <button class="btn btn-danger btn-sm d-inline-block" (click)="onDelete(row)">
+                {{ '::Delete' | abpLocalization }}
+              </button>
+            </ng-template>
+          </ngx-datatable-column> -->
+        </ngx-datatable>
+      </div>
+    </div>
+  </div>
+</abp-page>
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+      <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+    </div>
+    <div class="form-group">
+      <label for="cells-displayName"
+        [title]="'::INFO_DisplayRowCount' | abpLocalization">{{'::LABEL_DisplayRowCount'|abpLocalization}}</label>
+      <input type="number" id="cells-displayName" class="form-control" [(ngModel)]="pageSize" />
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+      (click)="saveSettiings()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isPreviewModalVisible" [options]="{ size: 'xl' }">
+  <ng-template #abpHeader>
+    <h3>{{ '::LABEL_PreviewAssessmentSchedule' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="row mb-2">
+      <div class="col-3">
+        <div class="form-group">
+          <label for="assessment-scheduling-rule-name">{{ '::LABEL_AssessmentSchedulingRule' | abpLocalization
+            }}</label>
+          <input type="text" id="assessment-scheduling-rule-name" class="form-control"
+            [value]="previewAssessmentSchedulingRuleName" disabled />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="assessment-type-name">{{ '::LABEL_Assessment_Type' | abpLocalization }}</label>
+          <input type="text" id="assessment-type-name" class="form-control" [value]="previewAssessmentTypeName"
+            disabled />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="schedule-type-name">{{ '::LABEL_ScheduleType' | abpLocalization }}</label>
+          <input type="text" id="schedule-type-name" class="form-control" [value]="previewScheduleTypeName" disabled />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="last-assessment-date">{{ '::LABEL_ForecastLatestAssessmentDate' | abpLocalization }}</label>
+          <input type="text" id="last-assessment-date" class="form-control" [value]="previewLastAssessmentDate | date:'dd MMM yyyy'"
+            disabled />
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-3">
+        <div class="form-group">
+          <label for="assessment-dates">{{ '::LABEL_Date' | abpLocalization }}</label>
+          <select id="assessment-dates" class="form-select" (change)="onDateChange($event)">
+            <option value=""></option>
+            <option *ngFor="let date of currentAssessmentRuleDates" [value]="date">{{ date | date:'dd MMM yyyy' }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="data-tiers">{{ '::LABEL_DataTier' | abpLocalization }}</label>
+          <select id="data-tiers" class="form-select" (change)="onDataTierChange($event)">
+            <option value=""></option>
+            <option *ngFor="let tier of currentAssessmentRuleDataTiers" [value]="tier.dataTierId">{{ tier.dataTierName
+              }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="owners">{{ '::LABEL_Owner' | abpLocalization }}</label>
+          <select id="owners" class="form-select" (change)="onOwnerChange($event)">
+            <option value=""></option>
+            <option *ngFor="let owner of currentAssessmentRuleOwners" [value]="owner.ownerId">{{ owner.ownerName }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="user-groups">{{ '::LABEL_UserGroup' | abpLocalization }}</label>
+          <select id="user-groups" class="form-select" (change)="onUserGroupChange($event)">
+            <option value=""></option>
+            <option *ngFor="let group of currentAssessmentRuleUserGroups" [value]="group.userGroupId">{{
+              group.userGroupName }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <ngx-datatable [rows]="filterPreviewData" [columns]="[
+        { prop: 'assessmentDate', name: ('::LABEL_Date' | abpLocalization) },
+        { prop: 'dataTierType', name: ('::LABEL_DataTierType' | abpLocalization) },
+        { prop: 'datatierName', name: ('::LABEL_DataTier' | abpLocalization) },
+        { prop: 'ownerName', name: ('::LABEL_Owner' | abpLocalization) },
+        { prop: 'userGroupName', name: ('::LABEL_UserGroup' | abpLocalization) }
+      ]" [count]="filterPreviewData.totalCount" default>
+    </ngx-datatable>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" (click)="confirmGenerate()">
+      {{ '::LABEL_Confirm' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>

@@ -1,0 +1,304 @@
+<app-modeling-template [title]="'::LABEL_AssessmentTypesGlobal'" [data]="data" [objectType]="'AssessmentTypeGlobal'"
+  [permissions]="{create: 'AssessmentTypeGlobal.Create', edit: 'AssessmentTypeGlobal.Edit', delete: 'AssessmentTypeGlobal.Delete', import: 'AssessmentTypeGlobal.Import', export: 'AssessmentTypeGlobal.Export'}"
+  [columns]="[{displayKey:'::Name', field: 'name'},{displayKey:'::DisplayName', field: 'displayName'},{displayKey:'::Description', field: 'description'},{displayKey:'::LABEL_StateModel', field: 'stateModelName'},{displayKey:'::LABEL_InitialStatus', field: 'initialStatusName'},
+  {displayKey:'::LABEL_ActiveRevision', field: 'activeRevision'},{displayKey:'::LABEL_LastRevision', field: 'lastRevision'},{displayKey:'::LABEL_ActivityCardType', field: 'activityCardTypeName'},{displayKey:'::LABEL_ActivityCardCategory', field: 'activityCardCategoryName'},{displayKey:'::LABEL_LastPublishTime', field: 'lastPublishTime'}]"
+  [list]="list" [hasLastUpdate]="true" (multiDelete)="multiDelete($event)" (dataAdd)="add()" (dataEdit)="edit($event)"
+  (dataDelete)="delete($event)" (export)="export($event)" (exportAll)="exportAll($event)"  (import)="import($event)"
+  (dataViewHistory)="viewHistory($event)" [copyDisabled]="true" [toolbarButtons]="{create: true, multiDelete: true, import: false, export: false}"
+  [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isGuidelineModalVisible" [busy]="modalBusy" [options]="{ centered: true }">
+  <ng-template #abpHeader>
+    <h3>{{ (selectedGuideline?.questionNo ? '::Edit' : '::Create') | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    @if (guidelineForm) {
+    <form [formGroup]="guidelineForm" (ngSubmit)="save()">
+      <div class="form-group mb-2">
+        <label for="guideline-question">{{ '::LABEL_AssessmentGlobalGuidelineQuestion' | abpLocalization
+          }}</label><span> * </span>
+        <input type="text" id="guideline-question" class="form-control" formControlName="question" autofocus />
+      </div>
+      <div class="form-group mb-2">
+        <label for="guideline-long-description">{{ '::LABEL_AssessmentGlobalGuidelineLongDescription' | abpLocalization
+          }}</label>
+        <textarea type="text" id="guideline-long-description" class="form-control"
+          formControlName="longDescription"></textarea>
+      </div>
+      <div class="form-group mb-2">
+        <label for="guideline-answer-type">{{ '::LABEL_AssessmentGlobalGuidelineAnswerType' | abpLocalization
+          }}</label><span> * </span>
+        <select class="form-select" formControlName="answerType">
+          <option *ngFor="let answerType of answerTypeOptions" [ngValue]="answerType.value">
+            {{answerType.label | abpLocalization}}
+          </option>
+        </select>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="guidelineForm?.invalid" (click)="saveGuideline()">
+      {{ '::LABEL_Update' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{ centered: true, size: 'xl' }">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="accordion" id="accordionExample">
+        <div class="accordion accordion-flush">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne" [class.collapsed]="isCollapse">
+                {{ '::LABEL_General' | abpLocalization }}
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col col-12">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span>
+                        * </span>
+                      <input type="text" id="assessment-type-name" class="form-control" formControlName="name"
+                        (input)="form.controls['displayName'].setValue($event.target.value)"
+                        autofocus />
+                    </div>
+                  </div>
+                  <div class="col col-12">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span>
+                        * </span>
+                      <input type="text" id="assessment-type-displayName" class="form-control"
+                        formControlName="displayName" />
+                    </div>
+                  </div>
+                  <div class="col col-12">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-description" [title]="'::INFO_Description' | abpLocalization">{{'::Description'|abpLocalization}}</label>
+                      <input type="text" id="assessment-type-description" class="form-control"
+                        formControlName="description" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-state" [title]="'::INFO_StateModel' | abpLocalization">{{'::LABEL_StateModel'|abpLocalization}}</label><span>
+                        * </span>
+                      <select class="form-select" formControlName="stateModelId">
+                        <option *ngFor="let stateModel of stateModels" [ngValue]="stateModel.id">
+                          {{stateModel.displayName || stateModel.name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-status" [title]="'::INFO_InitialStatus' | abpLocalization">{{'::LABEL_InitialStatus'|abpLocalization}}</label><span>
+                        * </span>
+                      <select class="form-select" formControlName="initialStatusId">
+                        <option *ngFor="let state of states" [ngValue]="state.id">
+                          {{state.displayName || state.name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-card-type" [title]="'::INFO_ActivityCardType' | abpLocalization">{{'::LABEL_ActivityCardType'|abpLocalization}}</label>
+                      <select class="form-select" formControlName="activityCardTypeId">
+                        <option [ngValue]="null"></option>
+                        <option *ngFor="let activityCardType of activityCardTypes" [ngValue]="activityCardType.id">
+                          {{activityCardType.displayName || activityCardType.name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <label
+                        for="assessment-type-card-category" [title]="'::INFO_ActivityCardCategory' | abpLocalization">{{'::LABEL_ActivityCardCategory'|abpLocalization}}</label>
+                      <select class="form-select" formControlName="activityCardCategoryId">
+                        <option [ngValue]="null"></option>
+                        <option *ngFor="let activityCardCategory of activityCardCategories"
+                          [ngValue]="activityCardCategory.id">
+                          {{activityCardCategory.displayName || activityCardCategory.name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-revision" [title]="'::INFO_Revision' | abpLocalization">{{'::LABEL_Revision'|abpLocalization}}</label><span> * </span>
+                      @if (selected?.id) {
+                      <select class="form-select" formControlName="revision">
+                        <option *ngFor="let revision of revisionsOptions" [ngValue]="revision">
+                          {{revision}}
+                        </option>
+                      </select>
+                      } @else {
+                      <input type="text" id="assessment-type-revision" class="form-control" formControlName="revision"
+                        [readOnly]="true" />
+                      }
+                    </div>
+                  </div>
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <label for="assessment-type-active-revision" [title]="'::INFO_ActiveRevision' | abpLocalization">{{'::LABEL_ActiveRevision'|abpLocalization}}</label>
+                      <input type="text" id="assessment-type-active-revision" class="form-control"
+                        formControlName="activeRevision" [readOnly]="true" />
+                    </div>
+                  </div>
+                </div>
+                @if (selected?.id) {
+                <div class="row">
+                  <div class="col col-3">
+                    <div class="form-group mb-2">
+                      <button placement="bottom" class="btn btn-primary btn-sm" type="button" (click)="newRevision()" [disabled]="getNewRevisionButtonStatus()">
+                        <i class="fa fa-plus me-1" aria-hidden="true"></i>
+                        {{ '::LABEL_NewRevision' | abpLocalization }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                aria-expanded="true" aria-controls="collapseTwo" [class.collapsed]="isCollapse">
+                {{ '::LABEL_AssessmentQuestionGuideline' | abpLocalization }}
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="form-group col col-12 col-md-12 mb-1">
+                    <div class="mb-2 d-flex justify-content-end">
+                      <button placement="bottom" class="btn btn-primary btn-sm" type="button"
+                        (click)="createGuidelie()">
+                        <i class="fa fa-plus me-1" aria-hidden="true"></i>
+                        {{ 'AbpIdentity::Permission:Create' | abpLocalization }}
+                      </button>
+                    </div>
+                    <ngx-datatable [rows]="guidelineList" [count]="guidelineList.length" [limit]="pageSize" default
+                      id="assessmentGuidelinDataTable">
+                      <ngx-datatable-column [maxWidth]="25" [sortable]="false">
+                        <ng-template let-row="row" let-rowIndex="rowIndex" let-index ngx-datatable-cell-template>
+                          <div ngbDropdown container="body" class="d-inline-block">
+                            <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" data-toggle="dropdown"
+                              aria-haspopup="true" ngbDropdownToggle></i>
+                            <div ngbDropdownMenu aria-labelledby="dropdown">
+                              <button ngbDropdownItem (click)="editGuideline(rowIndex)">
+                                {{ 'AbpActions::Edit' | abpLocalization }}
+                              </button>
+                              <button ngbDropdownItem (click)="moveUpGuideline(rowIndex)">
+                                {{ '::LABEL_MoveUp' | abpLocalization }}
+                              </button>
+                              <button ngbDropdownItem (click)="moveDownGuideline(rowIndex)">
+                                {{ '::LABEL_MoveDown' | abpLocalization }}
+                              </button>
+                              <button ngbDropdownItem (click)="deleteGuideline(row, rowIndex)">
+                                {{ '::Delete' | abpLocalization }}
+                              </button>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column [name]="'::LABEL_AssessmentGlobalGuidelineQuestion' | abpLocalization"
+                        prop="question"></ngx-datatable-column>
+                      <ngx-datatable-column
+                        [name]="'::LABEL_AssessmentGlobalGuidelineLongDescription' | abpLocalization"
+                        prop="longDescription"></ngx-datatable-column>
+                      <ngx-datatable-column [name]="'::LABEL_AssessmentGlobalGuidelineAnswerType' | abpLocalization"
+                        prop="answerType"></ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    }
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <div class="d-flex justify-content-between align-items-end w-100">
+      <div class="form-group w-50">
+        <label for="users-application" class="form-label" [title]="'::INFO_PublishTenants' | abpLocalization">
+          {{ '::LABEL_PublishTenants'|abpLocalization}}
+        </label>
+        <multiple-select [items]="tenants" displayName="name" valueName="id" (change)="selectedTenantChanges($event)"
+          [values]="form.controls['tenants'].value">
+        </multiple-select>
+      </div>
+      <div>
+        <button type="button" class="btn btn-danger me-2" *ngIf="selected?.id" (click)="publishRevision()"
+          [disabled]="form?.invalid || guidelineList.length === 0 || form.controls['tenants'].value.length === 0 || publisButtondisable">
+          <i class="fa-solid fa-tower-broadcast me-1"></i>
+          {{ '::LABEL_Publish' | abpLocalization }}
+        </button>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+          {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()" class="ms-2">
+          {{ 'AbpIdentity::Save' | abpLocalization }}
+        </abp-button>
+      </div>
+    </div>
+
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isImportDetailsVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+  </ng-template>
+  <ng-template #abpBody>
+    <app-modeling-import-detail [items]="importResult"></app-modeling-import-detail>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<app-history-modal
+    *ngIf="isHistoryModalVisible"
+    [(isHistoryModalVisible)]="isHistoryModalVisible"
+    [historys]="historys">
+</app-history-modal>

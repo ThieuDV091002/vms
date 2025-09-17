@@ -1,0 +1,113 @@
+<div *ngIf="scannedTag$ | async as tag; else placeholder">
+    <ul>
+        <p>Details</p>
+        <li *ngIf="tag.id !== undefined && tag.id.length > 0" lines="inset">
+            <p position="stacked">Tag Identifier</p>
+            <input [readonly]="true" [value]="tag.id | bytesToHex:'':':'">
+        </li>
+        <li *ngIf="tag.type !== undefined" lines="inset">
+            <p position="stacked">Tag Type</p>
+            <input [readonly]="true" [value]="tag.type">
+        </li>
+        <li *ngIf="tag.techTypes !== undefined && tag.techTypes.length > 0" lines="inset">
+            <p position="stacked">Technologies</p>
+            <input [readonly]="true" [value]="tag.techTypes.join(', ')">
+        </li>
+        <li *ngIf="tag.isWritable !== undefined" lines="inset">
+            <p position="stacked">Writable</p>
+            <input [readonly]="true" [value]=" tag.isWritable | booleanToText">
+        </li>
+        <li *ngIf="tag.canMakeReadOnly !== undefined" lines="inset">
+            <p position="stacked">Write protectable</p>
+            <input [readonly]="true" [value]="tag.canMakeReadOnly | booleanToText">
+        </li>
+        <!-- <li lines="inset">
+          <p position="stacked">Password protected</p>
+          <input [readonly]="true" [value]="">
+        </li> -->
+        <li *ngIf="tag.maxSize !== undefined" lines="inset">
+            <p position="stacked">Size</p>
+            <input [readonly]="true" [value]="tag.maxSize + ' Bytes'">
+        </li>
+        <li *ngIf="tag.atqa !== undefined && tag.atqa.length > 0" lines="inset">
+            <p position="stacked">ATQA</p>
+            <input [readonly]="true" [value]="tag.atqa | bytesToHex">
+        </li>
+        <li *ngIf="tag.applicationData !== undefined && tag.applicationData.length > 0" lines="inset">
+            <p position="stacked">Application Data</p>
+            <input [readonly]="true" [value]="tag.applicationData | bytesToHex">
+        </li>
+        <li *ngIf="tag.barcode !== undefined && tag.barcode.length > 0" lines="inset">
+            <p position="stacked">Barcode</p>
+            <input [readonly]="true" [value]="tag.barcode | bytesToHex">
+        </li>
+        <li *ngIf="tag.dsfId !== undefined && tag.dsfId.length > 0" lines="inset">
+            <p position="stacked">DSF ID</p>
+            <input [readonly]="true" [value]="tag.dsfId | bytesToHex">
+        </li>
+        <li *ngIf="tag.hiLayerResponse !== undefined && tag.hiLayerResponse.length > 0" lines="inset">
+            <p position="stacked">Higher Layer Response</p>
+            <input [readonly]="true" [value]="tag.hiLayerResponse | bytesToHex">
+        </li>
+        <li *ngIf="tag.historicalBytes !== undefined && tag.historicalBytes.length > 0" lines="inset">
+            <p position="stacked">Historical Bytes</p>
+            <input [readonly]="true" [value]="tag.historicalBytes | bytesToHex">
+        </li>
+        <li *ngIf="tag.manufacturer !== undefined && tag.manufacturer.length > 0" lines="inset">
+            <p position="stacked">Manufacturer</p>
+            <input [readonly]="true" [value]="tag.manufacturer | bytesToHex">
+        </li>
+        <li *ngIf="tag.protocolInfo !== undefined && tag.protocolInfo.length>0" lines="inset">
+            <p position="stacked">Protocol Info</p>
+            <input [readonly]="true" [value]="tag.protocolInfo | bytesToHex">
+        </li>
+        <li *ngIf="tag.responseFlags !== undefined && tag.responseFlags.length > 0" lines="inset">
+            <p position="stacked">Response Flag</p>
+            <input [readonly]="true" [value]="tag.responseFlags | bytesToHex">
+        </li>
+        <li *ngIf="tag.responseFlags !== undefined && tag.responseFlags.length > 0" lines="inset">
+            <p position="stacked">Response Flag</p>
+            <input [readonly]="true" [value]="tag.responseFlags | bytesToHex">
+        </li>
+        <li *ngIf="tag.sak !== undefined && tag.sak.length > 0" lines="inset">
+            <p position="stacked">SAK</p>
+            <input [readonly]="true" [value]="tag.sak | bytesToHex">
+        </li>
+        <li *ngIf="tag.systemCode !== undefined && tag.systemCode.length > 0" lines="inset">
+            <p position="stacked">System Code</p>
+            <input [readonly]="true" [value]="tag.systemCode | bytesToHex">
+        </li>
+    </ul>
+    <ul *ngIf="tag.message">
+
+        <p>Records</p>
+
+        <li lines="inset" *ngFor="let record of tag.message.records">
+            <p position="stacked">{{ record | recordLabel }}</p>
+            <input [readonly]="true" [value]="record | recordPayload">
+        </li>
+    </ul>
+</div>
+<footer style="margin-top: 80vh;">
+    <button class="button" (click)="route.navigate(['/device-test'])">Back</button>
+</footer>
+
+<ng-template #placeholder>
+    <div class="placeholder">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path d="M5 8L10 16" stroke="#33363F" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M18.7224 20.5C20.2145 17.9157 21 14.9841 21 12C21 9.01588 20.2145 6.08433 18.7224 3.5"
+                    stroke="#33363F" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M14.3923 18C15.4455 16.1758 16 14.1064 16 12C16 9.89356 15.4455 7.82423 14.3923 6"
+                    stroke="#33363F" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M9.9282 16C10.6303 14.7838 11 13.4043 11 12C11 10.5957 10.6303 9.21615 9.9282 8"
+                    stroke="#33363F" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M5.0718 16C4.36965 14.7838 4 13.4043 4 12C4 10.5957 4.36965 9.21615 5.0718 8" stroke="#33363F"
+                    stroke-width="2" stroke-linecap="round"></path>
+            </g>
+        </svg>
+    </div>
+</ng-template>

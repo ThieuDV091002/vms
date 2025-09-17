@@ -1,0 +1,32 @@
+<lpx-context-menu #applicationmenu>
+  <div class="application-selector container py-3">
+    <h5 class="mb-3">{{ '::Applications' | abpLocalization }}</h5>
+    <div class="app-grid">
+      <div class="app-card" *ngFor="let app of applications" (click)="openApp(app)">
+        <img [src]="app.iconUrl" alt="{{app.displayName | abpLocalization}} icon" class="app-icon" />
+        <span class="app-name">{{ app.displayName | abpLocalization }}</span>
+      </div>
+    </div>
+  </div>
+
+
+</lpx-context-menu>
+
+<span class="application-icon" (click)="show()" [title]="'::Links'|abpLocalization"
+  [ngStyle]="{'color': isActive ? 'var(--lpx-brand)' : 'var(--lpx-navbar-text-color)'}">
+  <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <g>
+      <circle cx="6" cy="6" r="4" fill="currentColor" />
+      <circle cx="18" cy="6" r="4" fill="currentColor" />
+      <circle cx="30" cy="6" r="4" fill="currentColor" />
+
+      <circle cx="6" cy="18" r="4" fill="currentColor" />
+      <circle cx="18" cy="18" r="4" fill="currentColor" />
+      <circle cx="30" cy="18" r="4" fill="currentColor" />
+
+      <circle cx="6" cy="30" r="4" fill="currentColor" />
+      <circle cx="18" cy="30" r="4" fill="currentColor" />
+      <circle cx="30" cy="30" r="4" fill="currentColor" />
+    </g>
+  </svg>
+</span>

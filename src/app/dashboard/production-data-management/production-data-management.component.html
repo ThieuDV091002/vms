@@ -1,0 +1,468 @@
+<div class="h-100 ps-2 pe-2 pb-2 widget-page" [ngClass]="{'widget-fullscreen': expandChart}">
+  <div class="d-flex justify-content-between">
+    <div class="col text-start p-0">
+      <div class="d-flex">
+        <h5 class="m-0 text-nowrap" *ngIf="!selected.extraProperties?.hideTitle">
+          {{ selected.name | abpLocalization }}
+        </h5>
+      </div>
+    </div>
+    <div class="col p-0">
+      <div class="text-end mb-2">
+
+        <span class="me-2 cursor-pointer advanced-filter-icon" (click)="toggleCollapse()" data-bs-toggle="collapse"
+        [attr.data-bs-target]="'#collapse' + type">
+          <img [class.filter-show-full]="filterSearchHasValue" [class.filter-show-empty]="!filterSearchHasValue"
+            [ngClass]="isCollapse ? 'd-none' : ''" alt="Filter Show" />
+          <img [class.filter-hidden-full]="filterSearchHasValue" [class.filter-hidden-empty]="!filterSearchHasValue"
+            [ngClass]="isCollapse ? '' : 'd-none'" alt="Filter Hidden" />
+        </span>
+        <span class="me-2 cursor-pointer" (click)="add()" *abpPermission="getPermission().create">
+          <i class="fa fa-plus fa-lg"></i>
+        </span>
+
+        @if (!queryId) {
+        <span class="me-2 cursor-pointer" (click)="deleteLaborDataManagementWidget()" *abpPermission="'Dashboard.Update'">
+          <i class="fa fa-trash fa-lg"></i>
+        </span>
+        @if (type === 'laborData'){
+        <span class="me-2 cursor-pointer" (click)="data?.totalCount > 0 && data?.totalCount <= 5000 && ExportData('laborData')" *abpPermission="'LaborData.Export'" 
+              [tooltip]="data?.totalCount > 5000 ? ('::LABEL_ExportProductionDataWarning' | abpLocalization) : null"
+              [class.cursor-pointer]="data?.totalCount > 0 && data?.totalCount <= 5000" 
+              [class.cursor-not-allowed]="data?.totalCount === 0 || data?.totalCount > 5000"
+              placement="auto" container="body">
+          <i class="fas fa-cloud-download-alt"></i>
+        </span>
+        }
+        @if (type === 'productionQtyData'){
+        <span class="me-2 cursor-pointer" (click)="data?.totalCount > 0 && data?.totalCount <= 5000 && ExportData('productionQtyData')" *abpPermission="'ProductionData.Export'"
+              [tooltip]="data?.totalCount > 5000 ? ('::LABEL_ExportProductionDataWarning' | abpLocalization) : null"
+              [class.cursor-pointer]="data?.totalCount > 0 && data?.totalCount <= 5000" 
+              [class.cursor-not-allowed]="data?.totalCount === 0 || data?.totalCount > 5000"
+              placement="auto" container="body">
+          <i class="fas fa-cloud-download-alt"></i>
+        </span>
+        }
+        @if (type === 'scrapQtyData'){
+        <span class="me-2 cursor-pointer" (click)="data?.totalCount > 0 && data?.totalCount <= 5000 && ExportData('scrapQtyData')" *abpPermission="'ScrapData.Export'" 
+              [tooltip]="data?.totalCount > 5000 ? ('::LABEL_ExportProductionDataWarning' | abpLocalization) : null"
+              [class.cursor-pointer]="data?.totalCount > 0 && data?.totalCount <= 5000" 
+              [class.cursor-not-allowed]="data?.totalCount === 0 || data?.totalCount > 5000"
+              placement="auto" container="body">
+          <i class="fas fa-cloud-download-alt"></i>
+        </span>
+        }
+        @if (type === 'reworkQtyData'){
+        <span class="me-2 cursor-pointer" (click)="data?.totalCount > 0 && data?.totalCount <= 5000 && ExportData('reworkQtyData')" *abpPermission="'ReworkData.Export'" 
+              [tooltip]="data?.totalCount > 5000 ? ('::LABEL_ExportProductionDataWarning' | abpLocalization) : null"
+              [class.cursor-pointer]="data?.totalCount > 0 && data?.totalCount <= 5000" 
+              [class.cursor-not-allowed]="data?.totalCount === 0 || data?.totalCount > 5000"
+              placement="auto" container="body">
+          <i class="fas fa-cloud-download-alt"></i>
+        </span>
+        }
+        @if (type === 'downtimeData'){
+        <span class="me-2 cursor-pointer" (click)="data?.totalCount > 0 && data?.totalCount <= 5000 && ExportData('downtimeData')" *abpPermission="'DowntimeData.Export'" 
+              [tooltip]="data?.totalCount > 5000 ? ('::LABEL_ExportProductionDataWarning' | abpLocalization) : null"
+              [class.cursor-pointer]="data?.totalCount > 0 && data?.totalCount <= 5000" 
+              [class.cursor-not-allowed]="data?.totalCount === 0 || data?.totalCount > 5000"
+              placement="auto" container="body">
+          <i class="fas fa-cloud-download-alt"></i>
+        </span>
+        }
+        @if (type === 'breaktimeData'){
+        <span class="me-2 cursor-pointer" (click)="data?.totalCount > 0 && data?.totalCount <= 5000 && ExportData('breaktimeData')" *abpPermission="'BreaktimeData.Export'"
+              [tooltip]="data?.totalCount > 5000 ? ('::LABEL_ExportProductionDataWarning' | abpLocalization) : null"
+              [class.cursor-pointer]="data?.totalCount > 0 && data?.totalCount <= 5000" 
+              [class.cursor-not-allowed]="data?.totalCount === 0 || data?.totalCount > 5000"
+              placement="auto" container="body">
+          <i class="fas fa-cloud-download-alt"></i>
+        </span>
+        }
+        }
+        <span class="me-2 cursor-pointer" (click)="expand()">
+          @if (expandChart) {
+          <i class="fa fa-compress fa-lg"></i>
+          } @else {
+          <i class="fa fa-expand fa-lg"></i>
+          }
+        </span>
+        <span class="cursor-pointer" (click)="openSettings()" *abpPermission="getPermission().edit">
+          <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div [id]="'collapse' + type" class="collapse">
+    <div class="row ps-2 pe-2" [formGroup]="filterForm">
+      <div class="form-group col col-12 col-md-3 text-start">
+        <label for="start-record-timestamp">{{ '::Label_StartRecordTimestamp'|abpLocalization }}
+        </label>
+        <input type="text" id="start-record-timestamp" class="form-control" formControlName="startRecordTimestamp"
+          bsDatepicker
+          [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY hh:mm:ss a'}" />
+      </div>
+      <div class="form-group col col-12 col-md-3 text-start">
+        <label for="end-record-timestamp">{{ '::Label_EndRecordTimestamp'|abpLocalization }}
+        </label>
+        <input type="text" id="end-record-timestamp" class="form-control" formControlName="endRecordTimestamp"
+          bsDatepicker
+          [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY hh:mm:ss a'}" />
+      </div>
+      <div class="form-group col col-12 col-md-3 text-start">
+        <label for="filter-work-order">{{'::Label_WorkOrder'|abpLocalization}}</label>
+        <input type="text" id="filter-work-order" class="form-control" formControlName="workOrder" />
+      </div>
+      <div class="col col-12 col-md-3">
+        <div class="form-group text-start">
+          <label for="filter-product">{{ '::LABEL_Product' | abpLocalization }}</label>
+          <ng-select
+          id="filter-product"
+          [items]="productData"
+          appendTo="body"
+          bindValue="id"
+          bindLabel="displayName"
+          [typeahead]="productInput$"
+          [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+          formControlName="product">
+          <ng-template ng-option-tmp let-item="item">
+            {{item.displayName}}
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.displayName}}
+          </ng-template>
+          </ng-select>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex pt-2 ps-2 pe-2 justify-content-end">
+      <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="filterForm.reset()">
+        {{ 'AbpUi::Clear' | abpLocalization }}
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" (click)="filterData()">
+        {{ 'AbpUi::PagerSearch' | abpLocalization }}
+      </button>
+    </div>
+  </div>
+  <div class="production-data-card"
+    [class]="isCollapse ? 'table-container-height-expand' : 'table-container-height-collapse'">
+    <ngx-datatable default [rows]="data?.items" [count]="data.totalCount" [headerHeight]="40"
+      [limit]="this.selected?.extraProperties.pageSize" [reorderable]="true" [list]="list" #myTable
+      [columnMode]="'force'" style="height: 100%;">
+      <ngx-datatable-column [maxWidth]="25" [sortable]="false" *ngIf="hasEditOrDeletePermission()">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div ngbDropdown container="body" class="d-inline-block">
+            <i class="fa-solid fa-ellipsis-vertical m-1 cursor-pointer" style="width: 25px;" data-toggle="dropdown"
+              aria-haspopup="true" ngbDropdownToggle></i>
+            <div ngbDropdownMenu aria-labelledby="dropdown">
+              <button ngbDropdownItem *abpPermission="getPermission().edit" (click)="edit(row)">
+                {{ 'AbpActions::Edit' | abpLocalization }}
+              </button>
+              <button ngbDropdownItem *abpPermission="getPermission().delete" (click)="delete(row)">
+                {{ '::Delete' | abpLocalization }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_WorkCenter' | abpLocalization" prop="workCenterName">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div>
+            {{ row.workCenterName | abpLocalization }}
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Label_RecordTimestamp' | abpLocalization" [minWidth]="200">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div>
+            {{ formatDate(row.recordTimestamp) | date: 'dd MMM yyyy hh:mm:ss a' }}
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Label_WorkOrder' | abpLocalization" prop="workOrder">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Product' | abpLocalization" prop="productName">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Operation' | abpLocalization" prop="operation">
+      </ngx-datatable-column>
+      @if (type === 'laborData') {
+      <ngx-datatable-column [name]="'::Label_StaffNeeded' | abpLocalization" prop="staffNeeded">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Label_StaffActual' | abpLocalization" prop="staffActual">
+      </ngx-datatable-column>
+      }
+      @if (type === 'productionQtyData') {
+      <ngx-datatable-column [name]="'::Label_PlannedQty' | abpLocalization" prop="plannedQty">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Label_BaseQty' | abpLocalization" prop="baseQty">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Label_ProducedQty' | abpLocalization" prop="producedQty">
+      </ngx-datatable-column>
+      }
+      @if (type === 'scrapQtyData') {
+      <ngx-datatable-column [name]="'::Label_ScrapQty' | abpLocalization" prop="scrapQty">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Label_ScrapReason' | abpLocalization" prop="localScrapReason">
+      </ngx-datatable-column>
+      }
+      @if (type === 'reworkQtyData') {
+      <ngx-datatable-column [name]="'::Label_ReworkQty' | abpLocalization" prop="reworkQty" [maxWidth]="110">
+      </ngx-datatable-column>
+      }
+      @if (type === 'downtimeData') {
+      <ngx-datatable-column [name]="'::Label_Dwontime' | abpLocalization" prop="downtime">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Reason' | abpLocalization" prop="localDowntimeReason">
+      </ngx-datatable-column>
+      }
+      @if (type === 'breaktimeData') {
+      <ngx-datatable-column [name]="'::Label_Breaktime' | abpLocalization" prop="breaktime">
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::LABEL_Reason' | abpLocalization" prop="localBreaktimeReason">
+      </ngx-datatable-column>
+      }
+      <!-- <ngx-datatable-column [name]="'::LastUpdateBy' | abpLocalization" [maxWidth]="150">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div>
+                            {{ row.lastModifierName ? row.lastModifierName : row.creatorName }}
+                        </div>
+                    </ng-template>
+                </ngx-datatable-column> -->
+      <ngx-datatable-column [name]="'::LastUpdateTime' | abpLocalization" [minWidth]="200">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div>
+            {{formatDate(row.lastModificationTime ? row.lastModificationTime : row.creationTime) | date: 'dd MMM yyyy hh:mm:ss a'}}
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</div>
+
+
+
+@if (type === 'laborData') {
+<app-labor-data *ngIf="openAddData" [openAddLaborData]="openAddData" (closeEvent)="closeAddModal()"
+  [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" (refreshList)="list.get()"></app-labor-data>
+<!-- <app-work-order-data *ngIf="openAddData" [openAddWorkOrderData]="openAddData" (closeEvent)="closeAddModal()"
+    [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+    [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers">
+</app-work-order-data> -->
+}
+
+@if (type === 'productionQtyData') {
+<app-production-qty-data *ngIf="openAddData" [openAddProductionData]="openAddData" (closeEvent)="closeAddModal()"
+  [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" (refreshList)="list.get()"></app-production-qty-data>
+}
+
+@if (type === 'scrapQtyData') {
+<app-scrap-qty-data *ngIf="openAddData" [openAddScrapData]="openAddData" (closeEvent)="closeAddModal()"
+  [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" (refreshList)="list.get()"></app-scrap-qty-data>
+}
+
+@if (type === 'reworkQtyData') {
+<app-rework-qty-data *ngIf="openAddData" [openAddReworkQtyData]="openAddData" (closeEvent)="closeAddModal()"
+  [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" (refreshList)="list.get()"></app-rework-qty-data>
+}
+
+@if (type === 'downtimeData') {
+<app-downtime-data *ngIf="openAddData" [openAddDowntimeData]="openAddData" (closeEvent)="closeAddModal()"
+  [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" (refreshList)="list.get()"></app-downtime-data>
+}
+
+@if (type === 'breaktimeData') {
+<app-breaktime-data *ngIf="openAddData" [openAddBreaktimeData]="openAddData" (closeEvent)="closeAddModal()"
+  [dataTierTreeNode]="dataTierTreeNode" [selectedDataTier]="selectedDataTier"
+  [assignedAndDefaultDataTiers]="assignedAndDefaultDataTiers" (refreshList)="list.get()"></app-breaktime-data>
+}
+
+<abp-modal [(visible)]="isSettingsModalVisible">
+  <ng-template #abpHeader>
+    <h3>{{ 'AbpSettingManagement::Settings' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    <div class="form-group mb-2">
+      <label for="widget-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label>
+      <input type="text" id="widget-name" class="form-control" [(ngModel)]="widgetTitle" autofocus />
+    </div>
+    <div class="form-group mb-2">
+      <div class="d-flex">
+        <label class="col-form-label text-start" [title]="'::INFO_HideTitle' | abpLocalization">
+          {{ '::Label_HideTitle' | abpLocalization }}
+        </label>
+        <div class="col-form-label ms-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="role-hide-title" [(ngModel)]="hideTitle" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="pageSize" [title]="'::INFO_DisplayRowCount' | abpLocalization">{{'::LABEL_DisplayRowCount'|abpLocalization}}</label>
+      <input type="number" id="pageSize" class="form-control" [(ngModel)]="pageSize" />
+    </div>
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="[null, 0].includes(pageSize) || widgetTitle === ''"
+      (click)="saveSettings()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>
+
+
+<abp-modal [(visible)]="isModalVisible" [busy]="modalBusy" [options]="{ centered: true, size: 'xl' }">
+  <ng-template #abpHeader>
+    <h3>{{ '::Edit' | abpLocalization }}</h3>
+  </ng-template>
+  <ng-template #abpBody>
+    @if (form) {
+    <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
+      <div class="row">
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="area">{{ '::Area' | abpLocalization }}</label><span> * </span>
+          <input type="text" id="area" class="form-control" formControlName="area" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="cell">{{ '::Cell' | abpLocalization }}</label><span> * </span>
+          <input type="text" id="cell" class="form-control" formControlName="cell" />
+
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="workCenter">{{ '::WorkCenter' | abpLocalization }}</label><span> * </span>
+          <input type="text" id="workCenter" class="form-control" formControlName="workCenterId" />
+        </div>
+
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="record-timestamp">{{ '::Label_RecordTimestamp'|abpLocalization }}</label><span> *
+          </span>
+          <input type="text" id="record-timestamp" class="form-control" formControlName="recordTimestamp" bsDatepicker
+            [bsConfig]="{containerClass: 'theme-dark-blue', withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY hh:mm:ss a'}" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="work-order">{{'::Label_WorkOrder'|abpLocalization}}</label><span> * </span>
+          <input type="text" id="work-order" class="form-control" formControlName="workOrder" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="product">{{ '::LABEL_Product' | abpLocalization }}</label><span> * </span>
+          <ng-select
+          id="product"
+          [items]="productData"
+          appendTo="body"
+          bindValue="id"
+          bindLabel="displayName"
+          [typeahead]="productInput$"
+          [placeholder]="'::LABEL_ShowingTopTen' | abpLocalization"
+          formControlName="productId">
+          <ng-template ng-option-tmp let-item="item">
+            {{item.displayName}}
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item">
+            {{ item.displayName}}
+          </ng-template>
+          </ng-select>
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="operation">{{'::LABEL_Operation'|abpLocalization}}</label>
+          <input type="text" id="operation" class="form-control" formControlName="operation" />
+        </div>
+        @if (type === 'laborData') {
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="staff-needed">{{'::Label_StaffNeeded'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="staff-needed" class="form-control" formControlName="staffNeeded" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="staff-actual">{{'::Label_StaffActual'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="staff-actual" class="form-control" formControlName="staffActual" />
+        </div>
+        }
+
+        @if (type === 'productionQtyData') {
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="planned-qty">{{'::Label_PlannedQty'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="planned-qty" class="form-control" formControlName="plannedQty" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="base-qty">{{'::Label_BaseQty'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="base-qty" class="form-control" formControlName="baseQty" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="produced-qty">{{'::Label_ProducedQty'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="produced-qty" class="form-control" formControlName="producedQty" />
+        </div>
+        }
+
+        @if (type === 'scrapQtyData') {
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="scrap-qty">{{'::Label_ScrapQty'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="scrap-qty" class="form-control" formControlName="scrapQty" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="scrap-reason">{{'::Label_ScrapReason'|abpLocalization}}</label><span> * </span>
+          <select class="form-control form-select" id="scrap-reason" formControlName="scrapReason">
+            <option [ngValue]="scrap.id" *ngFor="let scrap of scrapReasonData">
+              {{ scrap.displayName || scrap.name }}
+            </option>
+          </select>
+        </div>
+        }
+
+        @if (type === 'reworkQtyData') {
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="rework-qty">{{'::Label_ReworkQty'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="rework-qty" class="form-control" formControlName="reworkQty" />
+        </div>
+        }
+
+        @if (type === 'downtimeData') {
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="downtime">{{'::Label_DowntimeMin'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="downtime" class="form-control" formControlName="downtime" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="downtime-reason">{{'::Label_DowntimeReason'|abpLocalization}}</label><span> * </span>
+          <select class="form-control form-select" id="downtime-reason" formControlName="downtimeReason">
+            <option [ngValue]="downtime.id" *ngFor="let downtime of downtimeReasonData">
+              {{ downtime.displayName || downtime.name }}
+            </option>
+          </select>
+        </div>
+        }
+
+        @if (type === 'breaktimeData') {
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="breaktime">{{'::Label_BreaktimeMin'|abpLocalization}}</label><span> * </span>
+          <input appInputNumber [min]="0" id="breaktime" class="form-control" formControlName="breaktime" />
+        </div>
+        <div class="form-group col col-12 col-md-4 mb-2">
+          <label for="breaktime-reason">{{'::Label_BreaktimeReason'|abpLocalization}}</label>
+          <select class="form-control form-select" id="breaktime-reason" formControlName="breaktimeReason">
+            <option [ngValue]="breaktime.id" *ngFor="let breaktime of breaktimeReasonData">
+              {{ breaktime.displayName || breaktime.name }}
+            </option>
+          </select>
+        </div>
+        }
+      </div>
+    </form>
+    } @else {
+    <div class="text-center"><i class="fa fa-pulse fa-spinner"></i></div>
+    }
+  </ng-template>
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">
+      {{ 'AbpIdentity::Save' | abpLocalization }}
+    </abp-button>
+  </ng-template>
+</abp-modal>

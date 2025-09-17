@@ -1,0 +1,46 @@
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 84px));
+  gap: 1em;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.application-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  max-width: 84px;
+}
+
+.app-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.app-name {
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 500;
+  word-break: break-word;
+}
+.application-icon {
+  font-size: 2em;
+  color: var(--lpx-content-text);
+}
