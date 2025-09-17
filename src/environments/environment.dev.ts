@@ -15,7 +15,7 @@ export const environment = {
   oAuthConfig: {
     issuer: 'https://dev.ufe.molex.com:9443/',
     redirectUri: baseUrl,
-    clientId: 'vms_App',
+    clientId: 'VMS_App',
     responseType: 'code',
     scope: 'offline_access UFE',
     requireHttps: true

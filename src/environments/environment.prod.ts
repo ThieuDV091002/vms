@@ -15,7 +15,7 @@ export const environment = {
   oAuthConfig: {
     issuer: 'ENV_AUTHORITY_URL',
     redirectUri: baseUrl,
-    clientId: 'vms_App',
+    clientId: 'VMS_App',
     responseType: 'code',
     scope: 'offline_access UFE',
     requireHttps: true

@@ -70,11 +70,11 @@ else
   echo "ENV_REPORT_URL not set."
 fi
 
-# check ENV_vms_URL exists
-if [ -n "$ENV_vms_URL" ]; then
-  sed -i "s|ENV_vms_URL|${ENV_vms_URL}|g" /usr/share/nginx/html/main*.js
+# check ENV_VMS_URL exists
+if [ -n "$ENV_VMS_URL" ]; then
+  sed -i "s|ENV_VMS_URL|${ENV_VMS_URL}|g" /usr/share/nginx/html/main*.js
 else
-  echo "ENV_vms_URL not set."
+  echo "ENV_VMS_URL not set."
 fi
 
 # check ENV_VERSION exists
