@@ -11,7 +11,7 @@ variables:
   DOTNET_MAXCPUCOUNT: "2"
   # Set memory limits for .NET processes
   COMPlus_GCHeapHardLimit: "1000000000"
-  DOCKER_IMAGE: "registry.gitlab.com/molex/coc/dt/da/ufe/services/qms/ufe-qms-svc:${CI_COMMIT_REF_NAME}"
+  DOCKER_IMAGE: "registry.gitlab.com/molex/coc/dt/da/ufe/services/vms/ufe-vms-svc:${CI_COMMIT_REF_NAME}"
   # Buildah configuration
   BUILDAH_ISOLATION: chroot
   STORAGE_DRIVER: vfs
@@ -207,7 +207,7 @@ tag:
         curl -X PUT \
           -H "content-type: application/json" \
           -H "Cookie: KuboardUsername=admin; KuboardAccessKey=$AccessKey" \
-          -d "{\"kind\":\"deployments\",\"namespace\":\"ufe-qms-dev\",\"name\":\"qms-svc\",\"images\":{\"registry.gitlab.com/molex/coc/dt/da/ufe/services/mms/ufe-qms-svc\":\"registry.gitlab.com/molex/coc/dt/da/ufe/services/mms/ufe-qms-svc:$version\"}}" \
+          -d "{\"kind\":\"deployments\",\"namespace\":\"ufe-vms-dev\",\"name\":\"vms-svc\",\"images\":{\"registry.gitlab.com/molex/coc/dt/da/ufe/services/mms/ufe-vms-svc\":\"registry.gitlab.com/molex/coc/dt/da/ufe/services/mms/ufe-vms-svc:$version\"}}" \
           "$updateImageURL"
       else
         echo "Deployment update skipped - missing updateImageURL or AccessKey"
