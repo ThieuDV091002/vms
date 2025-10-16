@@ -1,1 +1,40 @@
-<p>text works!</p>
+<app-modeling-template [title]="'::MENU_Text' | abpLocalization" [data]="data" [objectType]="'Text'"
+    [permissions]="{create: 'Text.Create', edit: 'Text.Update', delete: 'Text.Delete'}"
+    [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
+    (dataEdit)="edit($event)" (dataDelete)="delete($event)"
+    [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+
+            <div class="form-group mb-2">
+                <label for="text-section" [title]="'::INFO_Section' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> * </span>
+                <select id="text-section" formControlName="section">
+                    <option *ngFor="let s of sections" [value]="s">{{ s }}</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-2">
+                <label for="text-content" [title]="'::INFO_Content' | abpLocalization">{{'::Content'|abpLocalization}}</label>
+                <textarea type="text" id="text-content" class="form-control"
+                    formControlName="content" row="5"></textarea>
+            </div>
+        </form>
+        <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>

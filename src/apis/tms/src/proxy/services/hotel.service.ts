@@ -103,7 +103,7 @@ export class HotelService {
       this.restService.request<any, PagedResultDto<HotelDto>>({
         method: 'GET',
         url: '/api/app/hotel',
-        params: { filter: input.filter, sorting: input.sorting, skipCount: input.skipCount, maxResultCount: input.maxResultCount },
+        params: { name: input.filter, sorting: input.sorting, skipCount: input.skipCount, maxResultCount: input.maxResultCount },
       },
       { apiName: this.apiName,...config });
     
