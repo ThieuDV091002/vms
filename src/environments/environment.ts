@@ -13,7 +13,7 @@ export const environment = {
     logoUrl: '',
   },
   oAuthConfig: {
-    issuer: 'https://dev.ufe.molex.com/',
+    issuer: 'https://localhost:44346/',
     redirectUri: baseUrl,
     clientId: 'VMS_App',
     responseType: 'code',
@@ -22,7 +22,7 @@ export const environment = {
   },
   apis: {
     default: {
-      url: 'https://dev.ufe.molex.com/permission',
+      url: 'https://localhost:44394',
       rootNamespace: 'Molex.UFE',
     },
     koch: {
@@ -58,7 +58,7 @@ export const environment = {
       rootNamespace: 'Molex.UFE',
     },
     vms: {
-      url: 'https://dev.vms.molex.com/vms',
+      url: 'https://localhost:44397',
       rootNamespace: 'Molex.UFE',
     },
     powerbi: {

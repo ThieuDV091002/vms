@@ -66,10 +66,10 @@
         "src/apis/report/src/proxy/*"
       ],
       "@apis/vms": [
-        "src/apis/vms/src/proxy/index.ts"
+        "src/apis/tms/src/proxy/index.ts"
       ],
       "@apis/vms/*": [
-        "src/apis/vms/src/proxy/*"
+        "src/apis/tms/src/proxy/*"
       ]
     },
     "useDefineForClassFields": false

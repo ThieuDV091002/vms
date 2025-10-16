@@ -60,6 +60,7 @@ import { PrivateMessagesComponent } from './modeling/private-messages/private-me
 import { AssessmentManageComponent } from './modeling/assessment-manage/assessment-manage.component';
 import { SiteSettingsComponent } from './modeling/site-settings/site-settings.component';
 import { ProductionReviewBoardSettingComponent } from './modeling/production-review-board-setting/production-review-board-setting.component';
+import { HotelComponent } from './modeling/hotel/hotel.component';
 export const routes: Routes = [
   {
     path: '',
@@ -264,6 +265,11 @@ export const routes: Routes = [
     path: 'modeling/user-labels',
     component: UserLabelsComponent,
     title: "User Labels"
+  },
+  {
+    path: 'guest-info/hotel',
+    component: HotelComponent,
+    title: "Hotel"
   },
   {
     path: 'modeling/standard-categories',

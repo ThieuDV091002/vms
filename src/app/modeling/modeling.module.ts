@@ -102,6 +102,7 @@ import { SiteSettingsComponent } from './site-settings/site-settings.component';
 import { MonthlyTargetSettingComponent } from './site-settings/monthly-target-setting.component';
 import { ProductionReviewBoardSettingComponent } from './production-review-board-setting/production-review-board-setting.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { HotelComponent } from './hotel/hotel.component';
 
 @NgModule({
   declarations: [
@@ -133,6 +134,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     StandardCategoriesComponent,
     LinkCategoriesComponent,
     LinksComponent,
+    HotelComponent,
     PermissionManagementComponent,
     ImportDetailComponent,
     CentralizedUsersComponent,
