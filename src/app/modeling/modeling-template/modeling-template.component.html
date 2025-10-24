@@ -9,6 +9,13 @@
         <span>{{ '::Move' | abpLocalization }}</span>
       </button>
       }
+      @if (toolbarButtons?.notify) {
+      <button *abpPermission="permissions?.notify" placement="bottom" class="btn btn-primary btn-sm action-button"
+        type="button" (click)="notify()" [disabled]="selected.length === 0">
+        <i class="fa fa-bell"></i>
+        <span>{{ '::Notify' | abpLocalization }}</span>
+      </button>
+      }
       @if (!toolbarButtons || !toolbarButtons.hasOwnProperty('import') || toolbarButtons?.import) {
       <button *abpPermission="permissions?.import" class="btn btn-outline-primary btn-sm action-button" type="button"
         (click)="selectImportFile.value='';selectImportFile.click()">

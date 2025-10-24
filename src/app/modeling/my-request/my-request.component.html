@@ -1,0 +1,179 @@
+<app-modeling-template [title]="'::MENU_MyRequest'" [data]="data" [objectType]="'ContractorRequest'"
+    [permissions]="{view: 'ContractorRequest.View', updateStatus: 'ContractorRequest.UpdateStatus', list: 'ContractorRequest.List'}"
+    [columns]="[{displayKey:'::ContractorName', field: 'contractorName'},{displayKey:'::WorkPermit', field: 'workPermitCode'},{displayKey:'::WorkingArea', field: 'workingArea'},{displayKey:'::PICStatus', field: 'molexSupervisorApproveStatusText'},{displayKey:'::EHSStatus', field: 'ehsApproveStatusText'}]"
+    [list]="list" [hasLastUpdate]="false"
+    [columnActions]="[{ displayKey: '::ViewDetails', permission: 'ContractorRequest.View', func: view ,parent:this}]"
+    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchContractor' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <h3 class="m-0">{{'::Contractor Request' | abpLocalization }}</h3>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                    {{'::LABEL_ExpandAll' | abpLocalization}}
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                    {{'::LABEL_CollapseAll' | abpLocalization}}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <div class="accordion" id="accordionExample">
+            <div class="accordion accordion-flush">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_General' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>{{ '::ContractorName' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
+                                    <p><strong>{{ '::RequestType' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
+                                    <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate | date:'dd/MM/yyyy' }}</p>
+                                    <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
+                                    <ng-container *ngIf="!selected?.requestType">
+                                        <p><strong>{{ '::MolexPIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
+                                        <p><strong>{{ '::ContractorPICName' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorName }}</p>
+                                        <p><strong>{{ '::ContractorPICPhone' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorPhone }}</p>
+                                        <p><strong>{{ '::WorkingArea' | abpLocalization }}:</strong> {{ selected?.workingArea }}</p>
+                                        <p><strong>{{ '::WorkDescription' | abpLocalization }}:</strong> {{ selected?.workDescription }}</p>
+                                        <div *ngFor="let jobType of selected?.selections | groupBy:'jobTypeId'">
+                                            <p><strong>{{ '::JobType' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
+                                            <div *ngFor="let section of jobType | groupBy:'jobSectionId'">
+                                                <p><strong>{{ '::Section' | abpLocalization }}:</strong> {{ section[0]?.jobSectionName }}</p>
+                                                <ul>
+                                                    <li *ngFor="let option of section">
+                                                        {{ option?.jobOptionName }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div *ngFor="let textField of selected?.textFieldValues">
+                                            <p><strong>{{ textField?.textField }}:</strong> {{ textField?.value }}</p>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="selected?.requestType">
+                                        <p><strong>{{ '::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermit }}</p>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_EmployeeList' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div>
+                                    <div *ngIf="employeeListFiles.length === 0">
+                                        <table class="table table-bordered table-sm mt-3" *ngIf="selected.employeeLists?.length > 0">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Full Name</th>
+                                                    <th>Date of Birth</th>
+                                                    <th>Company</th>
+                                                    <th>Passport</th>
+                                                    <th>Management Department</th>
+                                                    <th>Molex Supervisor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let emp of selected.employeeLists; let i = index">
+                                                    <td>{{ i + 1 }}</td>
+                                                    <td>{{ emp.fullName }}</td>
+                                                    <td>{{ emp.dateOfBirth }}</td>
+                                                    <td>{{ emp.company }}</td>
+                                                    <td>{{ emp.passport }}</td>
+                                                    <td>{{ emp.managementDepartment }}</td>
+                                                    <td>{{ emp.molexSupervisor }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="file-container" *ngFor="let file of employeeListFiles">
+                                        <div *ngIf="file.loading">
+                                        <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' | abpLocalization }}
+                                        </div>
+                                        <div *ngIf="!file.loading">
+                                        <img
+                                            *ngIf="file.isImage"
+                                            [src]="file.mediaAccessUrl"
+                                            alt="{{ file.fileName }}"
+                                            class="cursor-pointer file-image"
+                                            (click)="getPreviewImage(file.fileUrl)"
+                                        />
+                                        <a *ngIf="!file.isImage" [href]="file.mediaAccessUrl" [download]="file.fileName">
+                                            {{ file.fileName }}
+                                        </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_Documents' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div *ngIf="documentFiles.length === 0">{{ '::NoFilesAvailable' | abpLocalization }}</div>
+                                <div class="col-md-4" *ngFor="let file of documentFiles">
+                                    <div *ngIf="file.loading">
+                                        <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' | abpLocalization }}
+                                    </div>
+                                    <div *ngIf="!file.loading">
+                                        <img *ngIf="file.isImage" [src]="file.mediaAccessUrl" alt="{{ file.fileName }}"
+                                            class="cursor-pointer file-image" (click)="getPreviewImage(file.fileUrl)" />
+                                        <a *ngIf="!file.isImage" [href]="file.mediaAccessUrl" [download]="file.fileName">
+                                            {{ file.fileName }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="previewModalVisible" class="preview-modal">
+                                <div class="preview-modal-content">
+                                <img [src]="previewImage" alt="Preview" />
+                                <button (click)="previewModalVisible = false">{{ '::Close' | abpLocalization }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" (click)="reject(selected)">
+        {{ 'AbpIdentity::Reject' | abpLocalization }}
+        </button>
+        <abp-button (click)="approve(selected)">{{
+        'AbpIdentity::Approve' | abpLocalization
+        }}</abp-button>
+    </ng-template>
+</abp-modal>

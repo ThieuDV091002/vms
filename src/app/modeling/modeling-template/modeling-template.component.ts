@@ -35,6 +35,7 @@ interface permissionType {
   import: boolean;
   export: boolean;
   canDeleteOrExport?: boolean;
+  notify?: boolean;
 }
 
 interface toolbarButtonsType {
@@ -44,6 +45,7 @@ interface toolbarButtonsType {
   create?: boolean;
   copy?: boolean;
   multiDelete?: boolean;
+  notify?: boolean;
 }
 
 interface customActionType {
@@ -151,6 +153,7 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
   @Output() dataViewHistory: EventEmitter<any> = new EventEmitter<any>();
   @Output() moveData: EventEmitter<any> = new EventEmitter<any>();
   @Output() copyModalOpen: EventEmitter<any> = new EventEmitter<any>();
+  @Output() notifyData: EventEmitter<any> = new EventEmitter<any>();
 
   @Output() dataStart: EventEmitter<any> = new EventEmitter<any>();
   @Output() dataStop: EventEmitter<any> = new EventEmitter<any>();
@@ -396,7 +399,7 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
   }
 
   delete(row) {
-    this.dataDelete.emit({ id: row.id, name: row.userName || row.name || row.areaName });
+    this.dataDelete.emit({ id: row.id, name: row.userName || row.name || row.areaName || row.heading || row.section || row.fullName });
     this.pendingDeleteIds = [row.id];
   }
 
@@ -547,6 +550,21 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
 
   move() {
     this.moveData.emit({ objectIds: this.selected.map(s => s.id) });
+  }
+
+  notify() {
+    const selectedItems = Object.values(this.allSelected);
+    if (selectedItems.length === 0) {
+      return;
+    }
+    const idsToNotify = selectedItems.map(item => item.id);
+    const namesToNotify = selectedItems.map(item => item.fullName);
+    this.notifyData.emit({
+      objectType: this.objectType,
+      objectIds: idsToNotify,
+      objectNames: namesToNotify
+    });
+    console.log('IDs to notify:', idsToNotify);
   }
 
   // pageChange(event) {

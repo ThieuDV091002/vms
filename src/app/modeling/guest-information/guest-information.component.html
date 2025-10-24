@@ -1,0 +1,127 @@
+<app-modeling-template [title]="'::MENU_GuestInformation' | abpLocalization" [data]="data" [objectType]="'GuestInformation'"
+    [permissions]="{view: 'GuestInformation.View', notify: 'GuestInformation.Notify', list: 'GuestInformation.List'}"
+    [columns]="[{displayKey:'::FullName', field: 'fullName'},{displayKey:'::Company', field: 'company'},{displayKey:'::Title', field: 'title'},{displayKey:'::Purpose', field: 'purpose'},{displayKey:'::WorkWithWhomInMXV', field: 'workWithWhomInMolex'}]"
+    [toolbarButtons]="{notify: true}" [list]="list" [hasLastUpdate]="false" (notifyData)="notify($event)"
+    [columnActions]="[{ displayKey: '::ViewDetails', permission: 'GuestInformation.View', func: view ,parent:this},{ displayKey: '::Notify', permission: 'GuestInformation.Notify', func: notify ,parent:this}]"
+    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchGuest' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
+    <ng-template #abpHeader>
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <h3 class="m-0">{{'::Guest Information' | abpLocalization }}</h3>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+                    {{'::LABEL_ExpandAll' | abpLocalization}}
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+                    {{'::LABEL_CollapseAll' | abpLocalization}}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <div class="accordion" id="accordionExample">
+            <div class="accordion accordion-flush">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_General' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>{{ '::FullName' | abpLocalization }}:</strong> {{ selected?.fullName }}</p>
+                                    <p><strong>{{ '::Company' | abpLocalization }}:</strong> {{ selected?.company }}</p>
+                                    <p><strong>{{ '::Title' | abpLocalization }}:</strong> {{ selected?.title }}</p>
+                                    <p><strong>{{ '::Purpose' | abpLocalization }}:</strong> {{ selected?.purpose }}</p>
+                                    <p><strong>{{ '::WorkWithWhomInMXV' | abpLocalization }}:</strong> {{ selected?.workWithWhomInMolex }}</p>
+                                    <p><strong>{{ '::FoodRestriction' | abpLocalization }}:</strong> {{ selected?.isFoodRestrict ? 'Yes' : 'No' }}</p>
+                                    <ng-container *ngIf="selected?.isFoodRestrict">
+                                        <p><strong>{{ '::FoodRestrictionDetail' | abpLocalization }}:</strong> {{ selected?.foodRestrictDetail }}</p>
+                                    </ng-container>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>{{ '::HotelSupport' | abpLocalization }}:</strong> {{ selected?.isHotelSupport ? 'Yes' : 'No' }}</p>
+                                    <ng-container *ngIf="selected?.isHotelSupport">
+                                        <p><strong>{{ '::HotelName' | abpLocalization }}:</strong> {{ selected?.hotelName }}</p>
+                                        <p><strong>{{ '::RoomType' | abpLocalization }}:</strong> {{ selected?.roomType }}</p>
+                                    </ng-container>
+                                    <p><strong>{{ '::OtherRequest' | abpLocalization }}:</strong> {{ selected?.otherRequest }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_Flight' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6" *ngFor="let flight of selected?.flightInfos">
+                                    <p><strong>{{ '::FlightType' | abpLocalization }}:</strong> {{ flight.flightType ? 'Departure Flight' : 'Arrival Flight' }}</p>
+                                    <p><strong>{{ '::FlightDate' | abpLocalization }}:</strong> {{ flight.date | date:'dd/MM/yyyy' }}</p>
+                                    <p><strong>{{ '::FlightNo' | abpLocalization }}:</strong> {{ flight.no }}</p>
+                                    <p><strong>{{ '::FlightRoute' | abpLocalization }}:</strong> {{ flight.route }}</p>
+                                    <p><strong>{{ '::FlightTime' | abpLocalization }}:</strong> {{ flight.time | date:'HH:mm' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"
+                            [class.collapsed]="isCollapse">
+                            {{ '::LABEL_Transportation&Uniform' | abpLocalization }}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>{{ '::AirportTransportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isAirportTransport ? 'Yes' : 'No' }}</p>
+                                    <p><strong>{{ '::DailyTransportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isDailyTransport ? 'Yes' : 'No' }}</p>
+                                    <ng-container *ngIf="selected?.transportInfo.isDailyTransport">
+                                        <p><strong>{{ '::TransportTime' | abpLocalization }}:</strong> {{ selected?.transportInfo.time | date:'HH:mm' }}</p>
+                                        <p><strong>{{ '::TransportRoute' | abpLocalization }}:</strong> {{ selected?.transportInfo.route }}</p>
+                                        <p><strong>{{ '::TransportAddress' | abpLocalization }}:</strong> {{ selected?.transportInfo.address }}</p>
+                                    </ng-container>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>{{ '::EnterFactory' | abpLocalization }}:</strong> {{ selected?.uniformInfo.isVisitFactory ? 'Yes' : 'No' }}</p>
+                                    <ng-container *ngIf="selected?.uniformInfo.isVisitFactory">
+                                        <p><strong>{{ '::CameraCover' | abpLocalization }}:</strong> {{ selected?.uniformInfo.cameraCover }}</p>
+                                        <p><strong>{{ '::CardType' | abpLocalization }}:</strong> {{ selected?.uniformInfo.cardType ? 'Red' : 'Blue' }}</p>
+                                        <p><strong>{{ '::UniformType' | abpLocalization }}:</strong> {{ selected?.uniformInfo.uniformType ? 'Orange' : 'Green' }}</p>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+        {{ 'AbpIdentity::Back' | abpLocalization }}
+        </button>
+        <abp-button (click)="notify(selected)">{{
+        'AbpIdentity::Notify' | abpLocalization
+        }}</abp-button>
+    </ng-template>
+</abp-modal>

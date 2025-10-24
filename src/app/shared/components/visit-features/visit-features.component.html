@@ -1,0 +1,9 @@
+<h1 class="title">Outstanding Features Of Our Portal</h1>
+
+<div class="features-grid">
+  <div class="feature-card" *ngFor="let feature of features">
+    <img [src]="feature.image" alt="" class="feature-image" />
+    <h3 class="feature-title">{{ feature.title }}</h3>
+    <p class="feature-description">{{ feature.description }}</p>
+  </div>
+</div>

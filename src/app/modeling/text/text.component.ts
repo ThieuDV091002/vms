@@ -1,3 +1,4 @@
+import { EXTENSIONS_IDENTIFIER } from '@abp/ng.components/extensible';
 import { ListService, LocalizationService, PagedAndSortedResultRequestDto, PagedResultDto } from '@abp/ng.core';
 import { Confirmation, ConfirmationService, ToasterService } from '@abp/ng.theme.shared';
 import { Component, OnInit } from '@angular/core';
@@ -8,7 +9,14 @@ import { TextService } from '@apis/vms/services/text.service';
 @Component({
   selector: 'app-text',
   templateUrl: './text.component.html',
-  styleUrl: './text.component.scss'
+  styleUrl: './text.component.scss',
+  providers: [
+      ListService,
+      {
+        provide: EXTENSIONS_IDENTIFIER,
+        useValue: 'TextComponent',
+      },
+    ],
 })
 export class TextComponent implements OnInit {
   selected: TextDto;
@@ -51,7 +59,12 @@ export class TextComponent implements OnInit {
         content: [this.selected?.content || '', Validators.required]
       });
     }
-    sections = ['Heading', 'Travel To Other Countries', 'Travel To Viet Nam', 'Long-term And Short-term Assignment', 'Other Information', 'FAQ'];
+    sections = [
+      { id: 'Heading', displayName: 'Heading' },
+      { id: 'Hotels, Transportation', displayName: 'Hotels, Transportation' },
+      { id: 'Food Recommendation', displayName: 'Food Recommendation' },
+      { id: 'myHR Process Updates', displayName: 'myHR Process Updates' }
+    ];
 
     add() {
       this.selected = {} as TextDto;
@@ -69,7 +82,7 @@ export class TextComponent implements OnInit {
       request.subscribe(() => {
         if (!this.selected.id) {
           this.toasterService.success('::LABEL_CreatedSuccessfully', '', {
-            messageLocalizationParams: [this.info, this.form.value.name],
+            messageLocalizationParams: [this.info, this.form.value.section],
           });
         }
         else {
@@ -91,10 +104,10 @@ export class TextComponent implements OnInit {
       });
     }
   
-    delete(row) {
+    delete(row) { 
       this.confirmationService
         .warn('::LABEL_DeletionConfirmationMessage', '', {
-          messageLocalizationParams: [this.info, row.name],
+          messageLocalizationParams: [this.info, row.name],        
         })
         .subscribe(status => {
           if (status === Confirmation.Status.confirm) {
@@ -108,4 +121,11 @@ export class TextComponent implements OnInit {
         });
     }
 
+    selectChange(event) {
+    if (event?.id) {
+      this.form.controls['section'].setValue(event.id);
+    } else {
+      this.form.controls['section'].setValue(undefined);
+    }
+  }
 }

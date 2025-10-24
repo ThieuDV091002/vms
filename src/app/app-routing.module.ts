@@ -61,6 +61,22 @@ import { AssessmentManageComponent } from './modeling/assessment-manage/assessme
 import { SiteSettingsComponent } from './modeling/site-settings/site-settings.component';
 import { ProductionReviewBoardSettingComponent } from './modeling/production-review-board-setting/production-review-board-setting.component';
 import { HotelComponent } from './modeling/hotel/hotel.component';
+import { TextComponent } from './modeling/text/text.component';
+import { AttractionComponent } from './modeling/attraction/attraction.component';
+import { FoodComponent } from './modeling/food/food.component';
+import { ImageComponent } from './modeling/image/image.component';
+import { ImageLinkComponent } from './modeling/imagelink/imagelink.component';
+import { LocalAdminComponent } from './modeling/localadmin/localadmin.component';
+import { MedicalCareCenterComponent } from './modeling/medical-care-center/medical-care-center.component';
+import { TravelToolComponent } from './modeling/travel-tool/travel-tool.component';
+import { TransportationAppComponent } from './modeling/transportation-app/transportation-app.component';
+import { GuestInformationComponent } from './modeling/guest-information/guest-information.component';
+import { MyRequestComponent } from './modeling/my-request/my-request.component';
+import { ContractorRequestComponent } from './modeling/contractor-request/contractor-request.component';
+import { VisitorManagementComponent } from './modeling/visitor-management/visitor-management.component';
+import { TravelGuidePageComponent } from './modeling/travel-guide-page/travel-guide-page.component';
+import { GuestComponent } from './shared/components/guest-component/guest-component.component';
+import { GuestFormComponent } from './modeling/guest-form/guest-form.component';
 export const routes: Routes = [
   {
     path: '',
@@ -272,6 +288,77 @@ export const routes: Routes = [
     title: "Hotel"
   },
   {
+    path: 'guest-info/guest-information',
+    component: GuestInformationComponent,
+    title: "Guest Information"
+  },
+  {
+    path: 'contractor-request/my-requests',
+    component: MyRequestComponent,
+    title: "My Request"
+  },
+  {
+    path: 'contractor-request/approved-request',
+    component: ContractorRequestComponent,
+    title: "Approved By PIC"
+  },
+  {
+    path: 'traveling-guide',
+    component: TravelGuidePageComponent,
+    title: "Travel Guide"
+  },
+  {
+    path: 'guest-form',
+    component: GuestFormComponent,
+    title: "Guest Form"
+  },
+  {
+    path: 'travel-guide/text',
+    component: TextComponent,
+    title: "Text"
+  },
+  {
+    path: 'travel-guide/attraction',
+    component: AttractionComponent,
+    title: "Attraction"
+  },
+  {
+    path: 'travel-guide/food',
+    component: FoodComponent,
+    title: "Food"
+  },
+  {
+    path: 'travel-guide/image',
+    component: ImageComponent,
+    title: "Image"
+  },
+  {
+    path: 'travel-guide/image-link',
+    component: ImageLinkComponent,
+    title: "Image Link"
+  },
+  {
+    path: 'travel-guide/local-admin',
+    component: LocalAdminComponent,
+    title: "Local Admin"
+  },
+  {
+    path: 'travel-guide/medical-care-center',
+    component: MedicalCareCenterComponent,
+    title: "Medical Care Center"
+  },
+  {
+    path: 'travel-guide/tool',
+    component: TravelToolComponent,
+    title: "Tool"
+  },
+  {
+    path: 'travel-guide/transport-app',
+    component: TransportationAppComponent,
+    title: "Transportation App"
+  },
+  {
+    
     path: 'modeling/standard-categories',
     component: StandardCategoriesComponent,
     title: "Standard Categories"
@@ -410,6 +497,11 @@ export const routes: Routes = [
     path: 'modeling/production-review-board-settings',
     component: ProductionReviewBoardSettingComponent,
     title: "Production Review Board Settings"
+  },
+  {
+    path: 'visit-management',
+    component: VisitorManagementComponent,
+    title: "Visitor Management"
   }
 ];
 

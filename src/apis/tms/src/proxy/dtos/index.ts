@@ -1,3 +1,13 @@
 import * as Text from "./text";
-export {Text};
+import * as Attraction from "./attraction";
+import * as Food from "./food";
+import * as Image from "./image";
+import * as ImageLink from "./imagelink";
+import * as LocalAdmin from "./localadmin";
+import * as MedicalCareCenter from "./medical-care-center";
+import * as TransportationApp from "./transportation-app";
+import * as TravelTool from "./travel-tool";
+import * as GuestInformation from "./guest-information";
+import * as ContractorRequest from "./contractor-request";
+export {Text, Attraction, Food, Image, ImageLink, LocalAdmin, MedicalCareCenter, TransportationApp, TravelTool, GuestInformation, ContractorRequest};
 export * from './models';

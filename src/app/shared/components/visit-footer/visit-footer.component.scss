@@ -1,0 +1,43 @@
+.footer {
+  width: 100%;
+  background: linear-gradient(to top, #F1EAFF, #FFFFFF);
+  color: #2d3748;
+
+  &__content {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    &-img {
+      height: 2.75rem;
+    }
+  }
+
+  &__description {
+    text-align: center;
+    max-width: 36rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.625;
+  }
+
+  &__bottom {
+    border-top: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 400;
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+}

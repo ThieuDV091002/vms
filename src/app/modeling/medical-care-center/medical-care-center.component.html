@@ -1,0 +1,54 @@
+<app-modeling-template [title]="'::MENU_MedicalCareCenter' | abpLocalization" [data]="data" [objectType]="'MedicalCareCenter'"
+    [permissions]="{create: 'MedicalCareCenter.Create', edit: 'MedicalCareCenter.Update', delete: 'MedicalCareCenter.Delete'}"
+    [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
+    (dataEdit)="edit($event)" (dataDelete)="delete($event)"
+    [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization">
+</app-modeling-template>
+
+<abp-modal [(visible)]="isModalVisible">
+    <ng-template #abpHeader>
+        <h3>{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+            <div class="form-group mb-2">
+                <label for="medical-care-center-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                <input type="text" id="medical-care-center-name" class="form-control" formControlName="name"/>
+            </div>
+
+            <div class="form-group mb-2">
+                <label for="medical-care-center-locationUrl" [title]="'::INFO_LocationUrl' | abpLocalization">{{'::LocationURL'|abpLocalization}}</label><span> * </span>
+                <input type="text" id="medical-care-center-locationUrl" class="form-control" formControlName="locationUrl"/>
+            </div>
+
+            <div class="form-group mb-2">
+                <label for="medical-care-center-city" [title]="'::INFO_City' | abpLocalization">{{'::City'|abpLocalization}}</label><span> * </span>
+                <search-select id="medical-care-center-city" [items]="cities" displayName="displayName" valueName="id"
+                    (change)="selectChange($event)" [value]="this.form.controls['city'].value">
+                </search-select>
+            </div>
+
+            <div class="form-group mb-2">
+                <label for="medical-care-center-photo"
+                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                <input #fileInput id="medical-care-center-photo" type="file" class="form-control"
+                    (change)="onFileChange($event)" accept="image/*" />
+                <div *ngIf="photoUrl" class="mt-2">
+                    <img [src]="photoUrl" alt="icon"
+                         style="max-width: 100px; max-height: 100px;" />
+                </div>
+            </div>
+        </form>
+        <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-outline-primary" abpClose>
+            {{ 'AbpIdentity::Cancel' | abpLocalization }}
+        </button>
+        <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+            'AbpIdentity::Save' | abpLocalization
+            }}</abp-button>
+    </ng-template>
+</abp-modal>

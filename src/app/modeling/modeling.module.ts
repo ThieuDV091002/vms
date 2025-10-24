@@ -103,6 +103,21 @@ import { MonthlyTargetSettingComponent } from './site-settings/monthly-target-se
 import { ProductionReviewBoardSettingComponent } from './production-review-board-setting/production-review-board-setting.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HotelComponent } from './hotel/hotel.component';
+import { TextComponent } from './text/text.component';
+import { AttractionComponent } from './attraction/attraction.component';
+import { FoodComponent } from './food/food.component';
+import { ImageComponent } from './image/image.component';
+import { ImageLinkComponent } from './imagelink/imagelink.component';
+import { LocalAdminComponent } from './localadmin/localadmin.component';
+import { MedicalCareCenterComponent } from './medical-care-center/medical-care-center.component';
+import { TravelToolComponent } from './travel-tool/travel-tool.component';
+import { TransportationAppComponent } from './transportation-app/transportation-app.component';
+import { GuestInformationComponent } from './guest-information/guest-information.component';
+import { MyRequestComponent } from './my-request/my-request.component';
+import { GroupByPipe } from '../shared/pipes/group-by.pipe';
+import { ContractorRequestComponent } from './contractor-request/contractor-request.component';
+import { TravelGuidePageComponent } from './travel-guide-page/travel-guide-page.component';
+import { GuestFormComponent } from './guest-form/guest-form.component';
 
 @NgModule({
   declarations: [
@@ -135,6 +150,20 @@ import { HotelComponent } from './hotel/hotel.component';
     LinkCategoriesComponent,
     LinksComponent,
     HotelComponent,
+    TextComponent,
+    AttractionComponent,
+    FoodComponent,
+    ImageComponent,
+    ImageLinkComponent,
+    LocalAdminComponent,
+    MedicalCareCenterComponent,
+    TravelToolComponent,
+    TransportationAppComponent,
+    GuestInformationComponent,
+    MyRequestComponent,
+    ContractorRequestComponent,
+    GroupByPipe,
+    GuestFormComponent,
     PermissionManagementComponent,
     ImportDetailComponent,
     CentralizedUsersComponent,

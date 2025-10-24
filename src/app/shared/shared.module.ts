@@ -97,6 +97,7 @@ import { ApplicationSelectorComponent } from './components/application-selector/
     LpxSideMenuLayoutModule,
     NgbModalModule,
     LpxIconModule,
+    ModalModule,
     ExtensibleModule,
     PermissionManagementModule,
     ZXingScannerModule,
@@ -104,7 +105,7 @@ import { ApplicationSelectorComponent } from './components/application-selector/
     ModalModule.forRoot(),
     NgbTooltipModule,
     BsDatepickerModule.forRoot(),
-    DragDropModule
+    DragDropModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

@@ -1,0 +1,238 @@
+<nav class="navbar">
+    <a href="#/visit-management" class="logo" style="text-decoration: none; color: #ea0437; font-size: 3rem; font-weight: 1000;">
+        molex
+    </a>
+
+    <ul class="desktop-menu">
+        <li><a class="nav-link" href="#/visit-management">Home</a></li>
+        <li><a class="nav-link" href="#/traveling-guide">Travel Guide</a></li>
+    </ul>
+
+    <button type="button" class="get-started-btn desktop-btn">
+        Log in
+    </button>
+
+    <button aria-label="menu-btn" type="button" class="menu-btn" (click)="toggleMobileMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="#000">
+            <path
+                d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z">
+            </path>
+        </svg>
+    </button>
+
+    <div class="mobile-menu" *ngIf="isMobileMenuOpen">
+        <ul class="mobile-menu-list">
+            <li><a class="nav-link" href="#">Home</a></li>
+            <li><a class="nav-link" href="#">Travel Guide</a></li>
+        </ul>
+
+        <button type="button" class="get-started-btn mobile-btn">
+            Log in
+        </button>
+    </div>
+</nav>
+
+<form style="padding-top: 80px;">
+    <h1>Guest Information</h1>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="fullName">Full Name<span> * </span></label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="company">Company<span> * </span></label>
+            <input type="text" id="company" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="title">Title<span> * </span></label>
+            <input type="text" id="title" required>
+        </div>
+        <div class="form-group">
+            <label for="purpose">Purpose<span> * </span></label>
+            <input type="text" id="purpose" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="workWithWhomInMolex">Work With Whom In Molex<span> * </span></label>
+            <input type="text" id="workWithWhomInMolex" required>
+        </div>
+    </div>
+    <div class="form-group full-width">
+        <p>Arrival Flight</p>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="date">Date<span> * </span></label>
+            <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+            <label for="no">Flight No<span> * </span></label>
+            <input type="text" id="no" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="route">FLight Route<span> * </span></label>
+            <input type="text" id="route" required>
+        </div>
+        <div class="form-group">
+            <label for="time">Time<span> * </span></label>
+            <input type="time" id="time" required>
+        </div>
+    </div>
+    <div class="form-group full-width">
+        <p>Departure Flight</p>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="date">Date<span> * </span></label>
+            <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+            <label for="no">Flight No<span> * </span></label>
+            <input type="text" id="no" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="route">FLight Route<span> * </span></label>
+            <input type="text" id="route" required>
+        </div>
+        <div class="form-group">
+            <label for="time">Time<span> * </span></label>
+            <input type="time" id="time" required>
+        </div>
+    </div>
+    <div class="form-group full-width">
+        <p>Do you need support to book Hotel? If yes, please select a hotel or advise hotel name and room type</p>
+        <label for="isHotelSupport">Hotel Support<span> * </span></label>
+        <select name="" id="isHotelSupport">
+            <option value="" disabled selected>Choose an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div class="form-group full-width">
+        <label for="hotelId">Hotel</label>
+        <select name="" id="hotelId">
+            <option value="" disabled selected>Select a hotel</option>
+            <option value="1">Hotel - Room</option>
+            <option value="0">Hotel - Room</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="hotelName">Hotel Name</label>
+            <input type="text" id="hotelName" required>
+        </div>
+        <div class="form-group">
+            <label for="roomType">Room Type</label>
+            <input type="text" id="roomType" required>
+        </div>
+    </div>
+    <div class="form-group full-width">
+        <p>Do you have any food restriction? If yes, please give the detail</p>
+        <label for="isFoodRestrict">Food Restriction<span> * </span></label>
+        <select name="" id="isFoodRestrict">
+            <option value="" disabled selected>Choose an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div class="form-group full-width">
+        <label for="foodRestricDetail">Food Restriction Detail</label>
+        <textarea id="foodRestricDetail" required></textarea>
+    </div>
+    <div class="form-group full-width">
+        <p>Do you need transportation Airport pick up & drop off?</p>
+        <label for="isAirportTransport">Airport Transportation<span> * </span></label>
+        <select name="" id="isAirportTransport">
+            <option value="" disabled selected>Choose an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div class="form-group full-width">
+        <p>Do you need daily transporation? If yes, please show detail time, route and address</p>
+        <label for="isDailyTransport">Daily Transportation<span> * </span></label>
+        <select name="" id="isDailyTransport">
+            <option value="" disabled selected>Choose an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div class="form-group full-width">
+        <label for="time">Time</label>
+        <input type="time" id="time" required>
+    </div>
+    <div class="form-group full-width">
+        <label for="route">Route</label>
+        <input type="text" id="route" required>
+    </div>
+    <div class="form-group full-width">
+        <label for="address">Address</label>
+        <input type="text" id="adress" required>
+    </div>
+    <div class="form-group full-width">
+        <p>Do you need to enter factory? If yes, please provide camera cover number, card and uniform type</p>
+        <label for="isEnterFactory">Entering Factory<span> * </span></label>
+        <select name="" id="isEnterFactory">
+            <option value="" disabled selected>Choose an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="cameraCover">Camera Cover</label>
+            <input type="number" id="cameraCover" required>
+        </div>
+        <div class="form-group">
+            <label for="cardType">Card Type</label>
+            <select name="" id="isEnterFactory">
+                <option value="" disabled selected>Choose an option</option>
+                <option value="1">Blue</option>
+                <option value="0">Red</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="uniformType">Uniform Type</label>
+            <select name="" id="isEnterFactory">
+                <option value="" disabled selected>Choose an option</option>
+                <option value="1">Orange</option>
+                <option value="0">Green</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group full-width">
+        <label for="message">Other request</label>
+        <textarea id="message" required></textarea>
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
+
+
+<footer class="footer">
+  <div class="footer__content">
+    <div class="footer__logo">
+      <a href="#/visit-management" class="logo" style="text-decoration: none; color: #ea0437; font-size: 3rem; font-weight: 1000;">
+        molex
+    </a>
+    </div>
+    <p class="footer__description">
+      Molex® is a registered trademark of Molex, LLC in the United States of America and may be registered in other countries; all other trademarks listed herein belong to their respective owners.
+    </p>
+  </div>
+  <div class="footer__bottom">
+    <div class="footer__copyright">
+      <a href="#/visit-management" class="logo" style="text-decoration: none; color: #2d3748;">
+        molex
+    </a> ©2025. All rights reserved.
+    </div>
+  </div>
+</footer>
