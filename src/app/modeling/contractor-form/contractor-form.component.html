@@ -1,0 +1,273 @@
+<nav class="navbar">
+    <a href="#/visit-management" class="logo" style="text-decoration: none; color: #ea0437; font-size: 3rem; font-weight: 1000;">
+        molex
+    </a>
+
+    <ul class="desktop-menu">
+        <li><a class="nav-link" href="#/visit-management">Home</a></li>
+        <li><a class="nav-link" href="#/traveling-guide">Travel Guide</a></li>
+    </ul>
+
+    <button type="button" class="get-started-btn desktop-btn">
+        Log in
+    </button>
+
+    <button aria-label="menu-btn" type="button" class="menu-btn" (click)="toggleMobileMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="#000">
+            <path
+                d="M 3 7 A 1.0001 1.0001 0 1 0 3 9 L 27 9 A 1.0001 1.0001 0 1 0 27 7 L 3 7 z M 3 14 A 1.0001 1.0001 0 1 0 3 16 L 27 16 A 1.0001 1.0001 0 1 0 27 14 L 3 14 z M 3 21 A 1.0001 1.0001 0 1 0 3 23 L 27 23 A 1.0001 1.0001 0 1 0 27 21 L 3 21 z">
+            </path>
+        </svg>
+    </button>
+
+    <div class="mobile-menu" *ngIf="isMobileMenuOpen">
+        <ul class="mobile-menu-list">
+            <li><a class="nav-link" href="#">Home</a></li>
+            <li><a class="nav-link" href="#">Travel Guide</a></li>
+        </ul>
+
+        <button type="button" class="get-started-btn mobile-btn">
+            Log in
+        </button>
+    </div>
+</nav>
+
+<form [formGroup]="contractorForm" (ngSubmit)="onSubmit()" style="padding-top: 80px;">
+    <h1>Đăng ký giấy phép làm việc (Mẫu đăng ký cho nhà thầu)</h1>
+
+    <div class="form-group full-width">
+        <label for="requestType">Phân loại đăng ký<span> * </span></label>
+        <select formControlName="requestType" id="requestType" required>
+            <option value="" disabled selected>Vui lòng chọn</option>
+            <option value="0">Đăng ký giấy phép làm việc mới</option>
+            <option value="1">Gia hạn giấy phép làm việc cũ/Bổ sung người</option>
+        </select>
+    </div>
+
+    <div *ngIf="contractorForm.get('requestType')?.value === '0'">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="molexSupervisorName">Nhân viên Molex chịu trách nhiệm giám sát</label>
+                <input type="text" id="molexSupervisorName" formControlName="molexSupervisorName" required>
+            </div>
+            <div class="form-group">
+                <label for="contractorName">Tên Công ty, Nhà thầu</label>
+                <input type="text" id="contractorName" formControlName="contractorName" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="contractorSupervisorName">Tên nhân viên Nhà thầu chịu trách nhiệm giám sát</label>
+                <input type="text" id="contractorSupervisorName" formControlName="contractorSupervisorName" required>
+            </div>
+            <div class="form-group">
+                <label for="contractorSupervisorPhone">SĐT nhân viên Nhà thầu chịu trách nhiệm giám sát</label>
+                <input type="text" id="contractorSupervisorPhone" formControlName="contractorSupervisorPhone" required>
+            </div>
+        </div>
+        <div class="form-group full-width">
+            <label for="workingArea">Khu vực làm việc</label>
+            <input type="text" id="workingArea" formControlName="workingArea" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="startDate">Thời gian làm việc từ</label>
+                <br>
+                <input type="date" id="startDate" formControlName="startDate" required>
+            </div>
+            <div class="form-group">
+                <label for="endDate">Thời gian làm việc đến</label>
+                <br>
+                <input type="date" id="endDate" formControlName="endDate" required>
+            </div>
+            <div class="form-group">
+                <label for="employeeNumber">Số lượng nhân viên nhà thầu vào làm việc</label>
+                <input type="number" id="employeeNumber" formControlName="employeeNumber" required>
+            </div>
+        </div>
+
+        <!-- Employee List -->
+        <div formArrayName="employeeLists">
+            <p>Danh sách nhân viên</p>
+            <button type="button" (click)="addEmployee()">Thêm nhân viên</button>
+            <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName-{{i}}">Họ tên</label>
+                        <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth-{{i}}">Ngày sinh</label>
+                        <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passport-{{i}}">Số CCCD/Hộ chiếu</label>
+                        <input type="text" id="passport-{{i}}" formControlName="passport" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company-{{i}}">Tên công ty</label>
+                        <input type="text" id="company-{{i}}" formControlName="company" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="managementDepartment-{{i}}">Bộ phận quản lý</label>
+                        <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="molexSupervisor-{{i}}">Người phụ trách của Molex</label>
+                        <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor" required>
+                    </div>
+                </div>
+                <button type="button" (click)="removeEmployee(i)">Xóa nhân viên</button>
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <label for="employeeListFile">File danh sách nhân viên</label>
+            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" />
+        </div>
+        <div class="form-group full-width">
+            <label for="workDescription">Mô tả các thao tác, công việc cụ thể</label>
+            <textarea id="workDescription" formControlName="workDescription" required></textarea>
+        </div>
+    </div>
+
+    <div *ngIf="contractorForm.get('requestType')?.value === '1'">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="oldWorkPermitCode">Số giấy phép làm việc cũ</label>
+                <input type="text" id="oldWorkPermitCode" formControlName="oldWorkPermitCode" required>
+            </div>
+            <div class="form-group">
+                <label for="contractorName">Tên Công ty, Nhà thầu</label>
+                <input type="text" id="contractorName" formControlName="contractorName" required>
+            </div>
+        </div>
+        <div class="form-group full-width">
+            <label for="endDate">Gia hạn đến ngày</label>
+            <input type="date" id="endDate" formControlName="endDate" required>
+        </div>
+
+        <div formArrayName="employeeLists">
+            <p>Danh sách nhân viên</p>
+            <button type="button" (click)="addEmployee()">Thêm nhân viên</button>
+            <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName-{{i}}">Họ tên</label>
+                        <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth-{{i}}">Ngày sinh</label>
+                        <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passport-{{i}}">Số CCCD/Hộ chiếu</label>
+                        <input type="text" id="passport-{{i}}" formControlName="passport" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company-{{i}}">Tên công ty</label>
+                        <input type="text" id="company-{{i}}" formControlName="company" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="managementDepartment-{{i}}">Bộ phận quản lý</label>
+                        <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="molexSupervisor-{{i}}">Người phụ trách của Molex</label>
+                        <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor" required>
+                    </div>
+                </div>
+                <button type="button" (click)="removeEmployee(i)">Xóa nhân viên</button>
+            </div>
+        </div>
+        <div class="form-group full-width">
+            <label for="employeeListFile">File danh sách nhân viên</label>
+            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="molexSupervisorEmail">Email của nhân viên Molex giám sát thực hiện công việc</label>
+            <input type="email" id="molexSupervisorEmail" formControlName="molexSupervisorEmail" required>
+        </div>
+        <div class="form-group">
+            <label for="contractorEmail">Email của nhà thầu nhận kết quả phê duyệt</label>
+            <br>
+            <input type="email" id="contractorEmail" formControlName="contractorEmail" required>
+        </div>
+    </div>
+
+    <div class="form-group full-width">
+        <label>Nhà thầu xác nhận đã gửi video đào tạo cho toàn thể nhân viên và họ đã xem, hiểu nội dung:</label>
+        <div style="margin-top: 8px;">
+            <label>
+                <input type="radio" formControlName="videoConfirmed" value="yes" required>
+                Đã xem và hiểu
+            </label>
+            <label style="margin-left: 20px;">
+                <input type="radio" formControlName="videoConfirmed" value="no">
+                Chưa xem
+            </label>
+        </div>
+        <p style="margin-top: 10px;">
+            Link video đào tạo:
+            <a href="https://www.youtube.com/watch?v=IQg8GvOY6Pw&t=42s" target="_blank" rel="noopener noreferrer">
+                Tại đây
+            </a>
+        </p>
+    </div>
+
+    <div class="form-group full-width">
+        <label for="documentFiles">Các hồ sơ liên quan</label>
+        <input 
+            type="file" 
+            id="documentFiles" 
+            multiple 
+            (change)="onDocumentFilesChange($event)" 
+            style="height: 40px;" 
+            class="form-control mb-3" 
+            accept="image/*,.pdf,.doc,.docx,.xlsx,.xls" 
+        />
+        <!-- Display uploaded files -->
+        <div *ngIf="documentFiles.length > 0" class="uploaded-files">
+            <h4>Danh sách tệp đã tải lên:</h4>
+            <ul>
+                <li *ngFor="let preview of documentPreviews; let i=index" class="file-item">
+                    <span>{{ preview.file.name }}</span>
+                    <!-- Image preview for image files -->
+                    <img *ngIf="preview.url" [src]="preview.url" alt="Preview" class="file-preview" />
+                    <!-- Delete button -->
+                    <button type="button" (click)="removeDocumentFile(i)" class="delete-btn">Xóa</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <button type="submit" [disabled]="contractorForm.invalid">Submit</button>
+</form>
+
+
+<footer class="footer">
+  <div class="footer__content">
+    <div class="footer__logo">
+      <a href="#/visit-management" class="logo" style="text-decoration: none; color: #ea0437; font-size: 3rem; font-weight: 1000;">
+        molex
+    </a>
+    </div>
+    <p class="footer__description">
+      Molex® is a registered trademark of Molex, LLC in the United States of America and may be registered in other countries; all other trademarks listed herein belong to their respective owners.
+    </p>
+  </div>
+  <div class="footer__bottom">
+    <div class="footer__copyright">
+      <a href="#/visit-management" class="logo" style="text-decoration: none; color: #2d3748;">
+        molex
+    </a> ©2025. All rights reserved.
+    </div>
+  </div>
+</footer>

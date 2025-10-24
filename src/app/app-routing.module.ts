@@ -77,6 +77,7 @@ import { VisitorManagementComponent } from './modeling/visitor-management/visito
 import { TravelGuidePageComponent } from './modeling/travel-guide-page/travel-guide-page.component';
 import { GuestComponent } from './shared/components/guest-component/guest-component.component';
 import { GuestFormComponent } from './modeling/guest-form/guest-form.component';
+import { ContractorFormComponent } from './modeling/contractor-form/contractor-form.component';
 export const routes: Routes = [
   {
     path: '',
@@ -311,6 +312,11 @@ export const routes: Routes = [
     path: 'guest-form',
     component: GuestFormComponent,
     title: "Guest Form"
+  },
+  {
+    path: 'contractor-form',
+    component: ContractorFormComponent,
+    title: "Contractor Form"
   },
   {
     path: 'travel-guide/text',

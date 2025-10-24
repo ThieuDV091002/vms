@@ -118,6 +118,7 @@ import { GroupByPipe } from '../shared/pipes/group-by.pipe';
 import { ContractorRequestComponent } from './contractor-request/contractor-request.component';
 import { TravelGuidePageComponent } from './travel-guide-page/travel-guide-page.component';
 import { GuestFormComponent } from './guest-form/guest-form.component';
+import { ContractorFormComponent } from './contractor-form/contractor-form.component';
 
 @NgModule({
   declarations: [
@@ -164,6 +165,7 @@ import { GuestFormComponent } from './guest-form/guest-form.component';
     ContractorRequestComponent,
     GroupByPipe,
     GuestFormComponent,
+    ContractorFormComponent,
     PermissionManagementComponent,
     ImportDetailComponent,
     CentralizedUsersComponent,

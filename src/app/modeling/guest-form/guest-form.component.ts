@@ -6,6 +6,10 @@ import { Component } from '@angular/core';
   styleUrl: './guest-form.component.scss'
 })
 export class GuestFormComponent {
+  hotelSupport: string = '';
+  foodRestriction: string = '';
+  dailyTransport: string = '';
+  enterFactory: string = '';
   isMobileMenuOpen = false;
 
   toggleMobileMenu() {
