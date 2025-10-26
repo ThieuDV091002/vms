@@ -1,0 +1,49 @@
+<div class="p-6 max-w-[80%] lg:max-w-[70%] mx-auto">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- LEFT CONTENT -->
+        <div class="lg:col-span-2 space-y-6 h-full">
+            <!-- Intro -->
+            <div class="">
+                <p class="font-semibold text-xl">Hello!</p>
+                <p class="mt-2 text-gray-700 text-xl">
+                    Welcome to Travelling Guide, your essential companion for preparing business trips. Designed to simplify your travel planning, this platform offers tailored advice on transportation, accommodation, card, tools, and important business etiquette. Whether it’s your first visit or a regular trip, our guide helps you stay organized and informed, so you can focus on making the most of your time at Molex with confidence and ease.
+                </p>
+            </div>
+
+            <!-- Big Card -->
+            <div>
+                <img
+                        src="/images/travel-guide/Screenshot%202025-09-25%20091956.png"
+                        alt="myTravel & Expense"
+                        class="w-full"
+                />
+            </div>
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="space-y-6 h-full flex flex-col h-full">
+            @for (card of cards; track card.title) {
+                <div class="relative rounded-lg overflow-hidden shadow">
+                    <img
+                            [src]="card.img"
+                            [alt]="card.title"
+                            class="w-full h-80 object-cover"
+                    />
+                    <div
+                            class="absolute inset-0 bg-black/50 flex flex-col items-start justify-start p-8 text-white"
+                    >
+                        <h2 class="text-3xl font-bold">{{ card.title }}</h2>
+                        <p class="text-md mt-1 pb-4">{{ card.desc }}</p>
+                        <button
+                                (click)="openLink(card.link)"
+                                class="mt-3  bg-white text-black px-3 py-1 text-sm rounded hover:bg-gray-200 leading-tight whitespace-normal"
+                        >
+                            Learn more
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

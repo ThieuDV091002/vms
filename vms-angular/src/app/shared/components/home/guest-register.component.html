@@ -1,0 +1,286 @@
+<section
+        class="flex flex-col md:flex-row items-center justify-center gap-10 max-md:px-4"
+>
+    <!-- Image & Overlay -->
+    <div
+            class="relative shadow-2xl shadow-indigo-600/40 rounded-2xl overflow-hidden shrink-0"
+    >
+        <img
+                class="w-full md:w-[500px] lg:w-[600px] xl:w-[700px] object-cover rounded-2xl"
+                src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop"
+                alt="Community"
+        />
+
+        <div
+                class="flex items-center gap-1 max-w-72 absolute bottom-8 left-8 p-4 rounded-xl"
+        >
+            <div class="flex -space-x-4 shrink-0">
+                <img
+                        *ngFor="let member of communityMembers"
+                        [src]="member.img"
+                        [alt]="member.alt"
+                        class="size-9 rounded-full border-[3px] border-white hover:-translate-y-1 transition"
+                        [ngClass]="member.zIndex"
+                />
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Content -->
+    <div class="text-sm text-slate-600 w-full md:w-[500px] lg:w-[600px]">
+        <h1 class="text-xl uppercase font-semibold text-slate-700">Visitor Registration</h1>
+        <div
+                class="w-24 h-[3px] rounded-full bg-gradient-to-r from-indigo-600 to-[#DDD9FF]"
+        ></div>
+
+        <p class="mt-8">
+            We make visitor registration quick and simple, ensuring you have a smooth and enjoyable experience during your visit.<br>
+            Please click the button below to start your registration and gain access.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <p>
+                <span><strong>Guest Benefits</strong></span><br>
+                Priority access, personalized support, and detailed visit tracking.
+            </p>
+            <p>
+                <span><strong>How to Prepare?</strong></span><br>
+                Ensure accurate flight and hotel information for smooth coordination.
+            </p>
+        </div>
+
+        <button (click)="openModal()"
+                class="flex items-center gap-2 mt-8 hover:-translate-y-0.5 transition bg-gradient-to-r from-indigo-600 to-[#8A7DFF] py-3 px-8 rounded-full text-white"
+        >
+            <span>Register for a Visit</span>
+            <svg
+                    width="13"
+                    height="12"
+                    viewBox="0 0 13 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                        d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+                        fill="#fff"
+                />
+            </svg>
+        </button>
+    </div>
+</section>
+<app-modal
+        [isOpen]="isOpen"
+        (close)="closeModal()"
+        className="max-w-[1000px] m-4"
+>
+    <div class="no-scrollbar relative w-full max-w-[1000px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+        <div class="px-2 pr-14">
+            <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                Guest Registration Form
+            </h4>
+            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+                Help us serve you better by completing your registration.
+            </p>
+        </div>
+        <form class="flex flex-col" (ngSubmit)="handleSave()">
+            <div class="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+                <div class="mt-7">
+                    <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Full Name (On Passport)</app-label>
+                            <app-input-field type="text"/>
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>From Which Company</app-label>
+                            <app-input-field type="text" />
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Title</app-label>
+                            <app-input-field type="text" />
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Trip's Purpose</app-label>
+                            <app-input-field type="text" />
+                        </div>
+                        <div class="col-span-2">
+                            <app-label>Work With Whom In MXV</app-label>
+                            <app-input-field type="text" />
+                        </div>
+                        <h4 class="mb-2 col-span-2 text-xl font-semibold text-gray-800 dark:text-white/90">Trip Information</h4>
+                        <div class="col-span-2">
+                            <app-label>
+                                Do you need support to book hotel? If yes, please select a hotel or advise hotel name and room type below.
+                            </app-label>
+                            <app-select
+                                    [options]="hotelOptions"
+                                    (valueChange)="handleHotelSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <div class="col-span-2">
+                            <app-label>Hotel</app-label>
+                            <app-select
+                                    [options]="cardOptions"
+                                    [disabled]="!isHotelSelectEnabled"
+                                    (valueChange)="handleCardSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Hotel Name</app-label>
+                            <app-input-field type="text" [disabled]="!isHotelFieldsEnabled" />
+                        </div>
+
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Room Type</app-label>
+                            <app-input-field type="text" [disabled]="!isHotelFieldsEnabled" />
+                        </div>
+                        <div class="col-span-2">
+                            <app-label>Do you need transportation Airport pick up & drop off?</app-label>
+                            <app-select
+                                    [options]="hotelOptions"
+                                    (valueChange)="handleSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+                        <div class="col-span-2">
+                            <app-label>Do you need daily transportation?</app-label>
+                            <app-select
+                                    [options]="transportOptions"
+                                    (valueChange)="handleTransportSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <div class="col-span-2">
+                            <app-time-picker
+                                    id="time-picker"
+                                    label="Time"
+                                    placeholder="Select time"
+                                    [disabled]="!isTransportFieldsEnabled"
+                                    (timeChange)="onTimeSelected($event)"
+                            ></app-time-picker>
+                        </div>
+
+                        <div class="col-span-2">
+                            <app-label>Route</app-label>
+                            <app-input-field type="text" [disabled]="!isTransportFieldsEnabled" />
+                        </div>
+
+                        <div class="col-span-2">
+                            <app-label>Address</app-label>
+                            <app-input-field type="text" [disabled]="!isTransportFieldsEnabled" />
+                        </div>
+                        <div class="col-span-2">
+                            <app-label>Do you have any food restriction?</app-label>
+                            <app-select
+                                    [options]="foodOptions"
+                                    (valueChange)="handleFoodSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <div class="col-span-2">
+                            <app-text-area
+                                    placeholder="Food restrictions detail"
+                                    [rows]="3"
+                                    [disabled]="!isFoodDetailEnabled"
+                            ></app-text-area>
+                        </div>
+                        <div class="col-span-2">
+                            <app-label>Do you have any other requests?</app-label>
+                            <app-text-area
+                                    placeholder="Other requests(optional)"
+                                    [rows]="3"
+                            ></app-text-area>
+                        </div>
+                        <div class="col-span-2">
+                            <app-label>Do you need to visit factory?</app-label>
+                            <app-select
+                                    [options]="visitOptions"
+                                    (valueChange)="handleVisitSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Card</app-label>
+                            <app-select
+                                    [options]="cardOptions"
+                                    [disabled]="!isVisitFieldsEnabled"
+                                    (valueChange)="handleSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Uniform</app-label>
+                            <app-select
+                                    [options]="uniformOptions"
+                                    [disabled]="!isVisitFieldsEnabled"
+                                    (valueChange)="handleSelectChange($event)"
+                                    className="dark:bg-dark-900"
+                            ></app-select>
+                        </div>
+
+                        <h4 class="mb-2 col-span-2 text-xl font-semibold text-gray-800 dark:text-white/90">Arrival Flight</h4>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-date-picker
+                                    id="date-picker"
+                                    label="Date"
+                                    placeholder="Select a date"
+                                    (dateChange)="handleDateChange($event)"
+                            />
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Flight No</app-label>
+                            <app-input-field type="text" placeholder="Flight number"/>
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Flight Route</app-label>
+                            <app-input-field type="text" placeholder="From - To"/>
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-time-picker
+                                    id="time-picker"
+                                    label="Time"
+                                    placeholder="Select time"
+                                    (timeChange)="onTimeSelected($event)"
+                            />
+                        </div>
+                        <h4 class="mb-2 col-span-2 text-xl font-semibold text-gray-800 dark:text-white/90">Departure Flight</h4>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-date-picker
+                                    id="date-picker"
+                                    label="Date"
+                                    placeholder="Select a date"
+                                    (dateChange)="handleDateChange($event)"
+                            />
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Flight No</app-label>
+                            <app-input-field type="text" placeholder="Flight number"/>
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-label>Flight Route</app-label>
+                            <app-input-field type="text" placeholder="From - To"/>
+                        </div>
+                        <div class="col-span-2 lg:col-span-1">
+                            <app-time-picker
+                                    id="time-picker"
+                                    label="Time"
+                                    placeholder="Select time"
+                                    (timeChange)="onTimeSelected($event)"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+                <app-button size="sm" variant="outline" (btnClick)="closeModal()">Close</app-button>
+                <app-button size="sm" (btnClick)="handleSave()">Submit</app-button>
+            </div>
+        </form>
+    </div>
+</app-modal>

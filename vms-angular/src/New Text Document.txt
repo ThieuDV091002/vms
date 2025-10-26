@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Link with Logo + Text (No Subtitle)</title>
+  <style>
+    body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:#f7fafc;padding:40px;}
+    .demo{max-width:900px;margin:0 auto}
+
+    .brand-link{
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 14px;
+      border-radius:10px;
+      text-decoration:none;
+      color:inherit;
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+      box-shadow:0 1px 0 rgba(0,0,0,0.03), 0 6px 18px rgba(12,16,20,0.04);
+      border:1px solid rgba(15,23,42,0.04);
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .brand-link:hover,.brand-link:focus{
+      transform:translateY(-3px);
+      box-shadow:0 8px 30px rgba(12,16,20,0.08);
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(245,247,250,0.9));
+      outline:none;
+    }
+
+    .brand-logo{
+      width:48px;
+      height:48px;
+      border-radius:8px;
+      object-fit:cover;
+      flex-shrink:0;
+      background:#fff;
+      display:inline-block;
+    }
+
+    .brand-title{
+      font-weight:650;
+      font-size:16px;
+      color:#0f172a;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .brand-chevron{margin-left:12px;display:inline-flex;align-items:center}
+
+    @media (max-width:420px){
+      .brand-logo{width:40px;height:40px}
+      .brand-title{font-size:15px}
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+    <h3>Ví dụ: link chứa logo + text (không có subtitle)</h3>
+
+    <a class="brand-link" href="https://example.com" aria-label="Open Example website">
+      <img class="brand-logo" src="https://placehold.co/96x96/3b82f6/ffffff/png?text=Logo" alt="Example logo">
+      <span class="brand-title">Example Company</span>
+      <span class="brand-chevron" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </a>
+
+    <p style="margin-top:18px;color:#64748b">Thay URL trong <code>href</code> và ảnh trong <code>src</code> bằng logo thực của bạn.</p>
+  </div>
+</body>
+</html>

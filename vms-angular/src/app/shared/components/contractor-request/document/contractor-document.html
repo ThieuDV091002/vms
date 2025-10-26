@@ -1,0 +1,28 @@
+<!-- Attached Files -->
+<div class="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+    <div>
+        <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">
+            Attached Documents
+        </h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            @for (file of files; track $index) {
+                <div class="flex items-center p-4 border border-gray-200 rounded-xl shadow-sm hover:shadow-md dark:border-white/[0.05] dark:bg-white/[0.02] transition gap-3">
+                    <!-- File Icon -->
+                    <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-white/[0.05]">
+                        <ng-container [ngSwitch]="file.filetype">
+                            <svg *ngSwitchCase="'document'" xmlns="http://www.w3.org/2000/svg"
+                                 class="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M7 21h10a2 2 0 002-2V7l-6-6H7a2 2 0 00-2 2v16a2 2 0 002 2z" />
+                            </svg>
+                        </ng-container>
+                    </div>
+                    <!-- File Name -->
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">
+                        {{ file.fileName }}
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+                General Information
+            </h4>
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Request Type</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.request_type }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Work Permit Code</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.work_permit_code }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Contractor Name</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.vendor_name }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Molex Supervisor</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.molex_supervisor_name }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Contractor Supervisor</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.vendor_supervisor_name }} ({{ request.vendor_supervisor_phone }})
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Working Area</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.working_area }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Start Date</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.start_date }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">End Date</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.end_date }}
+                    </p>
+                </div>
+                <div class="lg:col-span-2">
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Work Description</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.work_description }}
+                    </p>
+                </div>
+                <!-- Job Selection -->
+                <div class="lg:col-span-2">
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Job Type</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.jobSelection.job_type_name }}
+                    </p>
+                </div>
+                <div class="lg:col-span-2">
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.jobSelection.job_section_name }}: {{ request.jobSelection.job_option_name }}
+                    </p>
+                </div>
+                <!-- Job Request Text Values -->
+                <div class="lg:col-span-2">
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ request.requestTextValues.text_field_name }} : {{request.requestTextValues.value}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

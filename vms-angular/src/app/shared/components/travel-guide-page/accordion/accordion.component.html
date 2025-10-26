@@ -1,0 +1,260 @@
+<div class="space-y-2 p-6 max-w-[80%] lg:max-w-[70%] mx-auto">
+    <!-- Accordion #1 -->
+    <div class="border-b">
+        <button
+                (click)="toggle(0)"
+                class="text-3xl py-3 inline-flex items-center gap-x-3 w-full font-medium text-start text-gray-800 hover:text-gray-500 rounded-lg"
+        >
+            @if (activeIndex !== 0) {
+                <!-- Down Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            } @else {
+                <!-- Up Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 15-6-6-6 6"></path>
+                </svg>
+            }
+
+            TRAVEL TO OTHER COUNTRIES
+        </button>
+
+        @if (activeIndex === 0) {
+            <app-travel-to-other-country></app-travel-to-other-country>
+        }
+    </div>
+
+    <!-- Accordion #2 -->
+    <div class="border-b ">
+        <button
+                (click)="toggle(1)"
+                class="py-3 text-3xl font-medium inline-flex items-center gap-x-3 w-full text-start text-gray-800 hover:text-gray-500 rounded-lg"
+        >
+            @if (activeIndex !== 0) {
+                <!-- Down Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            } @else {
+                <!-- Up Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 15-6-6-6 6"></path>
+                </svg>
+            }
+
+            TRAVEL TO VIETNAM
+        </button>
+
+        @if (activeIndex === 1) {
+            <div class="overflow-hidden transition-[height] duration-300 p-2 flex flex-col items-center gap-4">
+                <p class="text-center pb-5">
+                    <em class="text-blue-900 text-2xl font-medium">
+                        Planning a trip to Vietnam? Here’s a handy shortlist of important things to know before you go
+                    </em>
+                </p>
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white active:scale-95 rounded-md px-7 h-11">
+                    Vietnam e-visa website
+                </button>
+                <img
+                        [src]="'https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop'"
+                        class="w-full h-200 pt-5"
+                        (click)="openLink(card.link)"
+                        alt="">
+
+                <p class="text-gray-800 text-3xl text-center font-semibold pt-10">
+                    RECOMMEND HOTELS, TRANSPORTATION
+                </p>
+            </div>
+            <p class="text-gray-700 text-lg pt-10 pb-10">
+                For a comfortable trip to Vietnam, consider staying at recommended hotels in Hanoi and Hung Yen, and use trusted taxi and bus services for easy transportation. Be sure to explore Hanoi’s vibrant sights, enjoy delicious local cuisine, and familiarize yourself with available health services for a safe and enjoyable visit.
+            </p>
+            <div class="relative rounded-lg overflow-hidden shadow">
+                <img
+                        [src]="card.img"
+                        [alt]="card.title"
+                        class="w-full h-120 object-cover"
+                />
+                <div
+                        class="absolute inset-0 bg-black/50 flex flex-col items-start justify-end p-8 text-white"
+                >
+                    <h2 class="text-3xl font-semibold">Recommended hotels</h2>
+                    <button (click)="openLink('https://example.com/koch-mytravel')"
+                            class="mt-3 text-white py-1 text-sm rounded leading-tight whitespace-normal flex items-center gap-x-2"
+                    >
+                        Learn more
+                        <svg
+                                width="13"
+                                height="12"
+                                viewBox="0 0 13 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                    d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+                                    fill="#fff"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <img
+                    src="/images/travel-guide/Screenshot%202025-09-25%20115459.png"
+                    class="w-full pt-10"
+                    (click)="openLink(card.link)"
+                    alt="">
+            <app-transport-recommend></app-transport-recommend>
+            <p class="text-gray-800 text-3xl font-semibold text-center">
+                HEALTH SERVICES
+            </p>
+            <app-health-care></app-health-care>
+        }
+    </div>
+
+    <!-- Accordion #3 -->
+    <div class="border-b">
+        <button
+                (click)="toggle(2)"
+                class="py-3 inline-flex items-center gap-x-3 w-full text-3xl font-medium text-start text-gray-800 hover:text-gray-500 rounded-lg"
+        >
+            @if (activeIndex !== 0) {
+                <!-- Down Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            } @else {
+                <!-- Up Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 15-6-6-6 6"></path>
+                </svg>
+            }
+
+            LONG-TERM AND SHORT-TERM ASSIGNMENT
+        </button>
+
+        @if (activeIndex === 2) {
+            <div class="overflow-hidden transition-[height] duration-300 p-2">
+                <p class="text-gray-800 text-4xl text-center font-semibold pb-10">
+                    ASSIGNMENT FLOW
+                </p>
+                <div class="relative rounded-lg overflow-hidden shadow">
+                    <img
+                            [src]="card.img"
+                            [alt]="card.title"
+                            class="w-full h-80 object-cover"
+                    />
+                    <div
+                            class="absolute inset-0 bg-black/50 flex flex-col items-start justify-start p-8 text-white"
+                    >
+                        <h2 class="text-3xl font-bold">{{ card.title }}</h2>
+                        <button
+                                (click)="openLink(card.link)"
+                                class="mt-3  bg-white text-black px-3 py-1 text-sm rounded hover:bg-gray-200 leading-tight whitespace-normal"
+                        >
+                            Learn more
+                        </button>
+                    </div>
+                </div>
+                <p class="text-gray-800 text-4xl text-center font-semibold pt-10">
+                    myHR PROCESS UPDATES
+                </p>
+                <img src="/images/travel-guide/Screenshot%202025-09-25%20112529.png" class="w-full pt-10" alt="">
+                <ul class="list-disc list-inside text-gray-800 text-lg pt-10 pl-5">
+                    <li>Assignment Flow + RREs Supervisor, HRBP, Employees</li>
+                    <li>myHR process updates (link)</li>
+                    <li>Immigration support for passport, visa, work permit (Thuy GA)</li>
+                    <li>Tax support</li>
+                    <li>FAQs for assignees</li>
+                </ul>
+            </div>
+        }
+    </div>
+
+    <!-- Accordion #3 -->
+    <div class="border-b">
+        <button
+                (click)="toggle(3)"
+                class="py-3 inline-flex items-center gap-x-3 w-full text-3xl font-medium text-start text-gray-800 hover:text-gray-500 rounded-lg"
+        >
+            @if (activeIndex !== 0) {
+                <!-- Down Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            } @else {
+                <!-- Up Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 15-6-6-6 6"></path>
+                </svg>
+            }
+
+            OTHER INFORMATION
+        </button>
+
+        @if (activeIndex === 3) {
+            <div class="overflow-hidden transition-[height] duration-300 p-2">
+                <p class="text-gray-800 text-4xl text-center font-semibold pb-10">
+                    ATTRACTIONS IN VIETNAM
+                </p>
+                <app-attraction-recommend></app-attraction-recommend>
+                <p class="text-gray-800 text-4xl text-center font-semibold pt-10">
+                    FOOD RECOMMENDATION
+                </p>
+                <p class="text-gray-800 text-md pt-10">
+                    Hanoi is a culinary treasure trove where tradition meets street-side charm. As Vietnam’s capital, it’s also considered the country’s food capital, offering a rich tapestry of flavors shaped by history, climate, and culture. From the iconic <i>phở bò</i> (beef noodle soup) to the smoky allure of <i>bún chả</i> (grilled pork with noodles), every dish tells a story. Locals eat when they’re hungry, not by the clock, which means you’ll find sizzling grills and steaming bowls from dawn till late night.
+                    <br>Street food reigns supreme here—served on tiny plastic stools, often in alleyways or bustling corners. Hanoi’s cuisine is known for its balance: fresh herbs, delicate spices, and contrasting textures
+                </p>
+                <app-food-recommend></app-food-recommend>
+            </div>
+        }
+    </div>
+
+    <!-- Accordion #3 -->
+    <div>
+        <button
+                (click)="toggle(4)"
+                class="py-3 inline-flex items-center gap-x-3 w-full text-3xl font-medium text-start text-gray-800 hover:text-gray-500 rounded-lg"
+        >
+            @if (activeIndex !== 0) {
+                <!-- Down Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            } @else {
+                <!-- Up Arrow -->
+                <svg class="block size-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 15-6-6-6 6"></path>
+                </svg>
+            }
+
+            FAQ
+        </button>
+
+        @if (activeIndex === 4) {
+            <div class="overflow-hidden transition-[height] duration-300 p-2">
+                <app-faq></app-faq>
+            </div>
+        }
+    </div>
+</div>
+

@@ -1,0 +1,93 @@
+<div class="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+                General Information
+            </h4>
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Full Name</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.fullname }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Company</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.company }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Title</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.title }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Purpose</p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.purpose }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Work With Whom In Molex
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.work_with_whom_in_molex }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Hotel Support
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.is_hotel_support ? 'Yes' : 'No' }}
+                    </p>
+                </div>
+                <ng-container *ngIf="general.is_hotel_support">
+                    <div>
+                        <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                            Hotel Name
+                        </p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                            {{ general.hotel_name }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                            Room Type
+                        </p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                            {{ general.room_type }}
+                        </p>
+                    </div>
+                </ng-container>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Food Restriction
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.is_food_restrict ? 'Yes' : 'No' }}
+                    </p>
+                </div>
+                <div *ngIf="general.is_food_restrict">
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Restriction Details
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.food_restrict_detail }}
+                    </p>
+                </div>
+                <div class="lg:col-span-2">
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Other Request
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ general.other_request }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

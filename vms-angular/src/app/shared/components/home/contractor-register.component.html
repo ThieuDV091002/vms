@@ -1,0 +1,501 @@
+<section
+        class="flex flex-col md:flex-row items-center justify-center gap-10 max-md:px-4 pt-20"
+>
+    <!-- Text Content -->
+    <div class="text-sm text-slate-600 w-full md:w-[500px] lg:w-[600px]">
+        <h1 class="text-xl uppercase font-semibold text-slate-700">
+            Contractor Registration
+        </h1>
+        <div
+                class="w-24 h-[3px] rounded-full bg-gradient-to-r from-indigo-600 to-[#DDD9FF]"
+        ></div>
+
+        <p class="mt-8">
+            Register your company and team with all necessary details, including work permits, safety certifications, and employee information.<br>
+            Our system ensures compliance and helps efficiently manage contractor activities during their time on-site.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <p>
+                <span><strong>Contractor Benefits</strong></span><br>
+                Streamlined approvals, trackable work permits, and enhanced safety compliance.
+            </p>
+            <p>
+                <span><strong>Preparation Tips</strong></span><br>
+                Keep all certification and permit documents up to date for smooth access.
+            </p>
+        </div>
+
+        <button (click)="openModal()"
+                class="flex items-center gap-2 mt-8 hover:-translate-y-0.5 transition bg-gradient-to-r from-indigo-600 to-[#8A7DFF] py-3 px-8 rounded-full text-white"
+        >
+            <span>Register as a Contractor</span>
+            <svg
+                    width="13"
+                    height="12"
+                    viewBox="0 0 13 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                        d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+                        fill="#fff"
+                />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Image & Overlay -->
+    <div
+            class="relative shadow-2xl shadow-indigo-600/40 rounded-2xl overflow-hidden shrink-0"
+    >
+        <img
+                class="w-full md:w-[500px] lg:w-[600px] xl:w-[700px] object-cover rounded-2xl"
+                src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop"
+                alt="Contractor"
+        />
+    </div>
+</section>
+<app-modal
+        [isOpen]="isOpen"
+        (close)="closeModal()"
+        className="max-w-[1000px] m-4"
+>
+    <div class="no-scrollbar relative w-full max-w-[1000px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+        <div class="px-2 pr-14">
+            <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                Đăng ký Giấy phép Nhà thầu
+            </h4>
+            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+                Vui lòng điền đầy đủ thông tin để đăng ký hoặc gia hạn giấy phép nhà thầu.
+            </p>
+        </div>
+        <div class="px-2">
+            <app-label>Chọn loại giấy phép <span class="text-danger">*</span></app-label>
+            <app-select
+                    [options]="typeOptions"
+                    (valueChange)="handleSelectChange($event)"
+                    className="dark:bg-dark-900"
+            ></app-select>
+        </div>
+        <form class="flex flex-col" (ngSubmit)="handleSave()" [formGroup]="permitForm">
+            <div class="custom-scrollbar h-[600px] overflow-y-auto px-2 pb-3">
+                <!-- New Permit Form -->
+                @if (permitType === 'New') {
+                    <div class="mt-7">
+                        <h4 class="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90">Giấy phép làm việc mới</h4>
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Nhân viên Molex chịu trách nhiệm giám sát <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="molexSupervisor" type="text" placeholder="Tên nhân viên Molex" />
+                            </div>
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Tên Công ty / Nhà thầu <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="vendorCompany" type="text" placeholder="Tên công ty nhà thầu" />
+                            </div>
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Nhân viên Nhà thầu chịu trách nhiệm giám sát (Tên + SĐT) <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="vendorSupervisor" type="text" placeholder="Tên + SĐT" />
+                            </div>
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Khu vực làm việc <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="workArea" type="text" placeholder="Ví dụ: Nhà máy 2, Khu vực A1" />
+                            </div>
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Thời gian làm việc từ <span class="text-danger">*</span></app-label>
+                                <app-date-picker
+                                        formControlName="startDate"
+                                        placeholder="Chọn ngày bắt đầu"
+                                        (dateChange)="handleDateChange($event)"
+                                />
+                            </div>
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Thời gian làm việc đến <span class="text-danger">*</span></app-label>
+                                <app-date-picker
+                                        formControlName="endDate"
+                                        placeholder="Chọn ngày kết thúc"
+                                        (dateChange)="handleDateChange($event)"
+                                />
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Số lượng nhân viên nhà thầu vào làm việc <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="workerCount" type="number" placeholder="Số lượng nhân viên" />
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Danh sách nhân viên</app-label>
+                                <app-file-input-example></app-file-input-example>
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th class="pr-3 font-medium">STT</th>
+                                        <th class="pr-3 font-medium">Tên</th>
+                                        <th class="pr-3 font-medium">Ngày sinh</th>
+                                        <th class="pr-3 font-medium">Số CCCD/Hộ chiếu</th>
+                                        <th class="pr-3 font-medium">Công ty</th>
+                                        <th class="pr-3 font-medium">Bộ phận</th>
+                                        <th class="pr-3 font-medium">Người phụ trách Molex</th>
+                                        <th class="font-medium">Hành động</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (emp of employees; track trackByEmployeeId($index, emp); let i = $index) {
+                                            <tr>
+                                                <td>{{ i + 1 }}</td>
+                                                <td>{{ emp.name }}</td>
+                                                <td>{{ emp.dob }}</td>
+                                                <td>{{ emp.id }}</td>
+                                                <td>{{ emp.company }}</td>
+                                                <td>{{ emp.department }}</td>
+                                                <td>{{ emp.molexPIC }}</td>
+                                                <td>
+                                                    <app-button size="sm" variant="outline" (btnClick)="deleteEmployee(i)">Xóa</app-button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" formControlName="listCompleted" />
+                                    <app-label>Đã hoàn thành</app-label>
+                                </div>
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Mô tả các thao tác, công việc cụ thể <span class="text-danger">*</span></app-label>
+                                <app-text-area formControlName="jobDescription" placeholder="Mô tả công việc cụ thể" [rows]="3"></app-text-area>
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Loại công việc <span class="text-danger">*</span></app-label>
+                                <app-select
+                                        [options]="jobTypeOptions"
+                                        (valueChange)="onJobTypeChange($event)"
+                                        className="dark:bg-dark-900"
+                                        formControlName="jobType"
+                                ></app-select>
+                            </div>
+                            <!-- Dynamic Job Details -->
+                            @if (jobType === 'welding') {
+                                <div class="col-span-2">
+                                    <h5>A. Làm việc hàn, cắt - Giấy phép làm việc với lửa</h5>
+                                    <p><em>Giấy phép chỉ cho phép làm việc bên ngoài nhà xưởng, hạn 1 ngày.</em></p>
+                                    <div class="checkbox-group">
+                                        <app-label>Công việc với lửa <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldTasks" value="welding" />
+                                                <app-label>Hàn</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldTasks" value="cutting" />
+                                                <app-label>Cắt</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldTasks" value="grinding" />
+                                                <app-label>Mài</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldTasks" value="drill" />
+                                                <app-label>Khoan</app-label>
+                                            </div>
+                                        </div>
+                                        <app-input-field formControlName="weldOther" type="text" placeholder="Công việc khác" class="mt-2" />
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Điều kiện bắt buộc <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldConditions" value="falling_things" />
+                                                <app-label>Vật rơi</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldConditions" value="remove_flammable" />
+                                                <app-label>Loại bỏ vật liệu dễ cháy</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldConditions" value="welding_terminals_insulated" />
+                                                <app-label>Đầu cực hàn bọc cách điện</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Biện pháp an toàn <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldSafety" value="safety_barrier" />
+                                                <app-label>Thanh chắn an toàn</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="weldSafety" value="traffic_management" />
+                                                <app-label>Quản lý đèn tín hiệu</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (jobType === 'chemical') {
+                                <div class="col-span-2">
+                                    <h5>B. Làm việc tiếp xúc với hóa chất nguy hiểm</h5>
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-5">
+                                        <div><app-label>Tên hóa chất 1</app-label><app-input-field formControlName="chemical1" type="text" /></div>
+                                        <div><app-label>Tên hóa chất 2</app-label><app-input-field formControlName="chemical2" type="text" /></div>
+                                        <div><app-label>Tên hóa chất 3</app-label><app-input-field formControlName="chemical3" type="text" /></div>
+                                        <div><app-label>Tên hóa chất 4</app-label><app-input-field formControlName="chemical4" type="text" /></div>
+                                        <div><app-label>Tên hóa chất 5</app-label><app-input-field formControlName="chemical5" type="text" /></div>
+                                        <div><app-label>Tên hóa chất 6</app-label><app-input-field formControlName="chemical6" type="text" /></div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Cảnh báo phù hợp <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="chemicalHazards" value="allergy" />
+                                                <app-label>Gây dị ứng</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="chemicalHazards" value="flammable" />
+                                                <app-label>Dễ cháy</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="chemicalHazards" value="health_effect" />
+                                                <app-label>Ảnh hưởng sức khỏe</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Bảo hộ lao động cần thiết <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="ppe" value="gloves" />
+                                                <app-label>Găng tay</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="ppe" value="mask" />
+                                                <app-label>Khẩu trang/mặt nạ phòng độc</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Chất dập cháy thích hợp <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="fireExtinguishers" value="water" />
+                                                <app-label>Nước</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="fireExtinguishers" value="powder" />
+                                                <app-label>Bột chữa cháy</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Vật liệu ứng phó sự cố tràn đổ <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="spillMaterials" value="dry_sand" />
+                                                <app-label>Cát khô</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="spillMaterials" value="sawdust" />
+                                                <app-label>Mùn cưa</app-label>
+                                            </div>
+                                        </div>
+                                        <app-input-field formControlName="spillOtherMaterial" type="text" placeholder="Vật liệu khác" class="mt-2" />
+                                    </div>
+                                </div>
+                            }
+                            @if (jobType === 'working_height') {
+                                <div class="col-span-2">
+                                    <h5>C. Giấy phép làm việc trên cao</h5>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Sử dụng thiết bị leo cao <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightDevices" value="ladder" />
+                                                <app-label>Thang</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightDevices" value="scaffolding" />
+                                                <app-label>Giàn giáo (Có hồ sơ năng lực)</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightDevices" value="aerial_lift" />
+                                                <app-label>Xe nâng người (Có chứng chỉ)</app-label>
+                                            </div>
+                                        </div>
+                                        <app-input-field formControlName="workingHeightOtherDevice" type="text" placeholder="Khác" class="mt-2" />
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Điều kiện bắt buộc <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightConditions" value="trained_worker" />
+                                                <app-label>Đã qua đào tạo</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightConditions" value="full_body_harness" />
+                                                <app-label>Dây an toàn toàn thân</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Biện pháp an toàn <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightSafety" value="safety_barrier" />
+                                                <app-label>Thanh chắn an toàn</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="workingHeightSafety" value="traffic_management" />
+                                                <app-label>Quản lý đèn tín hiệu</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (jobType === 'lifting') {
+                                <div class="col-span-2">
+                                    <h5>D. Giấy phép làm việc nâng hạ</h5>
+                                    <div class="mb-3">
+                                        <app-label>Thông tin thiết bị nâng (Biển số xe, số kiểm định,...) <span class="text-danger">*</span></app-label>
+                                        <app-text-area formControlName="liftingEquipmentInfo" [rows]="3"></app-text-area>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Điều kiện bắt buộc <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="liftingConditions" value="lifting_procedure_prepared" />
+                                                <app-label>Qui trình nâng hạ có được chuẩn bị?</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="liftingConditions" value="crane_inspected" />
+                                                <app-label>Cần cẩu đã được kiểm tra?</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (jobType === 'general') {
+                                <div class="col-span-2">
+                                    <h5>E. Giấy phép làm việc chung</h5>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Nhận diện mối nguy <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="generalHazards" value="falling_things" />
+                                                <app-label>Vật rơi</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="generalHazards" value="slip_trip_fall" />
+                                                <app-label>Slip / Trip / Fall</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group mt-3">
+                                        <app-label>Biện pháp an toàn <span class="text-danger">*</span></app-label>
+                                        <div class="flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="generalSafety" value="safety_barrier" />
+                                                <app-label>Thanh chắn an toàn</app-label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" formControlName="generalSafety" value="traffic_management" />
+                                                <app-label>Quản lý đèn tín hiệu</app-label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Email của nhân viên Molex giám sát thực hiện công việc <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="molexEmail" type="email" placeholder="example@molex.com" />
+                            </div>
+                            <div class="col-span-2">
+                                <div class="form-check mt-3">
+                                    <input class="form-check-input" type="checkbox" formControlName="trainingCommit" />
+                                    <app-label class="fw-bold">
+                                        Tôi cam kết đã gửi video đào tạo <a href="https://www.youtube.com/watch?v=IQg8GvOY6Pw&t=42s" target="_blank" rel="noopener noreferrer">tại đây</a> cho toàn thể nhân viên nhà thầu đã xem và hiểu.
+                                    </app-label>
+                                </div>
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Tải lên các hồ sơ liên quan <small class="text-muted">(có thể chọn nhiều file)</small></app-label>
+                                <app-file-input-example></app-file-input-example>
+                            </div>
+                            <div class="col-span-2 lg:col-span-1">
+                                <app-label>Email của nhà thầu nhận kết quả phê duyệt <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="vendorApprovalEmail" type="email" placeholder="example@vendor.com" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Renew Permit Form -->
+                @if (permitType === 'Extend') {
+                    <div class="mt-7">
+                        <h4 class="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90">Gia hạn giấy phép cũ / Bổ sung nhân viên</h4>
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                            <div class="col-span-2">
+                                <app-label>Số giấy phép làm việc cũ <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="oldPermitNumberRenew" type="text" />
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Tên Công ty / Nhà thầu <span class="text-danger">*</span></app-label>
+                                <app-input-field formControlName="vendorCompanyRenew" type="text" />
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Gia hạn đến ngày <span class="text-danger">*</span></app-label>
+                                <app-date-picker
+                                        formControlName="renewToDate"
+                                        placeholder="Chọn ngày gia hạn"
+                                        (dateChange)="handleDateChange($event)"
+                                />
+                            </div>
+                            <div class="col-span-2">
+                                <app-label>Danh sách bổ sung nhân viên</app-label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" formControlName="noAddList" (change)="onNoAddListChange($event)" />
+                                    <app-label>Không bổ sung danh sách</app-label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" formControlName="completedAddList" />
+                                    <app-label>Đã hoàn thành bổ sung danh sách</app-label>
+                                </div>
+                                <input type="file" (change)="onFileChange($event)" accept=".xlsx,.xls,.csv" class="form-control mb-3" />
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Số CCCD/Hộ chiếu</th>
+                                        <th>Công ty</th>
+                                        <th>Bộ phận</th>
+                                        <th>Người phụ trách Molex</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (emp of employees; track trackByEmployeeId($index, emp); let i = $index) {
+                                            <tr>
+                                                <td>{{ i + 1 }}</td>
+                                                <td>{{ emp.name }}</td>
+                                                <td>{{ emp.dob }}</td>
+                                                <td>{{ emp.id }}</td>
+                                                <td>{{ emp.company }}</td>
+                                                <td>{{ emp.department }}</td>
+                                                <td>{{ emp.molexPIC }}</td>
+                                                <td>
+                                                    <app-button size="sm" variant="outline" (btnClick)="deleteEmployee(i)">Xóa</app-button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+                <app-button size="sm" variant="outline" (btnClick)="closeModal()">Hủy</app-button>
+                <app-button size="sm" type="submit" [disabled]="permitForm.invalid">Gửi</app-button>
+            </div>
+        </form>
+    </div>
+</app-modal>

@@ -1,0 +1,20 @@
+<div class="flex items-center gap-2 h-[400px] w-full max-w-4xl mt-10 mx-auto">
+    @for (img of images; track $index) {
+        <div
+                class="relative group flex-grow transition-all w-56 rounded-lg overflow-hidden h-[400px] duration-500 hover:w-full cursor-pointer"
+                (click)="openLink(img.link)"
+        >
+            <img
+                    class="h-full w-full object-cover object-center"
+                    [src]="img.src"
+                    [alt]="img.title"
+            />
+
+            <div
+                    class="absolute bottom-0 left-0 w-full  text-white text-xl p-2 opacity-0 group-hover:opacity-100 transition"
+            >
+                {{ img.title }}
+            </div>
+        </div>
+    }
+</div>

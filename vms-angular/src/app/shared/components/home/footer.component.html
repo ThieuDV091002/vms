@@ -1,0 +1,25 @@
+<footer
+        class="flex flex-col items-center justify-around w-full py-16 text-sm bg-slate-50 text-gray-800/70"
+>
+    <a href="/index.html" class="navbar-brand"><span class="text-danger"><strong>molex</strong></span></a>
+
+    <!-- Copyright -->
+    <p class="mt-4 text-center">
+        Copyright © {{ year }}
+        <a [href]="companyUrl" class="hover:underline">{{ company }}</a>.
+        All rights reserved.
+    </p>
+
+    <!-- Links -->
+    <div class="flex items-center gap-4 mt-6">
+        <ng-container *ngFor="let link of links; let last = last">
+            <a
+                    [href]="link.url"
+                    class="font-medium text-gray-800 hover:text-black transition-all"
+            >
+                {{ link.label }}
+            </a>
+            <div *ngIf="!last" class="h-4 w-px bg-black/20"></div>
+        </ng-container>
+    </div>
+</footer>

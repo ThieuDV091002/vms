@@ -1,0 +1,94 @@
+<section
+        class="flex flex-col md:flex-row items-center justify-center gap-10 max-md:px-4 pt-10 pb-10"
+>
+    <!-- Image & Overlay -->
+    <div
+            class="relative rounded-2xl h-120 overflow-hidden shrink-0"
+    >
+        <img
+                class="w-full md:w-[500px] lg:w-[600px] xl:w-[700px] object-cover rounded-2xl"
+                src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop"
+                alt="Community"
+        />
+    </div>
+
+    <!-- Text Content -->
+    <div class="text-sm text-slate-600 w-full md:w-[500px] lg:w-[600px]">
+        <h1 class="text-xl uppercase font-semibold text-slate-700">AIG BTA Insurance</h1>
+
+        <p class="mt-8">
+            The BIA plan provide benefits for employees' physical health and financial welfare. The BTA has two important features, namely Life Insurance and Medical Benefits. Please review documents below for more...
+        </p>
+
+        <button (click)="openLink('https://example.com/koch-mytravel')"
+                class="flex items-center gap-2 mt-8 hover:-translate-y-0.5 transition bg-gradient-to-r from-indigo-600 to-[#8A7DFF] py-3 px-8 rounded-full text-white"
+        >
+            <span>Register for a Visit</span>
+            <svg
+                    width="13"
+                    height="12"
+                    viewBox="0 0 13 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                        d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+                        fill="#fff"
+                />
+            </svg>
+        </button>
+    </div>
+</section>
+
+<div class="space-y-8">
+    <!-- Hà Nội -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Hà Nội</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            @for (item of centers[0].items; track $index) {
+                <button
+                        type="button"
+                        (click)="openLink(item.link)"
+                        class="w-full py-3 px-4 inline-flex items-center justify-start gap-x-2
+                 text-sm font-medium rounded-lg border border-gray-700
+                 text-gray-700 hover:bg-blue-200
+                 disabled:opacity-50 disabled:pointer-events-none
+                 text-left whitespace-normal"
+                >
+                    <svg class="w-5 h-5 text-gray-700 shrink-0"
+                         xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>{{ item.name }}</span>
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Hưng Yên -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Hưng Yên</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            @for (item of centers[1].items; track $index) {
+                <button
+                        type="button"
+                        (click)="openLink(item.link)"
+                        class="w-full py-3 px-4 inline-flex items-center justify-start gap-x-2
+                 text-sm font-medium rounded-lg border border-gray-700
+                 text-gray-700 hover:bg-blue-200
+                 disabled:opacity-50 disabled:pointer-events-none
+                 text-left whitespace-normal"
+                >
+                    <svg class="w-5 h-5 text-gray-700 shrink-0"
+                         xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>{{ item.name }}</span>
+                </button>
+            }
+        </div>
+    </div>
+</div>
+

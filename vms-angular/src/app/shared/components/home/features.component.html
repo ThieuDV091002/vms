@@ -1,0 +1,18 @@
+<h1 class="text-3xl font-semibold text-center mx-auto pt-18">Outstanding Features Of Our Portal</h1>
+<p class="text-sm text-slate-500 text-center mt-2 max-w-md mx-auto">
+    Easily register your visit or contractor entry, ensure personalized support and smooth access.
+</p>
+
+<div class="flex flex-wrap items-center justify-center gap-10 mt-16">
+    @for (feature of features; track feature.title){
+    <div class="max-w-80 hover:-translate-y-0.5 transition duration-300">
+        <img class="rounded-xl" [src]="feature.image" [alt]="feature.title" />
+        <h3 class="text-base font-semibold text-slate-700 mt-4">
+            {{ feature.title }}
+        </h3>
+        <p class="text-sm text-slate-600 mt-1">
+            {{ feature.description }}
+        </p>
+    </div>
+    }
+</div>

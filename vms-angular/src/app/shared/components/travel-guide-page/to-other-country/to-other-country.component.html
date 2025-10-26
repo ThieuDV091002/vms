@@ -1,0 +1,114 @@
+<div class="p-8 space-y-12">
+    <!-- Top section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Passport & Visa -->
+        <div class="space-y-2">
+            <h2 class="text-xl font-bold text-center pb-5">
+                PASSPORT AND VISA APPLICATION
+            </h2>
+            <div class="relative rounded-lg overflow-hidden shadow cursor-pointer"
+                 (click)="openLink('#')">
+                <img
+                        src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=600"
+                        class="w-full h-80 object-cover"
+                        alt="Visa"
+                />
+                <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-4 text-white">
+                    <p class="text-xl font-medium">Visa guide to different countries</p>
+                    <span class="text-sm">Learn more →</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corporate Card -->
+        <div class="space-y-2">
+            <h2 class="text-xl font-bold text-center pb-5">
+                CORPORATE CARD APPLICATION
+            </h2>
+            <div class="relative rounded-lg overflow-hidden shadow cursor-pointer"
+                 (click)="openLink('#')">
+                <img
+                        src="https://images.unsplash.com/photo-1620054735346-46976c62137c?q=80&w=600"
+                        class="w-full h-80 object-cover"
+                        alt="Corporate Card"
+                />
+                <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-4 text-white">
+                    <p class="text-xl font-medium">Corporate card application</p>
+                    <span class="text-sm">Learn more →</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket & Tools in 2 columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Ticket Booking & Hotel -->
+        <div>
+            <h2 class="text-xl font-bold text-center md:text-left mb-6">
+                TICKET BOOKING AND HOTEL ARRANGEMENT
+            </h2>
+
+            <p class="font-semibold mb-4">By local admin</p>
+            <div class="grid grid-cols-2 sm:grid-cols-2 gap-4 mb-6">
+                @for (admin of admins; track $index) {
+                    <div class="flex items-center border rounded-lg p-4 bg-white shadow-sm">
+                        <img [src]="admin.img" alt="avatar"
+                             class="w-14 h-14 rounded-full object-cover mr-4">
+                        <div>
+                            <p class="font-semibold">{{ admin.name }}</p>
+                            <p class="text-sm text-gray-600">{{ admin.role }}</p>
+                            <p class="text-xs text-gray-500">{{ admin.site }}</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <p class="font-semibold mb-4">Via CWT</p>
+            <button
+                    (click)="openLink('#')"
+                    class="px-4 py-2 rounded-md border border-gray-600 hover:bg-blue-200 text-sm"
+            >
+                Hotel Arrangements | myTravel
+            </button>
+        </div>
+
+        <!-- Tools & Support -->
+        <div>
+            <h2 class="text-xl font-bold text-center md:text-left mb-6">
+                TOOLS AND SUPPORT
+            </h2>
+
+            <div class="flex flex-col space-y-8">
+                <!-- Tools -->
+                <div>
+                    <p class="font-semibold mb-4">Tools</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @for (tool of tools; track $index) {
+                            <button
+                                    (click)="openLink(tool.link)"
+                                    class="flex items-center gap-2 text-sm border border-gray-300 px-3 py-2 rounded hover:bg-blue-200 text-left"
+                            >
+                                <span>{{ tool.icon }}</span> {{ tool.name }}
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <p class="font-semibold mb-4">Support</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @for (support of supports; track $index) {
+                            <button
+                                    (click)="openLink(support.link)"
+                                    class="flex items-center gap-2 text-sm border border-gray-300 px-3 py-2 rounded hover:bg-blue-200 text-left"
+                            >
+                                <span>{{ support.icon }}</span> {{ support.name }}
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

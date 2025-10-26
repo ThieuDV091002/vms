@@ -1,0 +1,51 @@
+<div class="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+                Transportation Information
+            </h4>
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Airport Transportation
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ transport.is_airport_trans ? 'Yes' : 'No' }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Daily Transportation
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ transport.is_daily_trans ? 'Yes' : 'No' }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Address
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ transport.address }}
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Time
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ transport.time }}
+                    </p>
+                </div>
+                <div class="lg:col-span-2">
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        Route
+                    </p>
+                    <p class="text-sm font-medium text-gray-800 dark:text-white/90">
+                        {{ transport.route }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+a {
+    transition: all 0.2s ease-in-out;
+}
+.navbar-brand {
+    font-size: 32px;
+    font-weight: var(--font-weight-bold);
+    color: #dc3545;
+}

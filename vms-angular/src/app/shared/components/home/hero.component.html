@@ -1,0 +1,100 @@
+<!-- Google Fonts (can also be added in index.html) -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<svg class="size-full absolute -z-10 inset-0" width="1440" height="720" viewBox="0 0 1440 720" fill="none"
+     xmlns="http://www.w3.org/2000/svg">
+    <path stroke="#E2E8F0" stroke-opacity=".7" d="M-15.227 702.342H1439.7" />
+    <circle cx="711.819" cy="372.562" r="308.334" stroke="#E2E8F0" stroke-opacity=".7" />
+    <circle cx="16.942" cy="20.834" r="308.334" stroke="#E2E8F0" stroke-opacity=".7" />
+    <path stroke="#E2E8F0" stroke-opacity=".7" d="M-15.227 573.66H1439.7M-15.227 164.029H1439.7" />
+    <circle cx="782.595" cy="411.166" r="308.334" stroke="#E2E8F0" stroke-opacity=".7" />
+</svg>
+
+<!-- Navbar -->
+<nav
+        class="fixed top-0 left-0 z-50 flex items-center justify-between w-full px-6 md:px-16 lg:px-24 xl:px-32 transition-all duration-500"
+        [ngClass]="
+    isScrolled
+      ? 'bg-white/80 shadow-md text-slate-800 backdrop-blur py-3'
+      : 'py-5 text-slate-800'
+  "
+>
+    <!-- Logo -->
+    <a href="/index.html" class="navbar-brand">
+        <span class="text-danger"><strong>molex</strong></span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-8 transition duration-500">
+        <a href="/" class="hover:text-slate-500 transition">Home</a>
+        <a href="/travel-guide" class="hover:text-slate-500 transition"
+        >Travel Guide</a
+        >
+    </div>
+
+    <button
+            class="hidden md:block px-6 py-2.5 text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all rounded-full"
+    >
+        Sign In
+    </button>
+
+    <!-- Mobile menu button -->
+    <button (click)="toggleMenu()" class="md:hidden active:scale-90 transition">
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="26"
+                height="26"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+        >
+            <path d="M4 5h16" />
+            <path d="M4 12h16" />
+            <path d="M4 19h16" />
+        </svg>
+    </button>
+</nav>
+
+
+<!-- Mobile nav -->
+<div
+        class="fixed inset-0 z-[100] bg-white/60 text-slate-800 backdrop-blur flex flex-col items-center justify-center text-lg gap-8 md:hidden transition-transform duration-300"
+        [ngClass]="{ 'translate-x-0': navOpen, '-translate-x-full': !navOpen }">
+    <a routerLink="/">Home</a>
+    <a routerLink="/travel-guide">Travel Guide</a>
+    <button (click)="closeMenu()" class="active:ring-3 active:ring-white aspect-square size-10 p-1 items-center justify-center bg-white hover:bg-slate-200 transition text-black rounded-md flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+        </svg>
+    </button>
+</div>
+
+<!-- Hero Section -->
+<section class="flex flex-col max-md:gap-20 md:flex-row pb-20 items-center justify-between mt-20 px-4 md:px-16 lg:px-24 xl:px-32">
+    <div class="flex flex-col items-center md:items-start">
+
+        <h1 class="text-center md:text-left text-5xl leading-[68px] md:text-6xl md:leading-[84px] font-medium max-w-xl text-slate-900">
+            Welcome to our visitor portal.
+        </h1>
+        <p class="text-center md:text-left text-sm text-slate-700 max-w-lg mt-2">
+            Please register as a Guest or Contractor.
+        </p>
+
+        <div class="flex items-center gap-4 mt-8 text-sm">
+            <button (click)="scrollTo('guest-register')" class="bg-indigo-600 hover:bg-indigo-700 text-white active:scale-95 rounded-md px-7 h-11">
+                Guest
+            </button>
+            <button (click)="scrollTo('contractor-register')"
+                    class="flex items-center gap-2 border border-slate-600 active:scale-95 hover:bg-white/10 transition text-slate-600 rounded-md px-6 h-11">
+                <span>Contractor</span>
+            </button>
+        </div>
+    </div>
+
+    <img src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/hero/hero-section-showcase-4.png"
+         alt="hero" class="max-w-xs sm:max-w-sm lg:max-w-md transition-all duration-300" />
+</section>
