@@ -14,15 +14,57 @@ import {
 export class ContractorRequestService {
   apiName = 'vms';
 
-  create = (input: CreateContractorRequestDto, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, ContractorRequestDto>(
+  create(input: CreateContractorRequestDto, config?: Partial<Rest.Config>) {
+    const formData = new FormData();
+
+    if (input.tenantId) formData.append('tenantId', input.tenantId);
+    formData.append('requestType', input.requestType.toString());
+    if (input.molexSupervisorName) formData.append('molexSupervisorName', input.molexSupervisorName);
+    formData.append('contractorName', input.contractorName);
+    if (input.contractorSupervisorPhone) formData.append('contractorSupervisorPhone', input.contractorSupervisorPhone);
+    if (input.contractorSupervisorName) formData.append('contractorSupervisorName', input.contractorSupervisorName);
+    if (input.workingArea) formData.append('workingArea', input.workingArea);
+    if (input.startDate) formData.append('startDate', input.startDate);
+    formData.append('endDate', input.endDate);
+    if (input.employeeNumber) formData.append('employeeNumber', input.employeeNumber.toString());
+    if (input.workDescription) formData.append('workDescription', input.workDescription);
+    if (input.oldWorkPermitCode) formData.append('oldWorkPermitCode', input.oldWorkPermitCode);
+    formData.append('molexSupervisorEmail', input.molexSupervisorEmail);
+    formData.append('contractorEmail', input.contractorEmail);
+
+    if (input.selections) {
+      formData.append('selectionsJson', JSON.stringify(input.selections));
+    }
+    if (input.textFieldValues && input.textFieldValues.length > 0) {
+      formData.append('textFieldValuesJson', JSON.stringify(input.textFieldValues));
+    }
+    if (input.employeeLists && input.employeeLists.length > 0) {
+      formData.append('employeeListsJson', JSON.stringify(input.employeeLists));
+    }
+
+    if (input.employeeListFile) {
+      formData.append('employeeListFile', input.employeeListFile, input.employeeListFile.name);
+    }
+
+    if (input.documentFiles && input.documentFiles.length > 0) {
+      input.documentFiles.forEach((file) => {
+        formData.append('documentFiles', file, file.name);
+      });
+    }
+
+    return this.restService.request<any, ContractorRequestDto>(
       {
         method: 'POST',
         url: '/api/app/contractor-request',
-        body: input,
+        body: formData,
       },
-      { apiName: this.apiName, ...config }
+      {
+        apiName: this.apiName,
+        ...config,
+        skipHandleError: config?.skipHandleError,
+      }
     );
+  }
 
   get = (id: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, ContractorRequestDto>(

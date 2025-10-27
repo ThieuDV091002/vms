@@ -78,27 +78,29 @@ export interface ContarctorRequestFileDto {
   fileType: number;
 }
 
+export enum ContractorRequestType {
+  New = 0,
+  Extend = 1
+}
+
 export interface CreateContractorRequestDto {
   tenantId?: string;
-  requestType: number;
+  requestType: ContractorRequestType;
   molexSupervisorName?: string;
   contractorName: string;
   contractorSupervisorPhone?: string;
   contractorSupervisorName?: string;
   workingArea?: string;
-  startDate?: string;
+  startDate?: string; // ISO date string, e.g., '2025-04-01'
   endDate: string;
   employeeNumber?: number;
   workDescription?: string;
   oldWorkPermitCode?: string;
   molexSupervisorEmail: string;
   contractorEmail: string;
-  selectionsJson?: string;
-  selections?: CreateSelectionsDto;
-  textFieldValuesJson?: string;
-  textFieldValues?: CreateJobTextFieldValueDto[];
-  employeeListsJson?: string;
-  employeeLists?: CreateEmployeeListDto[];
+  selections?: CreateSelectionsDto; // Sẽ stringify trong service
+  textFieldValues?: CreateJobTextFieldValueDto[]; // Sẽ stringify trong service
+  employeeLists?: CreateEmployeeListDto[]; // Sẽ stringify trong service
   employeeListFile?: File;
   documentFiles?: File[];
 }
