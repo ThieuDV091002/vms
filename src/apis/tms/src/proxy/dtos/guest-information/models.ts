@@ -2,23 +2,25 @@ import type { EntityDto, ExtensibleAuditedEntityDto, PagedAndSortedResultRequest
 import { DateTimeAdapter } from '@abp/ng.theme.shared';
 
 export interface FlightInfoDto extends EntityDto<string>{
-    date?: DateTimeAdapter;
+    date?: string;
     no?: string;
     route?: string;
-    time?: DateTimeAdapter;
+    time?: string;
+    flightType?: number;
 }
 
 export interface CreateFlightInfoDto{
-    date?: DateTimeAdapter;
+    date?: string;
     no?: string;
     route?: string;
-    time?: DateTimeAdapter;
+    time?: string;
+    flightType?: number;
 }
 
 export interface TransportInfoDto extends EntityDto<string>{
     isAirportTransport?: boolean;
     isDailyTransport?: boolean;
-    time?: DateTimeAdapter;
+    time?: string;
     route?: string;
     address?: string;
 }
@@ -26,7 +28,7 @@ export interface TransportInfoDto extends EntityDto<string>{
 export interface CreateTransportInfoDto {
     isAirportTransport?: boolean;
     isDailyTransport?: boolean;
-    time?: DateTimeAdapter;
+    time?: string;
     route?: string;
     address?: string;
 }

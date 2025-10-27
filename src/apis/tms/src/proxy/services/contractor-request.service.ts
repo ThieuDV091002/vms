@@ -33,6 +33,16 @@ export class ContractorRequestService {
       { apiName: this.apiName, ...config }
     );
 
+  getByOldWorkPermit = (oldWorkPermitCode: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, ContractorRequestDto>(
+      {
+        method: 'GET',
+        url: `/api/app/contractor-request/details-by-old-work-permit-code`,
+        params: {oldWorkPermitCode: oldWorkPermitCode},
+      },
+      { apiName: this.apiName, ...config }
+    );
+
   getMyRequestList = (input: ContractorRequestGetListInput, config?: Partial<Rest.Config>) =>
     this.restService.request<any, PagedResultDto<ContractorRequestListDto>>(
       {

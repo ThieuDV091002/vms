@@ -7,7 +7,8 @@ export interface JobTypeDto extends EntityDto<string> {
 export interface JobTypeDetailDto {
     jobTypeId?: string;
     jobTypeName?: string;
-    sections: JobSectionDto[]
+    sections: JobSectionDto[];
+    textFields: JobTextFieldDto[];
 }
 
 export interface JobSectionDto {

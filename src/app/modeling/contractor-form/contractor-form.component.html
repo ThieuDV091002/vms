@@ -22,8 +22,8 @@
 
     <div class="mobile-menu" *ngIf="isMobileMenuOpen">
         <ul class="mobile-menu-list">
-            <li><a class="nav-link" href="#">Home</a></li>
-            <li><a class="nav-link" href="#">Travel Guide</a></li>
+            <li><a class="nav-link" href="#/visit-management">Home</a></li>
+            <li><a class="nav-link" href="#/traveling-guide">Travel Guide</a></li>
         </ul>
 
         <button type="button" class="get-started-btn mobile-btn">
@@ -47,49 +47,48 @@
     <div *ngIf="contractorForm.get('requestType')?.value === '0'">
         <div class="form-row">
             <div class="form-group">
-                <label for="molexSupervisorName">Nhân viên Molex chịu trách nhiệm giám sát</label>
+                <label for="molexSupervisorName">Nhân viên Molex chịu trách nhiệm giám sát<span> * </span></label>
                 <input type="text" id="molexSupervisorName" formControlName="molexSupervisorName" required>
             </div>
             <div class="form-group">
-                <label for="contractorName">Tên Công ty, Nhà thầu</label>
+                <label for="contractorName">Tên Công ty, Nhà thầu<span> * </span></label>
                 <input type="text" id="contractorName" formControlName="contractorName" required>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="contractorSupervisorName">Tên nhân viên Nhà thầu chịu trách nhiệm giám sát</label>
+                <label for="contractorSupervisorName">Tên nhân viên Nhà thầu chịu trách nhiệm giám sát<span> * </span></label>
                 <input type="text" id="contractorSupervisorName" formControlName="contractorSupervisorName" required>
             </div>
             <div class="form-group">
-                <label for="contractorSupervisorPhone">SĐT nhân viên Nhà thầu chịu trách nhiệm giám sát</label>
+                <label for="contractorSupervisorPhone">SĐT nhân viên Nhà thầu chịu trách nhiệm giám sát<span> * </span></label>
                 <input type="text" id="contractorSupervisorPhone" formControlName="contractorSupervisorPhone" required>
             </div>
         </div>
         <div class="form-group full-width">
-            <label for="workingArea">Khu vực làm việc</label>
+            <label for="workingArea">Khu vực làm việc<span> * </span></label>
             <input type="text" id="workingArea" formControlName="workingArea" required>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="startDate">Thời gian làm việc từ</label>
+                <label for="startDate">Thời gian làm việc từ<span> * </span></label>
                 <br>
                 <input type="date" id="startDate" formControlName="startDate" required>
             </div>
             <div class="form-group">
-                <label for="endDate">Thời gian làm việc đến</label>
+                <label for="endDate">Thời gian làm việc đến<span> * </span></label>
                 <br>
                 <input type="date" id="endDate" formControlName="endDate" required>
             </div>
             <div class="form-group">
-                <label for="employeeNumber">Số lượng nhân viên nhà thầu vào làm việc</label>
+                <label for="employeeNumber">Số lượng nhân viên nhà thầu vào làm việc<span> * </span></label>
                 <input type="number" id="employeeNumber" formControlName="employeeNumber" required>
             </div>
         </div>
 
-        <!-- Employee List -->
         <div formArrayName="employeeLists">
             <p>Danh sách nhân viên</p>
-            <button type="button" (click)="addEmployee()">Thêm nhân viên</button>
+            <button type="button" (click)="addEmployee()" class="add-btn">Thêm nhân viên</button>
             <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
@@ -119,7 +118,7 @@
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor" required>
                     </div>
                 </div>
-                <button type="button" (click)="removeEmployee(i)">Xóa nhân viên</button>
+                <button type="button" (click)="removeEmployee(i)" class="delete-btn" style="margin-top: 10px;">Xóa nhân viên</button>
             </div>
         </div>
 
@@ -128,30 +127,59 @@
             <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" />
         </div>
         <div class="form-group full-width">
-            <label for="workDescription">Mô tả các thao tác, công việc cụ thể</label>
+            <label for="workDescription">Mô tả các thao tác, công việc cụ thể<span> * </span></label>
             <textarea id="workDescription" formControlName="workDescription" required></textarea>
+        </div>
+        <div class="form-group full-width">
+            <label for="jobTypeId">Loại công việc<span> * </span><span> * </span></label>
+            <select formControlName="jobTypeId" id="jobTypeId" required>
+                <option value="" disabled selected>Lựa chọn loại công việc</option>
+                <option *ngFor="let jobType of jobTypes" [value]="jobType.id">{{ jobType.jobName }}</option>
+            </select>
+        </div>
+
+        <div *ngIf="selectedJobTypeDetail" class="job-details">        
+            <div formArrayName="selectedSections">
+                <div *ngFor="let sectionCtrl of contractorForm.get('selectedSections')['controls']; let sectionIndex=index" [formGroupName]="sectionIndex">
+                    <p style="color: black;">{{ selectedJobTypeDetail.sections[sectionIndex].name }}</p>
+                    <div *ngFor="let option of selectedJobTypeDetail.sections[sectionIndex].options; let optionIndex=index">
+                        <label style="color: #4c4c4c; padding-bottom: 5px; display: flex;max-width: 100%;word-break: break-word;white-space: normal;">
+                            <input type="checkbox" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)" (change)="toggleOption(sectionIndex, option.jobOptionId, $event)">
+                            {{ option.name }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div [formGroup]="contractorForm.get('textFieldsValues')">
+                <div *ngFor="let field of selectedJobTypeDetail.textFields">
+                    <div class="form-group full-width">
+                        <label for="{{ field.jobTextFieldId }}">{{ field.field }}<span *ngIf="field.isRequired"> * </span></label>
+                        <input type="text" [id]="field.jobTextFieldId" [formControlName]="field.jobTextFieldId" [required]="field.isRequired">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div *ngIf="contractorForm.get('requestType')?.value === '1'">
         <div class="form-row">
             <div class="form-group">
-                <label for="oldWorkPermitCode">Số giấy phép làm việc cũ</label>
+                <label for="oldWorkPermitCode">Số giấy phép làm việc cũ<span> * </span></label>
                 <input type="text" id="oldWorkPermitCode" formControlName="oldWorkPermitCode" required>
             </div>
             <div class="form-group">
-                <label for="contractorName">Tên Công ty, Nhà thầu</label>
+                <label for="contractorName">Tên Công ty, Nhà thầu<span> * </span></label>
                 <input type="text" id="contractorName" formControlName="contractorName" required>
             </div>
         </div>
         <div class="form-group full-width">
-            <label for="endDate">Gia hạn đến ngày</label>
+            <label for="endDate">Gia hạn đến ngày<span> * </span></label>
             <input type="date" id="endDate" formControlName="endDate" required>
         </div>
 
         <div formArrayName="employeeLists">
-            <p>Danh sách nhân viên</p>
-            <button type="button" (click)="addEmployee()">Thêm nhân viên</button>
+            <p>Danh sách nhân viên bổ sung</p>
+            <button type="button" (click)="addEmployee()" class="add-btn">Thêm nhân viên</button>
             <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
@@ -181,22 +209,43 @@
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor" required>
                     </div>
                 </div>
-                <button type="button" (click)="removeEmployee(i)">Xóa nhân viên</button>
+                <button type="button" (click)="removeEmployee(i)" class="delete-btn" style="margin-top: 10px;">Xóa</button>
+            </div>
+        </div>
+        <div *ngIf="oldEmployeeListFiles.length > 0" class="old-files">
+            <p>Danh sách file nhân viên cũ:</p>
+            <p>Vui lòng bổ sung vào file nhân viên cũ và tải lên ở phía dưới</p>
+            <div class="file-container" *ngFor="let file of oldEmployeeListFiles">
+                <div *ngIf="file.loading">
+                    <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' }}
+                </div>
+                <div *ngIf="!file.loading">
+                    <img
+                        *ngIf="file.isImage"
+                        [src]="file.mediaAccessUrl"
+                        alt="{{ file.fileName }}"
+                        class="cursor-pointer file-image"
+                        (click)="getPreviewImage(file.fileUrl)"
+                    />
+                    <a *ngIf="!file.isImage" [href]="file.mediaAccessUrl" [download]="file.fileName">
+                        {{ file.fileName }}
+                    </a>
+                </div>
             </div>
         </div>
         <div class="form-group full-width">
-            <label for="employeeListFile">File danh sách nhân viên</label>
+            <label for="employeeListFile">File danh sách nhân viên bổ sung</label>
             <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" />
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label for="molexSupervisorEmail">Email của nhân viên Molex giám sát thực hiện công việc</label>
+            <label for="molexSupervisorEmail">Email của nhân viên Molex giám sát thực hiện công việc<span> * </span></label>
             <input type="email" id="molexSupervisorEmail" formControlName="molexSupervisorEmail" required>
         </div>
         <div class="form-group">
-            <label for="contractorEmail">Email của nhà thầu nhận kết quả phê duyệt</label>
+            <label for="contractorEmail">Email của nhà thầu nhận kết quả phê duyệt<span> * </span></label>
             <br>
             <input type="email" id="contractorEmail" formControlName="contractorEmail" required>
         </div>
@@ -204,14 +253,10 @@
 
     <div class="form-group full-width">
         <label>Nhà thầu xác nhận đã gửi video đào tạo cho toàn thể nhân viên và họ đã xem, hiểu nội dung:</label>
-        <div style="margin-top: 8px;">
-            <label>
+        <div style="margin-top: 8px; display: flex; gap: 20px; align-items: center;">
+            <label style="display: flex; align-items: center;">
                 <input type="radio" formControlName="videoConfirmed" value="yes" required>
-                Đã xem và hiểu
-            </label>
-            <label style="margin-left: 20px;">
-                <input type="radio" formControlName="videoConfirmed" value="no">
-                Chưa xem
+                <span style="margin-left: 5px;">Đã xem và hiểu</span>
             </label>
         </div>
         <p style="margin-top: 10px;">
@@ -233,15 +278,12 @@
             class="form-control mb-3" 
             accept="image/*,.pdf,.doc,.docx,.xlsx,.xls" 
         />
-        <!-- Display uploaded files -->
         <div *ngIf="documentFiles.length > 0" class="uploaded-files">
             <h4>Danh sách tệp đã tải lên:</h4>
             <ul>
                 <li *ngFor="let preview of documentPreviews; let i=index" class="file-item">
                     <span>{{ preview.file.name }}</span>
-                    <!-- Image preview for image files -->
                     <img *ngIf="preview.url" [src]="preview.url" alt="Preview" class="file-preview" />
-                    <!-- Delete button -->
                     <button type="button" (click)="removeDocumentFile(i)" class="delete-btn">Xóa</button>
                 </li>
             </ul>
