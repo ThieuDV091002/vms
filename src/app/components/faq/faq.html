@@ -1,0 +1,13 @@
+<div class="grid">
+  @for (faq of faqs; track $index) {
+    <div class="brand-link" (click)="openLink(faq.link)" aria-label="Open {{faq.title}}">
+      <img class="brand-logo" [src]="faq.img" [alt]="faq.title + ' logo'">
+      <span class="brand-title">{{ faq.title }}</span>
+      <span class="brand-chevron" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+  }
+</div>

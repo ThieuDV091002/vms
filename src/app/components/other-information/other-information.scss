@@ -1,0 +1,178 @@
+.container {
+  overflow: hidden;
+  transition: height 300ms;
+  padding: 0.5rem;
+}
+
+.attractions-title {
+  color: #1f2937;
+  font-size: 2.25rem;
+  text-align: center;
+  font-weight: 600;
+  padding-bottom: 2.5rem;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prev-button,
+.next-button {
+  padding: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-right: 0.5rem;
+  border-radius: 9999px;
+
+  @media (min-width: 768px) {
+    padding: 0.5rem;
+    margin-right: 1.5rem;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.next-button {
+  margin-left: 0.5rem;
+  margin-right: 0;
+
+  @media (min-width: 768px) {
+    margin-left: 1.5rem;
+  }
+}
+
+.arrow-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  color: white;
+}
+
+.slider-container {
+  width: 100%;
+  max-width: 48rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.slides {
+  display: flex;
+  transition: transform 500ms ease-in-out;
+}
+
+.slide {
+  width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  min-width: 100%;
+}
+
+.slide-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.top-text {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.bottom-container {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.bottom-subtext {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.bottom-text {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.food-title {
+  color: #1f2937;
+  font-size: 2.25rem;
+  text-align: center;
+  font-weight: 600;
+  padding-top: 2.5rem;
+}
+
+.food-desc {
+  color: #1f2937;
+  font-size: 0.875rem;
+  padding-top: 2.5rem;
+}
+
+.food-gallery {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 400px;
+  width: 100%;
+  max-width: 64rem;
+  margin-top: 2.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.food-item {
+  position: relative;
+  flex-grow: 1;
+  transition: all 500ms;
+  width: 14rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  height: 400px;
+  cursor: pointer;
+
+  &:hover {
+    width: 100%;
+  }
+}
+
+.food-img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.food-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  opacity: 0;
+  transition: opacity 300ms;
+
+  .food-item:hover & {
+    opacity: 1;
+  }
+}

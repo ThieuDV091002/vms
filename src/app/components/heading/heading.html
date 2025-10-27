@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="grid">
+    <!-- LEFT CONTENT -->
+    <div class="left">
+      <!-- Intro -->
+      <div class="intro">
+        <p class="hello">Hello!</p>
+        <p class="desc">
+          Welcome to Travelling Guide, your essential companion for preparing business trips. Designed to simplify your travel planning, this platform offers tailored advice on transportation, accommodation, card, tools, and important business etiquette. Whether it’s your first visit or a regular trip, our guide helps you stay organized and informed, so you can focus on making the most of your time at Molex with confidence and ease.
+        </p>
+      </div>
+
+      <!-- Big Card -->
+      <div class="big-card">
+        <img
+          src="/images/travel-guide/Screenshot%202025-09-25%20091956.png"
+          alt="myTravel & Expense"
+          class="big-img"
+        />
+      </div>
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="right">
+      @for (card of cards; track card.title) {
+        <div class="card">
+          <img
+            [src]="card.img"
+            [alt]="card.title"
+            class="card-img"
+          />
+          <div class="card-overlay">
+            <h2 class="card-title">{{ card.title }}</h2>
+            <p class="card-desc">{{ card.desc }}</p>
+            <button
+              (click)="openLink(card.link)"
+              class="card-button"
+            >
+              Learn more
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

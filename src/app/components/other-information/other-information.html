@@ -1,0 +1,71 @@
+<div class="container">
+  <p class="attractions-title">
+    ATTRACTIONS IN VIETNAM
+  </p>
+
+  <div class="carousel">
+    <button (click)="prevSlide(); resetAutoSlide()" class="prev-button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="arrow-icon" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <div class="slider-container">
+      <div class="slides" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+        @for (slide of slides; track $index) {
+          <div class="slide" (click)="openLink(slide.link)">
+            <img [src]="slide.src" [alt]="'Slide ' + $index"
+                 class="slide-img" />
+
+            <div class="top-text">
+              {{ slide.topText }}
+            </div>
+
+            <div class="bottom-container">
+              <div class="bottom-subtext">
+                {{ slide.bottomSubText }}
+              </div>
+
+              <div class="bottom-text">
+                {{ slide.bottomText }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button (click)="nextSlide(); resetAutoSlide()" class="next-button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="arrow-icon" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+
+  <p class="food-title">
+    FOOD RECOMMENDATION
+  </p>
+
+  <p class="food-desc">
+    Hanoi is a culinary treasure trove where tradition meets street-side charm. As Vietnam’s capital, it’s also considered the country’s food capital, offering a rich tapestry of flavors shaped by history, climate, and culture. From the iconic <i>phở bò</i> (beef noodle soup) to the smoky allure of <i>bún chả</i> (grilled pork with noodles), every dish tells a story. Locals eat when they’re hungry, not by the clock, which means you’ll find sizzling grills and steaming bowls from dawn till late night.
+    <br>Street food reigns supreme here—served on tiny plastic stools, often in alleyways or bustling corners. Hanoi’s cuisine is known for its balance: fresh herbs, delicate spices, and contrasting textures
+  </p>
+
+  <div class="food-gallery">
+    @for (img of images; track $index) {
+      <div class="food-item" (click)="openLink(img.link)">
+        <img
+          class="food-img"
+          [src]="img.src"
+          [alt]="img.title"
+        />
+
+        <div class="food-title">
+          {{ img.title }}
+        </div>
+      </div>
+    }
+  </div>
+</div>

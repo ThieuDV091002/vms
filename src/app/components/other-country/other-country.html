@@ -1,0 +1,121 @@
+<div class="container">
+  <!-- Top section -->
+  <div class="top-grid">
+    <!-- Passport & Visa -->
+    <div class="section">
+      <h2 class="section-title">
+        PASSPORT AND VISA APPLICATION
+      </h2>
+      <div class="card" (click)="openLink('#')">
+        <img
+          src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=600"
+          class="card-img"
+          alt="Visa"
+        />
+        <div class="card-overlay">
+          <p class="card-desc">Visa guide to different countries</p>
+          <span class="card-link">Learn more →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Corporate Card -->
+    <div class="section">
+      <h2 class="section-title">
+        CORPORATE CARD APPLICATION
+      </h2>
+      <div class="card" (click)="openLink('#')">
+        <img
+          src="https://images.unsplash.com/photo-1620054735346-46976c62137c?q=80&w=600"
+          class="card-img"
+          alt="Corporate Card"
+        />
+        <div class="card-overlay">
+          <p class="card-desc">Corporate card application</p>
+          <span class="card-link">Learn more →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket & Tools in 2 columns -->
+  <div class="bottom-grid">
+    <!-- Ticket Booking & Hotel -->
+    <div class="booking-section">
+      <h2 class="booking-title">
+        TICKET BOOKING AND HOTEL ARRANGEMENT
+      </h2>
+
+      <p class="subtitle">By local admin</p>
+      <div class="admins-grid">
+        @for (admin of admins; track $index) {
+          <div class="admin-card">
+            <img [src]="admin.img" alt="avatar"
+                 class="admin-img">
+            <div>
+              <p class="admin-name">{{ admin.name }}</p>
+              <p class="admin-role">{{ admin.role }}</p>
+              <p class="admin-site">{{ admin.site }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <p class="subtitle">Via CWT</p>
+      <div class="brand-link" (click)="openLink(cwt.link)" aria-label="Open {{cwt.title}}">
+        <img class="brand-logo" [src]="cwt.img" [alt]="cwt.title + ' logo'">
+        <span class="brand-title">{{ cwt.title }}</span>
+        <span class="brand-chevron" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Tools & Support -->
+    <div class="tools-section">
+      <h2 class="tools-title">
+        TOOLS AND SUPPORT
+      </h2>
+
+      <div class="tools-container">
+        <!-- Tools -->
+        <div>
+          <p class="subtitle">Tools</p>
+          <div class="items-grid">
+            @for (tool of tools; track $index) {
+              <div class="brand-link" (click)="openLink(tool.link)" aria-label="Open {{tool.title}}">
+                <img class="brand-logo" [src]="tool.img" [alt]="tool.title + ' logo'">
+                <span class="brand-title">{{ tool.title }}</span>
+                <span class="brand-chevron" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Support -->
+        <div>
+          <p class="subtitle">Support</p>
+          <div class="items-grid">
+            @for (support of supports; track $index) {
+              <div class="brand-link" (click)="openLink(support.link)" aria-label="Open {{support.title}}">
+                <img class="brand-logo" [src]="support.img" [alt]="support.title + ' logo'">
+                <span class="brand-title">{{ support.title }}</span>
+                <span class="brand-chevron" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

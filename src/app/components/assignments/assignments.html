@@ -1,0 +1,36 @@
+<div class="container">
+  <p class="section-title">
+    ASSIGNMENT FLOW
+  </p>
+
+  <div class="card">
+    <img
+      [src]="card.img"
+      [alt]="card.title"
+      class="card-img"
+    />
+    <div class="card-overlay">
+      <h2 class="card-title">{{ card.title }}</h2>
+      <button
+        (click)="openLink(card.link)"
+        class="learn-button"
+      >
+        Learn more
+      </button>
+    </div>
+  </div>
+
+  <p class="section-title">
+    myHR PROCESS UPDATES
+  </p>
+
+  <img [src]="myHrImage" class="myhr-img" alt="myHR Process Updates">
+
+  <ul class="info-list">
+    <li>Assignment Flow + RREs Supervisor, HRBP, Employees</li>
+    <li>myHR process updates (link)</li>
+    <li>Immigration support for passport, visa, work permit (Thuy GA)</li>
+    <li>Tax support</li>
+    <li>FAQs for assignees</li>
+  </ul>
+</div>

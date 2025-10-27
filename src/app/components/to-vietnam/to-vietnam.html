@@ -1,0 +1,124 @@
+<div class="intro">
+  <p class="planning">
+    <em class="planning-text">
+      Planning a trip to Vietnam? Here’s a handy shortlist of important things to know before you go
+    </em>
+  </p>
+  <button class="evisa-button">
+    Vietnam e-visa website
+  </button>
+  <img
+    src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop"
+    class="intro-img"
+    alt=""
+  />
+
+  <p class="recommend-title">
+    RECOMMEND HOTELS, TRANSPORTATION
+  </p>
+</div>
+<p class="desc">
+  For a comfortable trip to Vietnam, consider staying at recommended hotels in Hanoi and Hung Yen, and use trusted taxi and bus services for easy transportation. Be sure to explore Hanoi’s vibrant sights, enjoy delicious local cuisine, and familiarize yourself with available health services for a safe and enjoyable visit.
+</p>
+<div class="hotel-card">
+  <img
+    [src]="recommendedHotels.img"
+    [alt]="recommendedHotels.title"
+    class="hotel-img"
+  />
+  <div class="hotel-overlay">
+    <h2 class="hotel-title">Recommended hotels</h2>
+    <button (click)="openLink(recommendedHotels.link)" class="learn-button">
+      Learn more
+      <svg
+        width="13"
+        height="12"
+        viewBox="0 0 13 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+          fill="#fff"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+<img
+  [src]="bigImage"
+  class="big-img"
+  alt=""
+/>
+<div class="transport-grid">
+  @for (transport of transports; track $index) {
+    <div class="brand-link" (click)="openLink(transport.link)" aria-label="Open {{transport.title}}">
+      <img class="brand-logo" [src]="transport.img" [alt]="transport.title + ' logo'">
+      <span class="brand-title">{{ transport.title }}</span>
+      <span class="brand-chevron" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+  }
+</div>
+<p class="health-title">
+  HEALTH SERVICES
+</p>
+<section class="aig-section">
+  <!-- Image & Overlay -->
+  <div class="aig-img-container">
+    <img
+      class="aig-img"
+      [src]="aig.img"
+      alt="Community"
+    />
+  </div>
+
+  <!-- Text Content -->
+  <div class="aig-text">
+    <h1 class="aig-title">AIG BTA Insurance</h1>
+
+    <p class="aig-desc">
+      The BIA plan provide benefits for employees' physical health and financial welfare. The BTA has two important features, namely Life Insurance and Medical Benefits. Please review documents below for more...
+    </p>
+
+    <button (click)="openLink(aig.link)" class="register-button">
+      <span>Register for a Visit</span>
+      <svg
+        width="13"
+        height="12"
+        viewBox="0 0 13 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+          fill="#fff"
+        />
+      </svg>
+    </button>
+  </div>
+</section>
+
+<div class="centers-container">
+  @for (center of centers; track $index) {
+    <div>
+      <h3 class="region-title">{{ center.region }}</h3>
+      <div class="centers-grid">
+        @for (item of center.items; track $index) {
+          <div class="brand-link" (click)="openLink(item.link)" aria-label="Open {{item.title}}">
+            <img class="brand-logo" [src]="item.img" [alt]="item.title + ' logo'">
+            <span class="brand-title">{{ item.title }}</span>
+            <span class="brand-chevron" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
