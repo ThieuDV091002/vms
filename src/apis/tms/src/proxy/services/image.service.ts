@@ -60,7 +60,7 @@ export class ImageService {
     this.restService.request<any, ImageDto>(
       {
         method: 'GET',
-        url: '/api/app/text/by-section',
+        url: '/api/app/image/by-section',
         params: { section },
       },
       { apiName: this.apiName, ...config }

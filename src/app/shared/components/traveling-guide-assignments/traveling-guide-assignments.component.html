@@ -1,0 +1,37 @@
+<div class="container">
+  <h2 style="text-align: left;font-size: 1.25rem;font-weight: bold;">
+    LONG-TERM AND SHORT-TERM ASSIGNMENT
+  </h2>
+  <p class="section-title">
+    ASSIGNMENT FLOW
+  </p>
+
+  <div class="card" *ngFor="let card of assignmentCards">
+    <img
+      [src]="card.img"
+      [alt]="card.heading"
+      class="card-img"
+    />
+    <div class="card-overlay">
+      <h2 class="card-title">{{ card.heading }}</h2>
+      <button
+        (click)="openLink(card.url)"
+        class="learn-button"
+      >
+        Learn more
+      </button>
+    </div>
+  </div>
+
+  <p class="section-title">
+    myHR PROCESS UPDATES
+  </p>
+
+  <img [src]="myHrImage" class="myhr-img" alt="myHR Process Updates">
+
+  <ul class="info-list">
+    <li *ngFor="let item of contentList">
+      {{ item }}
+    </li>
+  </ul>
+</div>

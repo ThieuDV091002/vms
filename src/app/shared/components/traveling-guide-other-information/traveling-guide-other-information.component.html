@@ -1,0 +1,69 @@
+<div class="container">
+  <h2 style="text-align: left;font-size: 1.25rem;font-weight: bold;">
+    OTHER INFORMATION
+  </h2>
+  <p class="attractions-title">
+    ATTRACTIONS IN HANOI, VIETNAM
+  </p>
+
+  <div class="carousel">
+    <button (click)="prevSlide(); resetAutoSlide()" class="prev-button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="arrow-icon" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <div class="slider-container">
+      <div class="slides" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+          <div class="slide" (click)="openLink(attraction.link)" *ngFor="let attraction of attractions">
+            <img [src]="attraction.img" [alt]="attraction.name"
+                 class="slide-img" />
+
+            <div class="top-text">
+              {{ attraction.name }}
+            </div>
+
+            <div class="bottom-container">
+              <div class="bottom-subtext">
+                {{ attraction.description }}
+              </div>
+
+              <button class="bottom-text">
+                See location
+              </button>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <button (click)="nextSlide(); resetAutoSlide()" class="next-button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="arrow-icon" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+
+  <p class="food-title">
+    FOOD RECOMMENDATION
+  </p>
+
+  <p class="food-desc">
+    {{ content }}
+  </p>
+
+  <div class="food-gallery" *ngFor="let food of foods">
+      <div class="food-item" (click)="openLink(food.link)">
+        <img
+          class="food-img"
+          [src]="food.img"
+          [alt]="food.name"
+        />
+
+        <div class="food-title">
+          {{ food.name }}
+        </div>
+      </div>
+  </div>
+</div>

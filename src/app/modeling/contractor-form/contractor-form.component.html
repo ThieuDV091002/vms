@@ -92,29 +92,29 @@
             <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="fullName-{{i}}">Họ tên</label>
+                        <label for="fullName-{{i}}">Họ tên<span> * </span></label>
                         <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="dateOfBirth-{{i}}">Ngày sinh</label>
+                        <label for="dateOfBirth-{{i}}">Ngày sinh<span> * </span></label>
                         <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
                     </div>
                     <div class="form-group">
-                        <label for="passport-{{i}}">Số CCCD/Hộ chiếu</label>
+                        <label for="passport-{{i}}">Số CCCD/Hộ chiếu<span> * </span></label>
                         <input type="text" id="passport-{{i}}" formControlName="passport" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="company-{{i}}">Tên công ty</label>
+                        <label for="company-{{i}}">Tên công ty<span> * </span></label>
                         <input type="text" id="company-{{i}}" formControlName="company" required>
                     </div>
                     <div class="form-group">
-                        <label for="managementDepartment-{{i}}">Bộ phận quản lý</label>
+                        <label for="managementDepartment-{{i}}">Bộ phận quản lý<span> * </span></label>
                         <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment" required>
                     </div>
                     <div class="form-group">
-                        <label for="molexSupervisor-{{i}}">Người phụ trách của Molex</label>
+                        <label for="molexSupervisor-{{i}}">Người phụ trách của Molex<span> * </span></label>
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor" required>
                     </div>
                 </div>
@@ -124,14 +124,14 @@
 
         <div class="form-group full-width">
             <label for="employeeListFile">File danh sách nhân viên</label>
-            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" />
+            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
         <div class="form-group full-width">
             <label for="workDescription">Mô tả các thao tác, công việc cụ thể<span> * </span></label>
             <textarea id="workDescription" formControlName="workDescription" required></textarea>
         </div>
         <div class="form-group full-width">
-            <label for="jobTypeId">Loại công việc<span> * </span><span> * </span></label>
+            <label for="jobTypeId">Loại công việc<span> * </span></label>
             <select formControlName="jobTypeId" id="jobTypeId" required>
                 <option value="" disabled selected>Lựa chọn loại công việc</option>
                 <option *ngFor="let jobType of jobTypes" [value]="jobType.id">{{ jobType.jobName }}</option>
@@ -144,7 +144,7 @@
                     <p style="color: black;">{{ selectedJobTypeDetail.sections[sectionIndex].name }}</p>
                     <div *ngFor="let option of selectedJobTypeDetail.sections[sectionIndex].options; let optionIndex=index">
                         <label style="color: #4c4c4c; padding-bottom: 5px; display: flex;max-width: 100%;word-break: break-word;white-space: normal;">
-                            <input type="checkbox" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)" (change)="toggleOption(sectionIndex, option.jobOptionId, $event)">
+                            <input type="checkbox" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)" (change)="toggleOption(sectionIndex, option.jobOptionId, $event.target.checked)">
                             {{ option.name }}
                         </label>
                     </div>
@@ -183,29 +183,29 @@
             <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="fullName-{{i}}">Họ tên</label>
+                        <label for="fullName-{{i}}">Họ tên<span> * </span></label>
                         <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="dateOfBirth-{{i}}">Ngày sinh</label>
+                        <label for="dateOfBirth-{{i}}">Ngày sinh<span> * </span></label>
                         <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
                     </div>
                     <div class="form-group">
-                        <label for="passport-{{i}}">Số CCCD/Hộ chiếu</label>
+                        <label for="passport-{{i}}">Số CCCD/Hộ chiếu<span> * </span></label>
                         <input type="text" id="passport-{{i}}" formControlName="passport" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="company-{{i}}">Tên công ty</label>
+                        <label for="company-{{i}}">Tên công ty<span> * </span></label>
                         <input type="text" id="company-{{i}}" formControlName="company" required>
                     </div>
                     <div class="form-group">
-                        <label for="managementDepartment-{{i}}">Bộ phận quản lý</label>
+                        <label for="managementDepartment-{{i}}">Bộ phận quản lý<span> * </span></label>
                         <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment" required>
                     </div>
                     <div class="form-group">
-                        <label for="molexSupervisor-{{i}}">Người phụ trách của Molex</label>
+                        <label for="molexSupervisor-{{i}}">Người phụ trách của Molex<span> * </span></label>
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor" required>
                     </div>
                 </div>
@@ -235,7 +235,7 @@
         </div>
         <div class="form-group full-width">
             <label for="employeeListFile">File danh sách nhân viên bổ sung</label>
-            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" />
+            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
     </div>
 
@@ -290,7 +290,7 @@
         </div>
     </div>
 
-    <button type="submit" [disabled]="contractorForm.invalid">Submit</button>
+    <button type="submit" [disabled]="contractorForm.invalid || isSubmitting">Submit</button>
 </form>
 
 

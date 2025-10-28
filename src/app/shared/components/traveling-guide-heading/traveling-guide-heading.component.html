@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="grid">
+    <div class="left">
+      <div class="intro">
+        <p class="hello">Hello!</p>
+        <p class="desc">
+          {{ content }}
+        </p>
+      </div>
+
+      <div class="big-card">
+        <img
+          [src]="bigCardPhotoUrl"
+          alt="myTravel & Expense"
+          class="big-img"
+        />
+      </div>
+    </div>
+
+    <div class="right">
+        <div class="card" *ngFor="let card of cards">
+          <img
+            [src]="card.img"
+            [alt]="card.heading"
+            class="card-img"
+          />
+          <div class="card-overlay">
+            <h2 class="card-title">{{ card.heading }}</h2>
+            <p class="card-desc">{{ card.body }}</p>
+            <button
+              (click)="openLink(card.url)"
+              class="card-button"
+            >
+              Learn more
+            </button>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

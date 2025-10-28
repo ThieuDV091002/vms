@@ -59,12 +59,12 @@ export class MedicalCareCenterService {
       { apiName: this.apiName, ...config }
     );
 
-  getBySection = (section: string, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, MedicalCareCenterDto>(
+  getByCity = (city: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, MedicalCareCenterDto[]>(
       {
         method: 'GET',
         url: '/api/app/medical-care-center/by-city',
-        params: { section },
+        params: { city },
       },
       { apiName: this.apiName, ...config }
     );

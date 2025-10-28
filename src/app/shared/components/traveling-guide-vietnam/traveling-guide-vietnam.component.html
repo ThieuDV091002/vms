@@ -1,0 +1,109 @@
+<div class="main-container">
+  <h2 style="text-align: left;font-size: 1.25rem;font-weight: bold;">
+    TRAVEL TO VIETNAM
+  </h2>
+  <div class="intro">
+    <p class="planning">
+      <em class="planning-text">
+        Planning a trip to Vietnam? Here’s a handy shortlist of important things to know before you go
+      </em>
+    </p>
+    <button class="evisa-button" (click)="openLink('https://evisa.xuatnhapcanh.gov.vn/')">
+      Vietnam e-visa website
+    </button>
+    <img [src]="eVisaPhotoUrl"
+      class="intro-img" alt="" />
+
+    <p class="recommend-title">
+      RECOMMEND HOTELS, TRANSPORTATION
+    </p>
+  </div>
+  <p class="desc">
+    {{ content }}
+  </p>
+  <div class="hotel-card" (click)="openLink(card.url)" *ngFor="let card of hotelCards">
+    <img [src]="card.img" [alt]="card.heading" class="hotel-img" />
+    <div class="hotel-overlay">
+      <h2 class="hotel-title">{{ card.heading }}</h2>
+      <button class="learn-button">
+        Learn more
+        <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+            fill="#fff" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <img [src]="transportPhotoUrl" class="big-img" alt="" />
+  <div class="transport-grid" *ngFor="let transport of transports">
+    <div class="brand-link" (click)="openLink(transport.link)" [attr.aria-label]="'Open ' + transport.title">
+      <img class="brand-logo" [src]="transport.img" [alt]="transport.name">
+      <span class="brand-title">{{ transport.name }}</span>
+      <span class="brand-chevron" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+  </div>
+  <p class="health-title">
+    HEALTH SERVICES
+  </p>
+  <section class="aig-section" *ngFor="let card of healthCards">
+    <div class="aig-img-container">
+      <img class="aig-img" [src]="card.img" [alt]="card.heading" />
+    </div>
+
+    <div class="aig-text">
+      <h1 class="aig-title">{{ card.heading }}</h1>
+
+      <p class="aig-desc">
+        {{ card.body }}
+      </p>
+
+      <button (click)="openLink(card.url)" class="register-button">
+        <span>Continue reading</span>
+        <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+            fill="#fff" />
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <div class="centers-container">
+    <div>
+      <h3 class="region-title">Ha Noi - Medical Care Center</h3>
+      <div class="centers-grid" *ngFor="let center of hnMedicalCenters">
+        <div class="brand-link" (click)="openLink(center.link)" [attr.aria-label]="'Open ' + center.name">
+          <img class="brand-logo" [src]="center.img" [alt]="center.name">
+          <span class="brand-title">{{ center.name }}</span>
+          <span class="brand-chevron" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 class="region-title">Hung Yen - Medical Care Center</h3>
+      <div class="centers-grid" *ngFor="let center of hyMedicalCenters">
+        <div class="brand-link" (click)="openLink(center.link)" [attr.aria-label]="'Open ' + center.name">
+          <img class="brand-logo" [src]="center.img" [alt]="center.name">
+          <span class="brand-title">{{ center.name }}</span>
+          <span class="brand-chevron" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

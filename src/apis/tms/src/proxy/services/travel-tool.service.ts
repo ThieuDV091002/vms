@@ -56,12 +56,12 @@ export class TravelToolService {
       { apiName: this.apiName, ...config }
     );
 
-  getByToolType = (section: string, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, TravelToolDto>(
+  getByToolType = (toolType: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, TravelToolDto[]>(
       {
         method: 'GET',
         url: '/api/app/tool/by-tool-type',
-        params: { section },
+        params: { toolType },
       },
       { apiName: this.apiName, ...config }
     );

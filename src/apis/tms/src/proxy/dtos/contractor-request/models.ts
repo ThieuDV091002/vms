@@ -78,9 +78,14 @@ export interface ContarctorRequestFileDto {
   fileType: number;
 }
 
+export enum ContractorRequestType {
+  New = 0,
+  Extend = 1
+}
+
 export interface CreateContractorRequestDto {
   tenantId?: string;
-  requestType: number;
+  requestType: ContractorRequestType;
   molexSupervisorName?: string;
   contractorName: string;
   contractorSupervisorPhone?: string;
@@ -93,11 +98,8 @@ export interface CreateContractorRequestDto {
   oldWorkPermitCode?: string;
   molexSupervisorEmail: string;
   contractorEmail: string;
-  selectionsJson?: string;
   selections?: CreateSelectionsDto;
-  textFieldValuesJson?: string;
   textFieldValues?: CreateJobTextFieldValueDto[];
-  employeeListsJson?: string;
   employeeLists?: CreateEmployeeListDto[];
   employeeListFile?: File;
   documentFiles?: File[];

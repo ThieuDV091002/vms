@@ -1,0 +1,12 @@
+<h2 class="faq-heading">FAQ</h2>
+<div class="grid" *ngFor="let card of faqCards">
+    <div class="brand-link" (click)="openLink(card.link)" [attr.aria-label]="'Open ' + faq.title">
+      <img class="brand-logo" [src]="card.img" [alt]="card.heading">
+      <span class="brand-title">{{ card.heading }}</span>
+      <span class="brand-chevron" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+</div>

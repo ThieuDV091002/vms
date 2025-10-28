@@ -57,7 +57,7 @@ export class ImageLinkService {
     );
 
   getBySection = (section: string, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, ImageLinkDto>(
+    this.restService.request<any, ImageLinkDto[]>(
       {
         method: 'GET',
         url: '/api/app/link/by-section',

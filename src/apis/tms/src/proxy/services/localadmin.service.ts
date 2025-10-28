@@ -56,12 +56,12 @@ export class LocalAdminService {
       { apiName: this.apiName, ...config }
     );
 
-  getBySection = (section: string, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, LocalAdminDto>(
+  getBySite = (site: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, LocalAdminDto[]>(
       {
         method: 'GET',
         url: '/api/app/local-admin/by-site',
-        params: { section },
+        params: { site },
       },
       { apiName: this.apiName, ...config }
     );
