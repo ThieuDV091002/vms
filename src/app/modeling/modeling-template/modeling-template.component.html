@@ -152,6 +152,11 @@
                   {{ customAction.displayKey | abpLocalization }}
                 </button>
                 }
+                @if (toolbarButtons?.notify) {
+                <button ngbDropdownItem (click)="notifySingle(row)" *abpPermission="permission?.notify">
+                  {{ '::Notify' | abpLocalization }}
+                </button>
+                }
                 <button ngbDropdownItem [disabled]="!getPermission(item.permission)" (click)="performFunc(item, row)"
                   *ngFor="let item of columnActions">
                   {{ item.displayKey | abpLocalization }}</button>

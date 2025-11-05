@@ -18,8 +18,7 @@
       RECOMMEND HOTELS, TRANSPORTATION
     </p>
   </div>
-  <p class="desc">
-    {{ content }}
+  <p class="desc" [innerHTML]="content">
   </p>
   <div class="hotel-card" (click)="openLink(card.url)" *ngFor="let card of hotelCards">
     <img [src]="card.img" [alt]="card.heading" class="hotel-img" />
@@ -36,8 +35,8 @@
     </div>
   </div>
   <img [src]="transportPhotoUrl" class="big-img" alt="" />
-  <div class="transport-grid" *ngFor="let transport of transports">
-    <div class="brand-link" (click)="openLink(transport.link)" [attr.aria-label]="'Open ' + transport.title">
+  <div class="transport-grid">
+    <div class="brand-link" (click)="openLink(transport.link)" [attr.aria-label]="'Open ' + transport.title" *ngFor="let transport of transports">
       <img class="brand-logo" [src]="transport.img" [alt]="transport.name">
       <span class="brand-title">{{ transport.name }}</span>
       <span class="brand-chevron" aria-hidden="true">
@@ -77,8 +76,8 @@
   <div class="centers-container">
     <div>
       <h3 class="region-title">Ha Noi - Medical Care Center</h3>
-      <div class="centers-grid" *ngFor="let center of hnMedicalCenters">
-        <div class="brand-link" (click)="openLink(center.link)" [attr.aria-label]="'Open ' + center.name">
+      <div class="centers-grid">
+        <div class="brand-link" (click)="openLink(center.link)" [attr.aria-label]="'Open ' + center.name" *ngFor="let center of hnMedicalCenters">
           <img class="brand-logo" [src]="center.img" [alt]="center.name">
           <span class="brand-title">{{ center.name }}</span>
           <span class="brand-chevron" aria-hidden="true">
@@ -92,8 +91,8 @@
     </div>
     <div>
       <h3 class="region-title">Hung Yen - Medical Care Center</h3>
-      <div class="centers-grid" *ngFor="let center of hyMedicalCenters">
-        <div class="brand-link" (click)="openLink(center.link)" [attr.aria-label]="'Open ' + center.name">
+      <div class="centers-grid">
+        <div class="brand-link" (click)="openLink(center.link)" [attr.aria-label]="'Open ' + center.name" *ngFor="let center of hyMedicalCenters">
           <img class="brand-logo" [src]="center.img" [alt]="center.name">
           <span class="brand-title">{{ center.name }}</span>
           <span class="brand-chevron" aria-hidden="true">

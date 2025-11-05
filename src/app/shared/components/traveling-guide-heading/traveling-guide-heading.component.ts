@@ -68,7 +68,7 @@ export class TravelingGuideHeadingComponent implements OnInit {
     this.textService.getBySection(section).subscribe({
       next: (responseArray) => {
       if (Array.isArray(responseArray) && responseArray.length > 0) {
-        this.content = responseArray[0].content || '';
+        this.content = (responseArray[0].content || '').replace(/\n/g, '<br>');
       } else {
         this.content = '';
       }

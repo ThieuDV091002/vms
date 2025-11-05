@@ -64,7 +64,7 @@ export class ImageLinkComponent implements OnInit {
       this.form = this.fb.group({
         section: [this.selected?.section || '', Validators.required],
         heading: [this.selected?.heading || '', Validators.required],
-        body: [this.selected?.body || '', Validators.required],
+        body: [this.selected?.body || ''],
         url: [this.selected?.url || '', Validators.required],
         photo: [null]
       });

@@ -45,16 +45,15 @@
     </button>
   </div>
 
-  <p class="food-title">
-    FOOD RECOMMENDATION
+  <p class="attractions-title" style="padding-bottom: 1.5rem; padding-top: 1.5rem;">
+    RECOMMENDED FOOD
   </p>
 
-  <p class="food-desc">
-    {{ content }}
+  <p class="food-desc" [innerHTML]="content">
   </p>
 
-  <div class="food-gallery" *ngFor="let food of foods">
-      <div class="food-item" (click)="openLink(food.link)">
+  <div class="food-gallery">
+      <div class="food-item" (click)="openLink(food.link)" *ngFor="let food of foods">
         <img
           class="food-img"
           [src]="food.img"

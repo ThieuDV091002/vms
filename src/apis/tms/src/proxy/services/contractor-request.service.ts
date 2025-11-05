@@ -19,10 +19,13 @@ export class ContractorRequestService {
 
     if (input.tenantId) formData.append('tenantId', input.tenantId);
     formData.append('requestType', input.requestType.toString());
-    if (input.molexSupervisorName) formData.append('molexSupervisorName', input.molexSupervisorName);
+    if (input.molexSupervisorName)
+      formData.append('molexSupervisorName', input.molexSupervisorName);
     formData.append('contractorName', input.contractorName);
-    if (input.contractorSupervisorPhone) formData.append('contractorSupervisorPhone', input.contractorSupervisorPhone);
-    if (input.contractorSupervisorName) formData.append('contractorSupervisorName', input.contractorSupervisorName);
+    if (input.contractorSupervisorPhone)
+      formData.append('contractorSupervisorPhone', input.contractorSupervisorPhone);
+    if (input.contractorSupervisorName)
+      formData.append('contractorSupervisorName', input.contractorSupervisorName);
     if (input.workingArea) formData.append('workingArea', input.workingArea);
     if (input.startDate) formData.append('startDate', input.startDate);
     formData.append('endDate', input.endDate);
@@ -47,7 +50,7 @@ export class ContractorRequestService {
     }
 
     if (input.documentFiles && input.documentFiles.length > 0) {
-      input.documentFiles.forEach((file) => {
+      input.documentFiles.forEach(file => {
         formData.append('documentFiles', file, file.name);
       });
     }
@@ -79,7 +82,7 @@ export class ContractorRequestService {
       {
         method: 'GET',
         url: `/api/app/contractor-request/details-by-old-work-permit-code`,
-        params: {oldWorkPermitCode: oldWorkPermitCode},
+        params: { oldWorkPermitCode: oldWorkPermitCode },
       },
       { apiName: this.apiName, ...config }
     );
@@ -149,6 +152,34 @@ export class ContractorRequestService {
         method: 'POST',
         url: `/api/app/contractor-request/${id}/approve-ehs-approve-status`,
         params: { comment, workPermitCode },
+      },
+      { apiName: this.apiName, ...config }
+    );
+
+  export = (contractorRequestId: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, string>(
+      {
+        method: 'POST',
+        url: `/api/app/contractor-request/export-employee-list/${contractorRequestId}`,
+      },
+      { apiName: this.apiName, ...config }
+    );
+
+  delete = (id: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, void>(
+      {
+        method: 'DELETE',
+        url: `/api/app/contractor-request/${id}`,
+      },
+      { apiName: this.apiName, ...config }
+    );
+
+  multipleDeleteByIds = (ids: string[], config?: Partial<Rest.Config>) =>
+    this.restService.request<any, boolean>(
+      {
+        method: 'POST',
+        url: '/api/app/contractor-request/multi-delete',
+        body: ids,
       },
       { apiName: this.apiName, ...config }
     );

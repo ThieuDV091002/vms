@@ -56,7 +56,7 @@
             <div>
               <p class="admin-name">{{ admin.fullName }}</p>
               <p class="admin-role">{{ admin.title }}</p>
-              <p class="admin-role">Contact: {{ admin.kochID }}</p>
+              <p class="admin-role">Contact: <br><span style="font-size: 0.675rem;">{{ admin.kochID }}</span></p>
             </div>
           </div>
         </div>
@@ -70,21 +70,23 @@
             <div>
               <p class="admin-name">{{ admin.fullName }}</p>
               <p class="admin-role">{{ admin.title }}</p>
-              <p class="admin-role">Contact: {{ admin.kochID }}</p>
+              <p class="admin-role">Contact: <br><span style="font-size: 0.675rem;">{{ admin.kochID }}</span></p>
             </div>
           </div>
         </div>
       </div>
 
       <p class="subtitle">Via CWT</p>
-      <div class="brand-link" (click)="openLink(viaCWT.url)" [attr.aria-label]="'Open ' + viaCWT.name" *ngFor="let viaCWT of viaCWTs">
-        <img class="brand-logo" [src]="visCWT.img" [alt]="viaCWT.name">
-        <span class="brand-title">{{ viaCWT.name }}</span>
-        <span class="brand-chevron" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </span>
+      <div class="items-grid">
+        <div class="brand-link" (click)="openLink(viaCWT.url)" [attr.aria-label]="'Open ' + viaCWT.name" *ngFor="let viaCWT of viaCWTs">
+          <img class="brand-logo" [src]="viaCWT.img" [alt]="viaCWT.name">
+          <span class="brand-title">{{ viaCWT.name }}</span>
+          <span class="brand-chevron" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        </div>
       </div>
     </div>
 

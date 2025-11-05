@@ -3,14 +3,14 @@ import { ListService, LocalizationService, PagedResultDto } from '@abp/ng.core';
 import { Confirmation, ConfirmationService, ToasterService } from '@abp/ng.theme.shared';
 import { Component, NgModule, OnInit } from '@angular/core';
 import {
-  ContarctorRequestFileDto,
+  ContractorRequestFileDto,
   ContractorRequestDto,
   ContractorRequestGetListInput,
   ContractorRequestListDto,
 } from '@apis/vms/dtos/contractor-request';
 import { ContractorRequestService } from '@apis/vms/services';
+import { FileService } from '@apis/vms/services/file.service';
 import { finalize } from 'rxjs';
-import { FileService } from 'src/app/dashboard/services/file.service';
 import { DashboardUtils } from 'src/app/dashboard/utils';
 
 enum FileType {
@@ -43,8 +43,8 @@ export class MyRequestComponent implements OnInit {
   ];
   info: string;
   contractorName = '';
-  employeeListFiles: ContarctorRequestFileDto[] = [];
-  documentFiles: ContarctorRequestFileDto[] = [];
+  employeeListFiles: ContractorRequestFileDto[] = [];
+  documentFiles: ContractorRequestFileDto[] = [];
   previewModalVisible = false;
   previewImage = '';
   constructor(
@@ -102,23 +102,20 @@ export class MyRequestComponent implements OnInit {
   }
 
   processFiles() {
-    [...this.employeeListFiles, ...this.documentFiles].forEach(file => {
-      if (file.fileUrl && DashboardUtils.isImageFile(file.fileName)) {
-        file['loading'] = true;
-        this.fileService
-          .get(file.fileUrl, DashboardUtils.isImageFile(file.fileName))
-          .pipe(finalize(() => delete file['loading']))
-          .subscribe((res: any) => {
-            const url = URL.createObjectURL(DashboardUtils.convertBase64ToBlob(res));
-            file['mediaAccessUrl'] = url;
-            file['isImage'] = DashboardUtils.isImageFile(file.fileName);
-          });
-      } else if (file.fileUrl) {
-        file['mediaAccessUrl'] = file.fileUrl;
-        file['isImage'] = false;
-      }
-    });
-  }
+      [...this.employeeListFiles, ...this.documentFiles].forEach(file => {
+        if (file.fileId) {
+          file['loading'] = true;
+          this.fileService
+            .get(file.fileId, DashboardUtils.isImageFile(file.fileName))
+            .pipe(finalize(() => delete file['loading']))
+            .subscribe((res: any) => {
+              const url = URL.createObjectURL(DashboardUtils.convertBase64ToBlob(res));
+              file['mediaAccessUrl'] = url;
+              file['isImage'] = DashboardUtils.isImageFile(file.fileName);
+            });
+        }
+      });
+    }
 
   async getPreviewImage(fileUrl: string) {
     this.previewModalVisible = true;
@@ -128,7 +125,7 @@ export class MyRequestComponent implements OnInit {
 
   approve(e: any) {
     this.confirmationService
-      .warn('::LABEL_NotificationConfirmationMessage', '', {
+      .warn('::LABEL_ApproveConfirmationMessage', '', {
         messageLocalizationParams: [this.info, e.contractorName],
       })
       .subscribe(status => {
@@ -147,7 +144,7 @@ export class MyRequestComponent implements OnInit {
 
   reject(e: any) {
     this.confirmationService
-      .warn('::LABEL_NotificationConfirmationMessage', '', {
+      .warn('::LABEL_RejectConfirmationMessage', '', {
         messageLocalizationParams: [this.info, e.contractorName],
       })
       .subscribe(status => {

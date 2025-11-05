@@ -19,7 +19,7 @@ export interface ContractorRequestDto extends ExtensibleAuditedEntityDto<string>
     molexSupervisorApproveStatus: number;
     ehsApproveStatus: number;
     employeeLists: EmployeeListDto[];
-    files: ContarctorRequestFileDto[];
+    files: ContractorRequestFileDto[];
     selections: RequestSelectionDto[];
     textFieldValues: JobTextFieldValueDto[];
     tenantId?: string;
@@ -70,11 +70,11 @@ export interface EmployeeListDto {
   molexSupervisor: string;
 }
 
-export interface ContarctorRequestFileDto {
+export interface ContractorRequestFileDto {
   id: string;
   contractorRequestId: string;
   fileName: string;
-  fileUrl: string;
+  fileId: string;
   fileType: number;
 }
 

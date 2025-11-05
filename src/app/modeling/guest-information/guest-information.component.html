@@ -2,7 +2,8 @@
     [permissions]="{view: 'GuestInformation.View', notify: 'GuestInformation.Notify', list: 'GuestInformation.List'}"
     [columns]="[{displayKey:'::FullName', field: 'fullName'},{displayKey:'::Company', field: 'company'},{displayKey:'::Title', field: 'title'},{displayKey:'::Purpose', field: 'purpose'},{displayKey:'::WorkWithWhomInMXV', field: 'workWithWhomInMolex'}]"
     [toolbarButtons]="{notify: true}" [list]="list" [hasLastUpdate]="false" (notifyData)="notify($event)"
-    [columnActions]="[{ displayKey: '::ViewDetails', permission: 'GuestInformation.View', func: view ,parent:this},{ displayKey: '::Notify', permission: 'GuestInformation.Notify', func: notify ,parent:this}]"
+    (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
+    [columnActions]="[{ displayKey: '::ViewDetails', permission: 'GuestInformation.View', func: view ,parent:this}]"
     (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchGuest' | abpLocalization">
 </app-modeling-template>
 
@@ -66,7 +67,7 @@
                             {{ '::LABEL_Flight' | abpLocalization }}
                         </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                    <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6" *ngFor="let flight of selected?.flightInfos">
@@ -74,7 +75,7 @@
                                     <p><strong>{{ '::FlightDate' | abpLocalization }}:</strong> {{ flight.date | date:'dd/MM/yyyy' }}</p>
                                     <p><strong>{{ '::FlightNo' | abpLocalization }}:</strong> {{ flight.no }}</p>
                                     <p><strong>{{ '::FlightRoute' | abpLocalization }}:</strong> {{ flight.route }}</p>
-                                    <p><strong>{{ '::FlightTime' | abpLocalization }}:</strong> {{ flight.time | date:'HH:mm' }}</p>
+                                    <p><strong>{{ '::FlightTime' | abpLocalization }}:</strong> {{ flight.time.slice(0, 5)}}</p>
                                 </div>
                             </div>
                         </div>
@@ -88,14 +89,14 @@
                             {{ '::LABEL_Transportation&Uniform' | abpLocalization }}
                         </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                    <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6">
                                     <p><strong>{{ '::AirportTransportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isAirportTransport ? 'Yes' : 'No' }}</p>
                                     <p><strong>{{ '::DailyTransportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isDailyTransport ? 'Yes' : 'No' }}</p>
                                     <ng-container *ngIf="selected?.transportInfo.isDailyTransport">
-                                        <p><strong>{{ '::TransportTime' | abpLocalization }}:</strong> {{ selected?.transportInfo.time | date:'HH:mm' }}</p>
+                                        <p><strong>{{ '::TransportTime' | abpLocalization }}:</strong> {{ selected?.transportInfo.time.slice(0, 5) }}</p>
                                         <p><strong>{{ '::TransportRoute' | abpLocalization }}:</strong> {{ selected?.transportInfo.route }}</p>
                                         <p><strong>{{ '::TransportAddress' | abpLocalization }}:</strong> {{ selected?.transportInfo.address }}</p>
                                     </ng-container>
@@ -120,7 +121,7 @@
         <button type="button" class="btn btn-outline-primary" abpClose>
         {{ 'AbpIdentity::Back' | abpLocalization }}
         </button>
-        <abp-button (click)="notify(selected)">{{
+        <abp-button iconClass="fa fa-bell" (click)="notifyInModal()">{{
         'AbpIdentity::Notify' | abpLocalization
         }}</abp-button>
     </ng-template>

@@ -1,7 +1,9 @@
 <app-modeling-template [title]="'::MENU_ContractorRequest'" [data]="data" [objectType]="'ContractorRequest'"
-    [permissions]="{view: 'ContractorRequest.View', updateStatus: 'ContractorRequest.UpdateStatus', list: 'ContractorRequest.List'}"
+    [permissions]="{view: 'ContractorRequest.View', approve: 'ContractorRequest.Approve', 
+    list: 'ContractorRequest.List', delete: 'ContractorRequest.Delete',
+    export: 'ContractorRequest.Export', reject: 'ContractorRequest.Reject'}"
     [columns]="[{displayKey:'::Contractor Name', field: 'contractorName'},{displayKey:'::Work Permit', field: 'workPermitCode'},{displayKey:'::Working Area', field: 'workingArea'},{displayKey:'::PIC Status', field: 'molexSupervisorApproveStatusText'},{displayKey:'::EHS Status', field: 'ehsApproveStatusText'}]"
-    [list]="list" [hasLastUpdate]="false"
+    [list]="list" [hasLastUpdate]="false" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
     [columnActions]="[{ displayKey: 'View Details', permission: 'ContractorRequest.View', func: view ,parent:this}]"
     (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchContractor' | abpLocalization">
 </app-modeling-template>
@@ -38,7 +40,7 @@
                                 <div class="col-md-6">
                                     <p><strong>{{ '::ContractorName' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
                                     <p><strong>{{ '::RequestType' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
-                                    <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate | date:'dd/MM/yyyy' }}</p>
+                                    <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate ? (selected.startDate | date:'dd/MM/yyyy') : '' }}</p>
                                     <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
                                     <ng-container *ngIf="!selected?.requestType">
                                         <p><strong>{{ '::MolexPIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
@@ -49,7 +51,7 @@
                                         <div *ngFor="let jobType of selected?.selections | groupBy:'jobTypeId'">
                                             <p><strong>{{ '::JobType' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
                                             <div *ngFor="let section of jobType | groupBy:'jobSectionId'">
-                                                <p><strong>{{ '::Section' | abpLocalization }}:</strong> {{ section[0]?.jobSectionName }}</p>
+                                                <p>{{ section[0]?.jobSectionName }}</p>
                                                 <ul>
                                                     <li *ngFor="let option of section">
                                                         {{ option?.jobOptionName }}
@@ -62,7 +64,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="selected?.requestType">
-                                        <p><strong>{{ '::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermit }}</p>
+                                        <p><strong>{{ '::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermitCode }}</p>
                                     </ng-container>
                                 </div>
                             </div>
@@ -82,6 +84,13 @@
                             <div class="row">
                                 <div>
                                     <div *ngIf="employeeListFiles.length === 0">
+                                        <div class="d-inline-block">
+                                            <button class="btn btn-outline-primary btn-sm action-button" *ngIf="selected.employeeLists?.length > 0"
+                                                type="button" (click)="exportEmployeeList()">
+                                                <i class="fa fa-download"></i>
+                                                <span>{{ '::Export' | abpLocalization }}</span>
+                                            </button>
+                                        </div>                 
                                         <table class="table table-bordered table-sm mt-3" *ngIf="selected.employeeLists?.length > 0">
                                             <thead>
                                                 <tr>
@@ -146,19 +155,15 @@
                                     <div *ngIf="file.loading">
                                         <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' | abpLocalization }}
                                     </div>
-                                    <div *ngIf="!file.loading">
-                                        <img *ngIf="file.isImage" [src]="file.mediaAccessUrl" alt="{{ file.fileName }}"
-                                            class="cursor-pointer file-image" (click)="getPreviewImage(file.fileUrl)" />
-                                        <a *ngIf="!file.isImage" [href]="file.mediaAccessUrl" [download]="file.fileName">
+                                    <div *ngIf="!file.loading" style="display: flex; flex-direction: column; gap: 12px; padding: 12px;">
+                                        <div style="height: 200px;">
+                                            <img *ngIf="file.isImage" [src]="file.mediaAccessUrl" alt="{{ file.fileName }}"
+                                                class="cursor-pointer file-image" style="width: auto; max-height: 200px;" />
+                                        </div>
+                                        <a [href]="file.mediaAccessUrl" [download]="file.fileName">
                                             {{ file.fileName }}
                                         </a>
                                     </div>
-                                </div>
-                            </div>
-                            <div *ngIf="previewModalVisible" class="preview-modal">
-                                <div class="preview-modal-content">
-                                <img [src]="previewImage" alt="Preview" />
-                                <button (click)="previewModalVisible = false">{{ '::Close' | abpLocalization }}</button>
                                 </div>
                             </div>
                         </div>
@@ -166,20 +171,20 @@
                 </div>
             </div>
         </div>
-        <form [formGroup]="form">
+        <form [formGroup]="form" *ngIf="selected?.ehsApproveStatus === 0">
             <div class="form-group mb-2">
                 <label for="contractor-request-work-permit-code" [title]="'::INFO_WorkPermitCode' | abpLocalization">{{'::WorkPermitCode'|abpLocalization}}</label>
                 <input type="text" id="contractor-request-work-permit-code" class="form-control" formControlName="workPermitCode"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="contractor-request-comment" [title]="'::INFO_Comment' | abpLocalization">{{'::Comment'|abpLocalization}}</label><span> * </span>
+                <label for="contractor-request-comment" [title]="'::INFO_Comment' | abpLocalization">{{'::LABEL_CommentText'|abpLocalization}}</label><span> * </span>
                 <textarea id="contractor-request-comment" class="form-control" formControlName="comment" rows="5"></textarea>
             </div>
         </form>
     </ng-template>
 
-    <ng-template #abpFooter>
+    <ng-template #abpFooter *ngIf="selected?.ehsApproveStatus === 0">
         <button type="button" class="btn btn-outline-primary" (click)="reject(selected)">
         {{ 'AbpIdentity::Reject' | abpLocalization }}
         </button>

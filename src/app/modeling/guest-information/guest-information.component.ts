@@ -12,10 +12,10 @@ import { GuestInfoService } from '@apis/vms/services/guest-info.service';
   styleUrl: './guest-information.component.scss',
   providers: [
     ListService,
-      {
-        provide: EXTENSIONS_IDENTIFIER,
-        useValue: 'GuestInformationComponent',
-      },
+    {
+      provide: EXTENSIONS_IDENTIFIER,
+      useValue: 'GuestInformationComponent',
+    },
   ],
 })
 export class GuestInformationComponent implements OnInit {
@@ -37,13 +37,12 @@ export class GuestInformationComponent implements OnInit {
     public confirmationService: ConfirmationService,
     public toasterService: ToasterService,
     private localizationService: LocalizationService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.hookToQuery();
     this.localizationService.get('::LABEL_GuestInformation').subscribe(data => {
-      this.info = data
+      this.info = data;
     });
   }
 
@@ -69,20 +68,70 @@ export class GuestInformationComponent implements OnInit {
     });
   }
 
-  notify(row) {
+  notify(e: { objectIds: string[]; objectNames: string[] }) {
+    const ids = e.objectIds;
+    const names = e.objectNames;
     this.confirmationService
       .warn('::LABEL_NotificationConfirmationMessage', '', {
-        messageLocalizationParams: [this.info, row.fullName || row.objectNames],
+        messageLocalizationParams: [this.info, names.join(',<br/>')],
       })
       .subscribe(status => {
         if (status === Confirmation.Status.confirm) {
-          this.service.notify(row.objectIds).subscribe(() => {
+          this.service.notify(ids).subscribe(() => {
             this.toasterService.success('::LABEL_SuccessfullyNotified', '', {
-              messageLocalizationParams: [this.info, row.fullName || row.objectNames],
+              messageLocalizationParams: [this.info, names.join(',<br/>')],
             });
           });
         }
-        this.isModalVisible = false;
+      });
+  }
+
+  notifySingle() {
+    this.notify({
+      objectIds: [this.selected.id],
+      objectNames: [this.selected.fullName],
+    });
+  }
+
+  notifyInModal() {
+    this.notify({
+      objectIds: [this.selected.id],
+      objectNames: [this.selected.fullName],
+    });
+    this.isModalVisible = false;
+  }
+
+  delete(row) {
+    this.confirmationService
+      .warn('::LABEL_DeletionConfirmationMessage', '', {
+        messageLocalizationParams: [this.info, row.name],
+      })
+      .subscribe(status => {
+        if (status === Confirmation.Status.confirm) {
+          this.service.delete(row.id).subscribe(() => {
+            this.toasterService.success('::LABEL_SuccessfullyDeleted', '', {
+              messageLocalizationParams: [this.info, row.name],
+            });
+            this.list.get();
+          });
+        }
+      });
+  }
+
+  multiDelete(e) {
+    this.confirmationService
+      .warn('::LABEL_DeletionConfirmationMessage', '', {
+        messageLocalizationParams: [this.info + '<br/>', e.objectNames.join(',<br/>')],
+      })
+      .subscribe(status => {
+        if (status === Confirmation.Status.confirm) {
+          this.service['multipleDeleteByIds'](e.objectIds).subscribe(() => {
+            this.toasterService.success('::LABEL_SuccessfullyDeleted', '', {
+              messageLocalizationParams: [this.info, e.objectNames],
+            });
+            this.list.get();
+          });
+        }
       });
   }
 }

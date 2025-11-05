@@ -1,13 +1,14 @@
 import { LocalizationService } from '@abp/ng.core';
 import { ToasterService } from '@abp/ng.theme.shared';
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FileService } from '@apis/general/services';
-import { ContarctorRequestFileDto, ContractorRequestDto, ContractorRequestType, CreateContractorRequestDto, CreateEmployeeListDto, CreateJobTextFieldValueDto, CreateSelectionsDto, OptionSelectionDto, SectionSelectionDto } from '@apis/vms/dtos/contractor-request';
+import { ViewportScroller } from '@angular/common';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { ContractorRequestFileDto, ContractorRequestDto, ContractorRequestType, CreateContractorRequestDto, CreateEmployeeListDto, CreateJobTextFieldValueDto, CreateSelectionsDto, OptionSelectionDto, SectionSelectionDto } from '@apis/vms/dtos/contractor-request';
 import { JobSectionDto, JobTextFieldDto, JobTypeDetailDto, JobTypeDto } from '@apis/vms/dtos/job-type';
 import { ContractorRequestService } from '@apis/vms/services/contractor-request.service';
+import { FileService } from '@apis/vms/services/file.service';
 import { JobTypeService } from '@apis/vms/services/job-type.service';
-import { catchError, debounceTime, distinctUntilChanged, finalize, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, finalize, of, take } from 'rxjs';
 import { DashboardUtils } from 'src/app/dashboard/utils';
 
 enum FileType {
@@ -18,7 +19,7 @@ enum FileType {
 @Component({
   selector: 'app-contractor-form',
   templateUrl: './contractor-form.component.html',
-  styleUrls: ['./contractor-form.component.scss']
+  styleUrls: ['./contractor-form.component.scss'],
 })
 export class ContractorFormComponent implements OnInit {
   info: string;
@@ -28,7 +29,7 @@ export class ContractorFormComponent implements OnInit {
   documentPreviews: { file: File; url: string | null }[] = [];
   jobTypes: JobTypeDto[] = [];
   selectedJobTypeDetail: JobTypeDetailDto | null = null;
-  oldEmployeeListFiles: ContarctorRequestFileDto[] = [];
+  oldEmployeeListFiles: ContractorRequestFileDto[] = [];
   oldWorkPermitError: string | null = null;
   isSubmitting = false;
 
@@ -38,14 +39,17 @@ export class ContractorFormComponent implements OnInit {
     private contractorRequestService: ContractorRequestService,
     private toasterService: ToasterService,
     private fileService: FileService,
-    private localizationService: LocalizationService
+    private localizationService: LocalizationService,
+    private viewportScroller: ViewportScroller,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     this.contractorForm = this.fb.group({});
   }
 
   ngOnInit(): void {
     this.localizationService.get('::LABEL_ContractorRequest').subscribe(data => {
-      this.info = data
+      this.info = data;
     });
     this.initializeForm();
     this.loadJobTypes();
@@ -56,7 +60,7 @@ export class ContractorFormComponent implements OnInit {
   private setupConditionalValidators(): void {
     const requestTypeControl = this.contractorForm.get('requestType');
     requestTypeControl?.valueChanges.subscribe((type: string) => {
-      this.updateValidators(type);
+      this.updateValidators(type || '');
     });
   }
 
@@ -76,54 +80,57 @@ export class ContractorFormComponent implements OnInit {
 
     controlsToUpdate.forEach(({ name, required }) => {
       const control = this.contractorForm.get(name);
-      if (required) {
-        control?.setValidators(Validators.required);
-      } else {
-        control?.clearValidators();
+      if (control) {
+        if (required) {
+          control.setValidators(Validators.required);
+        } else {
+          control.clearValidators();
+        }
+        control.updateValueAndValidity({ emitEvent: false });
       }
-      control?.updateValueAndValidity();
     });
   }
 
   setupOldWorkPermitListener(): void {
-    this.contractorForm.get('oldWorkPermitCode')?.valueChanges.pipe(
-      debounceTime(1000),
-      distinctUntilChanged(),
-      catchError(error => {
-        this.toasterService.error('Failed to fetch old work permit details');
-        this.oldEmployeeListFiles = [];
-        this.oldWorkPermitError = 'Failed to fetch details';
-        return of(null);
-      })
-    ).subscribe((code: string) => {
-      if (code && this.contractorForm.get('requestType')?.value === '1') {
-        this.oldWorkPermitError = null;
-        this.contractorRequestService.getByOldWorkPermit(code).subscribe({
-          next: (data: ContractorRequestDto) => {
-            if (data) {
-              this.oldEmployeeListFiles = data.files?.filter(file => file.fileType === FileType.EmployeeList) || [];
-              this.processOldFiles();
-              this.oldWorkPermitError = null;
-            } else {
+    this.contractorForm
+      .get('oldWorkPermitCode')
+      ?.valueChanges.pipe(
+        debounceTime(1000),
+        distinctUntilChanged(),
+        catchError(error => {
+          this.oldEmployeeListFiles = [];
+          return of(null);
+        })
+      )
+      .subscribe((code: string) => {
+        if (code && this.contractorForm.get('requestType')?.value === '1') {
+          this.oldWorkPermitError = null;
+          this.contractorRequestService.getByOldWorkPermit(code).subscribe({
+            next: (data: ContractorRequestDto) => {
+              if (data) {
+                this.oldEmployeeListFiles =
+                  data.files?.filter(file => file.fileType === FileType.EmployeeList) || [];
+                this.processOldFiles();
+                this.oldWorkPermitError = null;
+              } else {
+                this.oldEmployeeListFiles = [];
+                this.oldWorkPermitError = 'No data found for the provided work permit code';
+              }
+            },
+            error: err => {
               this.oldEmployeeListFiles = [];
-              this.oldWorkPermitError = 'No data found for the provided work permit code';
-            }
-          },
-          error: (err) => {
-            this.oldEmployeeListFiles = [];
-            this.oldWorkPermitError = 'Invalid or non-existent work permit code';
-            this.toasterService.error(this.oldWorkPermitError);
-          }
-        });
-      } else {
-        this.oldEmployeeListFiles = [];
-        this.oldWorkPermitError = null;
-      }
-    });
+            },
+          });
+        } else {
+          this.oldEmployeeListFiles = [];
+          this.oldWorkPermitError = null;
+        }
+      });
   }
 
   loadJobTypes(): void {
-    this.jobTypeService.getAll()
+    this.jobTypeService
+      .getAll()
       .pipe(
         catchError(error => {
           this.toasterService.error('Failed to load job types');
@@ -135,28 +142,50 @@ export class ContractorFormComponent implements OnInit {
       });
   }
 
+  private validateEmployeeRequirement(): ValidatorFn {
+    return (form: FormGroup): ValidationErrors | null => {
+      const requestType = form.get('requestType')?.value;
+      const employeeLists = form.get('employeeLists') as FormArray;
+      const employeeListFile = form.get('employeeListFile')?.value;
+
+      const isNewRequest = requestType === '0';
+      const hasEmployeeList = employeeLists.length === form.get('employeeNumber').value;
+      const hasFile = !!employeeListFile;
+
+      if (isNewRequest && !hasEmployeeList && !hasFile) {
+        return { employeeRequired: true };
+      }
+      return null;
+    };
+  }
+
   private initializeForm(): void {
-    this.contractorForm = this.fb.group({
-      requestType: ['', Validators.required],
-      molexSupervisorName: [''],
-      contractorName: ['', Validators.required],
-      contractorSupervisorName: [''],
-      contractorSupervisorPhone: [''],
-      workingArea: [''],
-      startDate: [''],
-      endDate: ['', Validators.required],
-      employeeNumber: [null],
-      workDescription: [''],
-      oldWorkPermitCode: [''],
-      molexSupervisorEmail: ['', [Validators.required, Validators.email]],
-      contractorEmail: ['', [Validators.required, Validators.email]],
-      videoConfirmed: ['', Validators.required],
-      employeeLists: this.fb.array([]),
-      employeeListFile: [null],
-      jobTypeId: [''],
-      selectedSections: this.fb.array([]),
-      textFieldsValues: this.fb.group({})
-    });
+    this.contractorForm = this.fb.group(
+      {
+        requestType: ['', Validators.required],
+        molexSupervisorName: [''],
+        contractorName: ['', Validators.required],
+        contractorSupervisorName: [''],
+        contractorSupervisorPhone: [''],
+        workingArea: [''],
+        startDate: [''],
+        endDate: ['', Validators.required],
+        employeeNumber: [null],
+        workDescription: [''],
+        oldWorkPermitCode: [''],
+        molexSupervisorEmail: ['', [Validators.required, Validators.email]],
+        contractorEmail: ['', [Validators.required, Validators.email]],
+        videoConfirmed: ['', Validators.required],
+        employeeLists: this.fb.array([]),
+        employeeListFile: [null],
+        jobTypeId: [''],
+        selectedSections: this.fb.array([]),
+        textFieldsValues: this.fb.group({}),
+      },
+      {
+        validators: this.validateEmployeeRequirement(),
+      }
+    );
 
     this.contractorForm.get('jobTypeId')?.valueChanges.subscribe((jobTypeId: string) => {
       if (jobTypeId) {
@@ -169,7 +198,8 @@ export class ContractorFormComponent implements OnInit {
   }
 
   loadJobTypeDetails(jobTypeId: string): void {
-    this.jobTypeService.getDetails(jobTypeId)
+    this.jobTypeService
+      .getDetails(jobTypeId)
       .pipe(
         catchError(error => {
           this.toasterService.error('Failed to load job type details');
@@ -207,7 +237,7 @@ export class ContractorFormComponent implements OnInit {
       const sectionGroup = this.fb.group({
         jobSectionId: [section.jobSectionId],
         jobSectionName: [section.name],
-        options: this.fb.array([])
+        options: this.fb.array([]),
       });
       selectedSections.push(sectionGroup);
     });
@@ -226,12 +256,16 @@ export class ContractorFormComponent implements OnInit {
   toggleOption(sectionIndex: number, optionId: string, checked: boolean): void {
     const selectedOptions = this.getSelectedOptions(sectionIndex);
     if (checked) {
-      selectedOptions.push(this.fb.group({
-        jobOptionId: [optionId],
-        jobOptionName: [this.getOptionName(sectionIndex, optionId)]
-      }));
+      selectedOptions.push(
+        this.fb.group({
+          jobOptionId: [optionId],
+          jobOptionName: [this.getOptionName(sectionIndex, optionId)],
+        })
+      );
     } else {
-      const index = selectedOptions.controls.findIndex(ctrl => ctrl.get('jobOptionId')?.value === optionId);
+      const index = selectedOptions.controls.findIndex(
+        ctrl => ctrl.get('jobOptionId')?.value === optionId
+      );
       if (index >= 0) {
         selectedOptions.removeAt(index);
       }
@@ -259,8 +293,8 @@ export class ContractorFormComponent implements OnInit {
       dateOfBirth: ['', Validators.required],
       passport: ['', Validators.required],
       company: ['', Validators.required],
-      managementDepartment: ['', Validators.required],
-      molexSupervisor: ['', Validators.required]
+      managementDepartment: [''],
+      molexSupervisor: [''],
     });
   }
 
@@ -312,10 +346,10 @@ export class ContractorFormComponent implements OnInit {
 
   processOldFiles(): void {
     this.oldEmployeeListFiles.forEach(file => {
-      if (file.fileUrl) {
+      if (file.fileId) {
         file['loading'] = true;
         this.fileService
-          .get(file.fileUrl, DashboardUtils.isImageFile(file.fileName))
+          .get(file.fileId, DashboardUtils.isImageFile(file.fileName))
           .pipe(finalize(() => delete file['loading']))
           .subscribe((res: any) => {
             const url = URL.createObjectURL(DashboardUtils.convertBase64ToBlob(res));
@@ -327,41 +361,58 @@ export class ContractorFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.ngZone.onStable
+      .asObservable()
+      .pipe(take(1))
+      .subscribe(() => {
+        requestAnimationFrame(() => {
+          const titleElement = document.getElementById('form-title');
+          if (titleElement) {
+            this.viewportScroller.scrollToAnchor('form-title');
+          } else {
+            this.viewportScroller.scrollToPosition([0, 0]);
+          }
+        });
+      });
     if (this.contractorForm.invalid) {
-      this.toasterService.error('Form is invalid. Please check required fields.');
       return;
     }
 
     this.isSubmitting = true;
     const formValue = this.contractorForm.value;
+    const isNew = formValue.requestType === '0';
+    let selections: CreateSelectionsDto | undefined;
+    let textFieldValues: CreateJobTextFieldValueDto[] | undefined;
 
-    const selections: CreateSelectionsDto = {
-      jobTypeId: formValue.jobTypeId,
-      jobTypeName: this.jobTypes.find(jt => jt.id === formValue.jobTypeId)?.jobName ?? '',
-      sections: formValue.selectedSections.map((section: any) => ({
-        jobSectionId: section.jobSectionId,
-        jobSectionName: section.jobSectionName,
-        options: section.options.map((opt: any) => ({
-          jobOptionId: opt.jobOptionId,
-          jobOptionName: opt.jobOptionName
-        })) as OptionSelectionDto[]
-      })) as SectionSelectionDto[]
-    };
+    if (isNew) {
+      selections = {
+        jobTypeId: formValue.jobTypeId,
+        jobTypeName: this.jobTypes.find(jt => jt.id === formValue.jobTypeId)?.jobName ?? '',
+        sections: formValue.selectedSections.map((section: any) => ({
+          jobSectionId: section.jobSectionId,
+          jobSectionName: section.jobSectionName,
+          options: section.options.map((opt: any) => ({
+            jobOptionId: opt.jobOptionId,
+            jobOptionName: opt.jobOptionName,
+          })) as OptionSelectionDto[],
+        })) as SectionSelectionDto[],
+      };
 
-    const textFieldValues: CreateJobTextFieldValueDto[] = [];
-    if (this.selectedJobTypeDetail) {
-      this.selectedJobTypeDetail.textFields.forEach((field: JobTextFieldDto) => {
-        const value = formValue.textFieldsValues[field.jobTextFieldId ?? ''];
-        if (value) {
-          textFieldValues.push({
-            jobTypeId: formValue.jobTypeId,
-            jobTypeName: selections.jobTypeName ?? '',
-            jobTextFieldId: field.jobTextFieldId ?? '',
-            textField: field.field ?? '',
-            value: value
-          });
-        }
-      });
+      textFieldValues = [];
+      if (this.selectedJobTypeDetail) {
+        this.selectedJobTypeDetail.textFields.forEach((field: JobTextFieldDto) => {
+          const value = formValue.textFieldsValues[field.jobTextFieldId ?? ''];
+          if (value) {
+            textFieldValues.push({
+              jobTypeId: formValue.jobTypeId,
+              jobTypeName: selections.jobTypeName ?? '',
+              jobTextFieldId: field.jobTextFieldId ?? '',
+              textField: field.field ?? '',
+              value: value,
+            });
+          }
+        });
+      }
     }
 
     const requestDto: CreateContractorRequestDto = {
@@ -381,21 +432,60 @@ export class ContractorFormComponent implements OnInit {
       employeeLists: formValue.employeeLists as CreateEmployeeListDto[],
       employeeListFile: formValue.employeeListFile,
       documentFiles: this.documentFiles,
-      selections: selections,
-      textFieldValues: textFieldValues
+      selections,
+      textFieldValues,
     };
 
     this.contractorRequestService.create(requestDto).subscribe({
-      next: (result) => {
+      next: result => {
         this.toasterService.success('::LABEL_CreatedSuccessfully', '', {
           messageLocalizationParams: [this.info, formValue.contractorName],
         });
         this.isSubmitting = false;
+        this.resetForm();
       },
-      error: (err) => {
-        this.toasterService.error('Failed to create contractor request: ' + err.message);
-        this.isSubmitting = false;
-      }
     });
+  }
+
+  private resetForm(): void {
+    this.contractorForm.reset({
+      requestType: '',
+      molexSupervisorName: '',
+      contractorName: '',
+      contractorSupervisorName: '',
+      contractorSupervisorPhone: '',
+      workingArea: '',
+      startDate: '',
+      endDate: '',
+      employeeNumber: null,
+      workDescription: '',
+      oldWorkPermitCode: '',
+      molexSupervisorEmail: '',
+      contractorEmail: '',
+      videoConfirmed: '',
+      jobTypeId: '',
+    });
+
+    const employeeLists = this.contractorForm.get('employeeLists') as FormArray;
+    employeeLists.clear();
+
+    const selectedSections = this.contractorForm.get('selectedSections') as FormArray;
+    selectedSections.clear();
+
+    const textFieldsValues = this.contractorForm.get('textFieldsValues') as FormGroup;
+    Object.keys(textFieldsValues.controls).forEach(key => {
+      textFieldsValues.removeControl(key);
+    });
+
+    this.documentFiles = [];
+    this.documentPreviews = [];
+    this.contractorForm.patchValue({ employeeListFile: null });
+
+    this.oldEmployeeListFiles = [];
+    this.oldWorkPermitError = null;
+
+    this.selectedJobTypeDetail = null;
+
+    this.updateValidators('');
   }
 }

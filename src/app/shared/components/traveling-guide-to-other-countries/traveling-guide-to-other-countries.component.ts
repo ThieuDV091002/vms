@@ -64,9 +64,9 @@ export class TravelingGuideToOtherCountriesComponent {
   ngOnInit(): void {
     this.loadPassportCards('Passport And Visa Application');
     this.loadCorporateCards('Corporate Card Application');
-    this.loadViaCWTs('ViaCWT');
+    this.loadViaCWTs('Via CWT');
     this.loadTools('Tools');
-    this.loadSupports('Supports');
+    this.loadSupports('Support');
     this.loadMXVAdmins('MXV');
     this.loadMXHYAdmins('MXHY');
   }
@@ -272,7 +272,7 @@ export class TravelingGuideToOtherCountriesComponent {
   loadCorporateCards(section: string): void {
     this.imageLinkService.getBySection(section).subscribe({
       next: cardsResponse => {
-        this.passportCards = cardsResponse.map((card: any) => ({
+        this.corporateCards = cardsResponse.map((card: any) => ({
           heading: card.heading,
           body: card.body,
           url: card.url,

@@ -154,6 +154,7 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
   @Output() moveData: EventEmitter<any> = new EventEmitter<any>();
   @Output() copyModalOpen: EventEmitter<any> = new EventEmitter<any>();
   @Output() notifyData: EventEmitter<any> = new EventEmitter<any>();
+  @Output() multiNotify: EventEmitter<any> = new EventEmitter<any>();
 
   @Output() dataStart: EventEmitter<any> = new EventEmitter<any>();
   @Output() dataStop: EventEmitter<any> = new EventEmitter<any>();
@@ -399,24 +400,52 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
   }
 
   delete(row) {
-    this.dataDelete.emit({ id: row.id, name: row.userName || row.name || row.areaName || row.heading || row.section || row.fullName });
+    this.dataDelete.emit({ id: row.id || row.contractorRequestId, name: row.userName || row.name || row.areaName || row.heading || row.section || row.fullName || row.contractorName });
     this.pendingDeleteIds = [row.id];
   }
 
   pendingDeleteIds: string[] = [];
+  pendingNotifyIds: string[] = [];
 
   multiDeleteClick() {
     const selectedItems = Object.values(this.allSelected);
-    const idsToDelete = selectedItems.map(item => item.id);
+    const idsToDelete = selectedItems.map(item => item.id || item.contractorRequestId);
 
     this.multiDelete.emit({
       objectType: this.objectType,
       objectIds: idsToDelete,
-      objectNames: selectedItems.map(s => s.name),
+      objectNames: selectedItems.map(s => s.name || s.fullName || s.contractorName),
       userNames: selectedItems.map(s => s.userName)
     });
 
     this.pendingDeleteIds = idsToDelete;
+  }
+
+  notify() {
+    const selectedItems = Object.values(this.allSelected);
+    const idsToNotify = selectedItems.map(item => item.id);
+    const namesToNotify = selectedItems.map(item => item.fullName || item.name || '');
+
+    this.notifyData.emit({
+      objectType: this.objectType,
+      objectIds: idsToNotify,
+      objectNames: namesToNotify,
+    });
+
+    this.pendingNotifyIds = idsToNotify;
+  }
+
+  notifySingle(row) {
+    const idsToNotify = [row.id];
+    const namesToNotify = [row.fullName || row.name || ''];
+
+    this.notifyData.emit({
+      objectType: this.objectType,
+      objectIds: idsToNotify,
+      objectNames: namesToNotify,
+    });
+
+    this.pendingNotifyIds = idsToNotify;
   }
 
   viewHistory(row) {
@@ -424,7 +453,7 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
   }
 
   customActionClick(row) {
-    this.customActionTrigger.emit({ id: row.id, name: row.userName ? row.userName : row.name });
+    this.customActionTrigger.emit({ id: row.id, name:  row.userName || row.name || row.fullName });
   }
 
   start(row) {
@@ -546,25 +575,6 @@ export class ModelingTemplateComponent implements OnInit, OnDestroy {
   search(event: string) {
     event = event.trim();
     this.filterChange.emit(event)
-  }
-
-  move() {
-    this.moveData.emit({ objectIds: this.selected.map(s => s.id) });
-  }
-
-  notify() {
-    const selectedItems = Object.values(this.allSelected);
-    if (selectedItems.length === 0) {
-      return;
-    }
-    const idsToNotify = selectedItems.map(item => item.id);
-    const namesToNotify = selectedItems.map(item => item.fullName);
-    this.notifyData.emit({
-      objectType: this.objectType,
-      objectIds: idsToNotify,
-      objectNames: namesToNotify
-    });
-    console.log('IDs to notify:', idsToNotify);
   }
 
   // pageChange(event) {

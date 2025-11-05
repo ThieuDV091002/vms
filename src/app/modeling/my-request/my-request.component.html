@@ -38,9 +38,10 @@
                                 <div class="col-md-6">
                                     <p><strong>{{ '::ContractorName' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
                                     <p><strong>{{ '::RequestType' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
-                                    <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate | date:'dd/MM/yyyy' }}</p>
-                                    <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
+                                    
                                     <ng-container *ngIf="!selected?.requestType">
+                                        <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate | date:'dd/MM/yyyy' }}</p>
+                                        <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
                                         <p><strong>{{ '::MolexPIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
                                         <p><strong>{{ '::ContractorPICName' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorName }}</p>
                                         <p><strong>{{ '::ContractorPICPhone' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorPhone }}</p>
@@ -49,7 +50,7 @@
                                         <div *ngFor="let jobType of selected?.selections | groupBy:'jobTypeId'">
                                             <p><strong>{{ '::JobType' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
                                             <div *ngFor="let section of jobType | groupBy:'jobSectionId'">
-                                                <p><strong>{{ '::Section' | abpLocalization }}:</strong> {{ section[0]?.jobSectionName }}</p>
+                                                <p>{{ section[0]?.jobSectionName }}</p>
                                                 <ul>
                                                     <li *ngFor="let option of section">
                                                         {{ option?.jobOptionName }}
@@ -62,7 +63,8 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="selected?.requestType">
-                                        <p><strong>{{ '::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermit }}</p>
+                                        <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
+                                        <p><strong>{{ '::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermitCode }}</p>
                                     </ng-container>
                                 </div>
                             </div>
@@ -77,7 +79,7 @@
                             {{ '::LABEL_EmployeeList' | abpLocalization }}
                         </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                    <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
                                 <div>
@@ -138,7 +140,7 @@
                             {{ '::LABEL_Documents' | abpLocalization }}
                         </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" [class.show]="!isCollapse">
+                    <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
                                 <div *ngIf="documentFiles.length === 0">{{ '::NoFilesAvailable' | abpLocalization }}</div>
@@ -146,19 +148,13 @@
                                     <div *ngIf="file.loading">
                                         <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' | abpLocalization }}
                                     </div>
-                                    <div *ngIf="!file.loading">
+                                    <div *ngIf="!file.loading" style="display: flex; flex-direction: column;">
                                         <img *ngIf="file.isImage" [src]="file.mediaAccessUrl" alt="{{ file.fileName }}"
-                                            class="cursor-pointer file-image" (click)="getPreviewImage(file.fileUrl)" />
-                                        <a *ngIf="!file.isImage" [href]="file.mediaAccessUrl" [download]="file.fileName">
+                                            class="cursor-pointer file-image" style="width: auto; max-height: 200px;"/>
+                                        <a [href]="file.mediaAccessUrl" [download]="file.fileName">
                                             {{ file.fileName }}
                                         </a>
                                     </div>
-                                </div>
-                            </div>
-                            <div *ngIf="previewModalVisible" class="preview-modal">
-                                <div class="preview-modal-content">
-                                <img [src]="previewImage" alt="Preview" />
-                                <button (click)="previewModalVisible = false">{{ '::Close' | abpLocalization }}</button>
                                 </div>
                             </div>
                         </div>
@@ -168,7 +164,7 @@
         </div>
     </ng-template>
 
-    <ng-template #abpFooter>
+    <ng-template #abpFooter *ngIf="selected?.molexSupervisorApproveStatus === 0">
         <button type="button" class="btn btn-outline-primary" (click)="reject(selected)">
         {{ 'AbpIdentity::Reject' | abpLocalization }}
         </button>

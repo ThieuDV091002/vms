@@ -52,26 +52,26 @@ export class GuestFormComponent implements OnInit {
         this.createFlightGroup(FlightType.Departure)
       ]),
 
-      isHotelSupport: [false, Validators.required],
+      isHotelSupport: [null, Validators.required],
       hotelId: [''],
       hotelName: [''],
       roomType: [''],
 
-      isFoodRestrict: [false, Validators.required],
+      isFoodRestrict: [null, Validators.required],
       foodRestrictDetail: [''],
 
       otherRequest: [''],
 
       transportInfo: this.fb.group({
-        isAirportTransport: [false, Validators.required],
-        isDailyTransport: [false, Validators.required],
+        isAirportTransport: [null, Validators.required],
+        isDailyTransport: [null, Validators.required],
         time: [''],
         route: [''],
         address: [''],
       }),
 
       uniformInfo: this.fb.group({
-        isVisitFactory: [false, Validators.required],
+        isVisitFactory: [null, Validators.required],
         cameraCover: [''],
         cardType: [''],
         uniformType: [''],

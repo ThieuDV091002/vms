@@ -73,9 +73,7 @@ import { TransportationAppComponent } from './modeling/transportation-app/transp
 import { GuestInformationComponent } from './modeling/guest-information/guest-information.component';
 import { MyRequestComponent } from './modeling/my-request/my-request.component';
 import { ContractorRequestComponent } from './modeling/contractor-request/contractor-request.component';
-import { VisitorManagementComponent } from './modeling/visitor-management/visitor-management.component';
 import { TravelGuidePageComponent } from './modeling/travel-guide-page/travel-guide-page.component';
-import { GuestComponent } from './shared/components/guest-component/guest-component.component';
 import { GuestFormComponent } from './modeling/guest-form/guest-form.component';
 import { ContractorFormComponent } from './modeling/contractor-form/contractor-form.component';
 export const routes: Routes = [
@@ -503,11 +501,6 @@ export const routes: Routes = [
     path: 'modeling/production-review-board-settings',
     component: ProductionReviewBoardSettingComponent,
     title: "Production Review Board Settings"
-  },
-  {
-    path: 'visit-management',
-    component: VisitorManagementComponent,
-    title: "Visitor Management"
   }
 ];
 

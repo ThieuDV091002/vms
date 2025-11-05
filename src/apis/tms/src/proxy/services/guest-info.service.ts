@@ -58,5 +58,24 @@ export class GuestInfoService {
       { apiName: this.apiName, ...config }
     );
 
+  delete = (id: string, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, void>(
+      {
+        method: 'DELETE',
+        url: `/api/app/guest-information/${id}`,
+      },
+      { apiName: this.apiName, ...config }
+    );
+
+  multipleDeleteByIds = (ids: string[], config?: Partial<Rest.Config>) =>
+    this.restService.request<any, boolean>(
+      {
+        method: 'POST',
+        url: '/api/app/guest-information/multi-delete',
+        body: ids,
+      },
+      { apiName: this.apiName, ...config }
+    );
+
   constructor(private restService: RestService) {}
 }
