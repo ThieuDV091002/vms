@@ -1,7 +1,6 @@
 import { LocalizationService } from '@abp/ng.core';
 import { ToasterService } from '@abp/ng.theme.shared';
-import { ViewportScroller } from '@angular/common';
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ContractorRequestFileDto, ContractorRequestDto, ContractorRequestType, CreateContractorRequestDto, CreateEmployeeListDto, CreateJobTextFieldValueDto, CreateSelectionsDto, OptionSelectionDto, SectionSelectionDto } from '@apis/vms/dtos/contractor-request';
 import { JobSectionDto, JobTextFieldDto, JobTypeDetailDto, JobTypeDto } from '@apis/vms/dtos/job-type';
@@ -22,6 +21,14 @@ enum FileType {
   styleUrls: ['./contractor-form.component.scss'],
 })
 export class ContractorFormComponent implements OnInit {
+  @ViewChild('formTop') formTop!: ElementRef;
+  
+    scrollToTop(): void {
+      const topElement = this.formTop?.nativeElement;
+      if (topElement) {
+        topElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
   info: string;
   contractorForm: FormGroup;
   isMobileMenuOpen = false;
@@ -39,10 +46,7 @@ export class ContractorFormComponent implements OnInit {
     private contractorRequestService: ContractorRequestService,
     private toasterService: ToasterService,
     private fileService: FileService,
-    private localizationService: LocalizationService,
-    private viewportScroller: ViewportScroller,
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private localizationService: LocalizationService
   ) {
     this.contractorForm = this.fb.group({});
   }
@@ -361,22 +365,6 @@ export class ContractorFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.ngZone.onStable
-      .asObservable()
-      .pipe(take(1))
-      .subscribe(() => {
-        requestAnimationFrame(() => {
-          const titleElement = document.getElementById('form-title');
-          if (titleElement) {
-            this.viewportScroller.scrollToAnchor('form-title');
-          } else {
-            this.viewportScroller.scrollToPosition([0, 0]);
-          }
-        });
-      });
-    if (this.contractorForm.invalid) {
-      return;
-    }
 
     this.isSubmitting = true;
     const formValue = this.contractorForm.value;
@@ -443,6 +431,7 @@ export class ContractorFormComponent implements OnInit {
         });
         this.isSubmitting = false;
         this.resetForm();
+        this.scrollToTop();
       },
     });
   }

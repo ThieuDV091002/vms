@@ -98,7 +98,6 @@ export class GuestInformationComponent implements OnInit {
       objectIds: [this.selected.id],
       objectNames: [this.selected.fullName],
     });
-    this.isModalVisible = false;
   }
 
   delete(row) {

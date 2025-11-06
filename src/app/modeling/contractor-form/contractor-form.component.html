@@ -1,5 +1,5 @@
 <form [formGroup]="contractorForm" (ngSubmit)="onSubmit()" style="padding-top: 40px;" id="contractor-form-top">
-    <h2 style="color: black;" id="form-title">{{ '::LABEL_ContractorForm' | abpLocalization }}</h2>
+    <h2 style="color: black;" #formTop>{{ '::LABEL_ContractorForm' | abpLocalization }}</h2>
 
     <div class="form-group full-width">
         <label for="requestType">{{ '::LABEL_RequestType' | abpLocalization }}<span> * </span></label>

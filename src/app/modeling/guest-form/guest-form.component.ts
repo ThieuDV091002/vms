@@ -1,14 +1,19 @@
-import { LocalizationService } from '@abp/ng.core';
-import { ToasterService } from '@abp/ng.theme.shared';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef
+} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToasterService } from '@abp/ng.theme.shared';
+import { LocalizationService } from '@abp/ng.core';
 import { HotelDto } from '@apis/vms/dtos';
 import { CreateFlightInfoDto, CreateGuestInfoDto } from '@apis/vms/dtos/guest-information';
 import { GuestInfoService, HotelService } from '@apis/vms/services';
 
-enum FlightType {
-  Arrival = 0,
-  Departure = 1,
+enum FlightType { 
+  Arrival = 0, 
+  Departure = 1 
 }
 
 @Component({
@@ -16,12 +21,21 @@ enum FlightType {
   templateUrl: './guest-form.component.html',
   styleUrl: './guest-form.component.scss'
 })
-export class GuestFormComponent implements OnInit {
+export class GuestFormComponent implements OnInit{
   @ViewChild('formTop') formTop!: ElementRef;
+
+  scrollToTop(): void {
+    const topElement = this.formTop?.nativeElement;
+    if (topElement) {
+      topElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+  }
+
   isMobileMenuOpen = false;
-  info: string;
+  info = '';
   hotels: HotelDto[] = [];
-  guestForm: FormGroup;
+  guestForm!: FormGroup;
+  isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
@@ -31,15 +45,15 @@ export class GuestFormComponent implements OnInit {
     private localizationService: LocalizationService
   ) {}
 
-  toggleMobileMenu() {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  ngOnInit(): void {
+    this.localizationService.get('::LABEL_GuestInformation')
+      .subscribe(v => this.info = v);
+
+    this.loadHotels();
+    this.buildForm();
   }
 
-  ngOnInit(): void {
-    this.localizationService.get('::LABEL_GuestInformation').subscribe(data => {
-      this.info = data
-    });
-    this.loadHotels();
+  private buildForm() {
     this.guestForm = this.fb.group({
       fullName: ['', Validators.required],
       company: ['', Validators.required],
@@ -67,36 +81,25 @@ export class GuestFormComponent implements OnInit {
         isDailyTransport: [null, Validators.required],
         time: [''],
         route: [''],
-        address: [''],
+        address: ['']
       }),
 
       uniformInfo: this.fb.group({
         isVisitFactory: [null, Validators.required],
         cameraCover: [''],
         cardType: [''],
-        uniformType: [''],
-      }),
+        uniformType: ['']
+      })
     });
   }
 
-  loadHotels() {
-    this.hotelService.getList({
-      filter: '', sorting: '', skipCount: 0, maxResultCount: 100,
-      ids: []
-    }).subscribe({
-      next: (result) => {
-        this.hotels = result.items;
-      }
-    });
-  }
-
-  createFlightGroup(flightType: FlightType): FormGroup {
+  private createFlightGroup(type: FlightType): FormGroup {
     return this.fb.group({
       date: ['', Validators.required],
       no: ['', Validators.required],
       route: ['', Validators.required],
       time: ['', Validators.required],
-      flightType: [flightType, Validators.required],
+      flightType: [type, Validators.required]
     });
   }
 
@@ -110,32 +113,34 @@ export class GuestFormComponent implements OnInit {
       return;
     }
 
+    this.isSubmitting = true;
+
     const formValue = this.guestForm.value;
 
-    const flightInfos: CreateFlightInfoDto[] = formValue.flightInfos.map(flight => ({
-      date: flight.date,
-      no: flight.no,
-      route: flight.route,
-      time: flight.time,
-      flightType: flight.flightType,
+    const flightInfos: CreateFlightInfoDto[] = formValue.flightInfos.map((f: any) => ({
+      date: f.date,
+      no: f.no,
+      route: f.route,
+      time: f.time,
+      flightType: f.flightType
     }));
 
     const transportInfo = {
       isAirportTransport: formValue.transportInfo.isAirportTransport,
       isDailyTransport: formValue.transportInfo.isDailyTransport,
-      time: formValue.transportInfo.time,
-      route: formValue.transportInfo.route,
-      address: formValue.transportInfo.address,
+      time: formValue.transportInfo.time || null,
+      route: formValue.transportInfo.route || null,
+      address: formValue.transportInfo.address || null
     };
 
     const uniformInfo = {
       isVisitFactory: formValue.uniformInfo.isVisitFactory,
-      cardType: formValue.uniformInfo.cardType !== undefined ? Number(formValue.uniformInfo.cardType) : null,
-      uniformType: formValue.uniformInfo.uniformType !== undefined ? Number(formValue.uniformInfo.uniformType) : null,
-      cameraCover: formValue.uniformInfo.cameraCover !== undefined ? Number(formValue.uniformInfo.cameraCover) : null,
+      cardType: formValue.uniformInfo.cardType != null ? Number(formValue.uniformInfo.cardType) : null,
+      uniformType: formValue.uniformInfo.uniformType != null ? Number(formValue.uniformInfo.uniformType) : null,
+      cameraCover: formValue.uniformInfo.cameraCover != null ? Number(formValue.uniformInfo.cameraCover) : null
     };
 
-    const createGuestDto: CreateGuestInfoDto = {
+    const dto: CreateGuestInfoDto = {
       fullName: formValue.fullName,
       company: formValue.company,
       title: formValue.title,
@@ -148,67 +153,66 @@ export class GuestFormComponent implements OnInit {
       isFoodRestrict: formValue.isFoodRestrict,
       foodRestrictDetail: formValue.foodRestrictDetail || null,
       otherRequest: formValue.otherRequest || null,
-      flightInfos: flightInfos,
-      transportInfo: transportInfo,
-      uniformInfo: uniformInfo,
+      flightInfos,
+      transportInfo,
+      uniformInfo
     };
 
-    this.guestInfoService.create(createGuestDto).subscribe({
-      next: (result) => {
+    this.guestInfoService.create(dto).subscribe({
+      next: () => {
         this.toasterService.success('::LABEL_CreatedSuccessfully', '', {
-          messageLocalizationParams: [this.info, formValue.fullName],
+          messageLocalizationParams: [this.info, formValue.fullName]
         });
-        this.guestForm.reset({
-          fullName: '',
-          company: '',
-          title: '',
-          purpose: '',
-          workWithWhomInMolex: '',
-
-          flightInfos: [
-            {
-              date: '',
-              no: '',
-              route: '',
-              time: '',
-              flightType: FlightType.Arrival
-            },
-            {
-              date: '',
-              no: '',
-              route: '',
-              time: '',
-              flightType: FlightType.Departure
-            }
-          ],
-
-          isHotelSupport: false,
-          hotelId: '',
-          hotelName: '',
-          roomType: '',
-
-          isFoodRestrict: false,
-          foodRestrictDetail: '',
-
-          otherRequest: '',
-
-          transportInfo: {
-            isAirportTransport: false,
-            isDailyTransport: false,
-            time: '',
-            route: '',
-            address: ''
-          },
-
-          uniformInfo: {
-            isVisitFactory: false,
-            cameraCover: '',
-            cardType: '',
-            uniformType: ''
-          }
-        });
-        this.formTop.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        this.resetForm();
+        this.isSubmitting = false;
+        this.scrollToTop();
+      },
+      error: () => {
+        this.isSubmitting = false;
       }
     });
+  }
+
+  private resetForm() {
+    this.guestForm.reset({
+      fullName: '',
+      company: '',
+      title: '',
+      purpose: '',
+      workWithWhomInMolex: '',
+      flightInfos: [
+        { date: '', no: '', route: '', time: '', flightType: FlightType.Arrival },
+        { date: '', no: '', route: '', time: '', flightType: FlightType.Departure }
+      ],
+      isHotelSupport: null,
+      hotelId: '',
+      hotelName: '',
+      roomType: '',
+      isFoodRestrict: null,
+      foodRestrictDetail: '',
+      otherRequest: '',
+      transportInfo: {
+        isAirportTransport: null,
+        isDailyTransport: null,
+        time: '',
+        route: '',
+        address: ''
+      },
+      uniformInfo: {
+        isVisitFactory: null,
+        cameraCover: '',
+        cardType: '',
+        uniformType: ''
+      }
+    });
+  }
+
+  loadHotels() {
+    this.hotelService.getList({ filter: '', sorting: '', skipCount: 0, maxResultCount: 100, ids: [] })
+      .subscribe(res => this.hotels = res.items);
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 }

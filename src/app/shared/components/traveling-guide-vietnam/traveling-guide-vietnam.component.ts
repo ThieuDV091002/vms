@@ -59,7 +59,7 @@ export class TravelingGuideVietnamComponent implements OnInit {
         this.hnMedicalCenters = cardsResponse.map((card: any) => ({
           name: card.name,
           city: card.city,
-          link: card.downloadUrl,
+          link: card.locationUrl,
           img: '',
         }));
 
@@ -91,7 +91,7 @@ export class TravelingGuideVietnamComponent implements OnInit {
         this.hyMedicalCenters = cardsResponse.map((card: any) => ({
           name: card.name,
           city: card.city,
-          link: card.downloadUrl,
+          link: card.locationUrl,
           img: '',
         }));
 
@@ -325,48 +325,4 @@ export class TravelingGuideVietnamComponent implements OnInit {
   openLink(url: string) {
     window.open(url, '_blank');
   }
-
-  recommendedHotels = {
-    title: 'Recommended hotels',
-    img: 'https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop',
-    link: 'https://example.com/koch-mytravel',
-  };
-
-  aig = {
-    img: 'https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=451&h=451&auto=format&fit=crop',
-    link: 'https://example.com/koch-mytravel',
-  };
-
-  centers = [
-    {
-      region: 'Hà Nội',
-      items: [
-        {
-          title: 'Vinmec Times City Hospital',
-          img: 'https://placehold.co/96x96/3b82f6/ffffff/png?text=Vinmec',
-          link: 'https://vinmec.com',
-        },
-        {
-          title: 'Bach Mai Hospital',
-          img: 'https://placehold.co/96x96/3b82f6/ffffff/png?text=BachMai',
-          link: 'https://bachmai.gov.vn',
-        },
-      ],
-    },
-    {
-      region: 'Hưng Yên',
-      items: [
-        {
-          title: 'Hung Yen General Hospital',
-          img: 'https://placehold.co/96x96/3b82f6/ffffff/png?text=HungYen',
-          link: 'https://soytehungyen.gov.vn',
-        },
-        {
-          title: 'Pho Noi General Hospital',
-          img: 'https://placehold.co/96x96/3b82f6/ffffff/png?text=PhoNoi',
-          link: '#',
-        },
-      ],
-    },
-  ];
 }

@@ -1,6 +1,6 @@
 <h2 class="faq-heading">FAQ</h2>
 <div class="grid">
-    <div class="brand-link" (click)="openLink(card.link)" [attr.aria-label]="'Open ' + card.heading" *ngFor="let card of faqCards">
+    <div class="brand-link" (click)="openLink(card.url)" [attr.aria-label]="'Open ' + card.heading" *ngFor="let card of faqCards">
       <img class="brand-logo" [src]="card.img" [alt]="card.heading">
       <span class="brand-title">{{ card.heading }}</span>
       <span class="brand-chevron" aria-hidden="true">
