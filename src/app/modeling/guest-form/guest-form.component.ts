@@ -32,7 +32,7 @@ export class GuestFormComponent implements OnInit{
   }
 
   isMobileMenuOpen = false;
-  info = '';
+  info: string;
   hotels: HotelDto[] = [];
   guestForm!: FormGroup;
   isSubmitting = false;
@@ -46,8 +46,9 @@ export class GuestFormComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    this.localizationService.get('::LABEL_GuestInformation')
-      .subscribe(v => this.info = v);
+    this.localizationService.get('::LABEL_ContractorRequest').subscribe(data => {
+      this.info = data;
+    });
 
     this.loadHotels();
     this.buildForm();
