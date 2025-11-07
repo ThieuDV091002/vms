@@ -58,7 +58,7 @@ export const environment = {
       rootNamespace: 'Molex.UFE',
     },
     vms: {
-      url: 'ENV_vms_URL',
+      url: 'ENV_VMS_URL',
       rootNamespace: 'Molex.UFE',
     },
     powerbi: {
