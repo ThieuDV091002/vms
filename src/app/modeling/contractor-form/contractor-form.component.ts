@@ -52,7 +52,7 @@ export class ContractorFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.localizationService.get('::LABEL_ContractorRequest').subscribe(data => {
+    this.localizationService.get('::Work Permit Request').subscribe(data => {
       this.info = data;
     });
     this.initializeForm();

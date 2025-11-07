@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::MENU_ContractorRequest'" [data]="data" [objectType]="'ContractorRequest'"
+<app-modeling-template [title]="'::Work Permit Request'" [data]="data" [objectType]="'ContractorRequest'"
     [permissions]="{view: 'ContractorRequest.View', approve: 'ContractorRequest.Approve', 
     list: 'ContractorRequest.List', delete: 'ContractorRequest.Delete',
     export: 'ContractorRequest.Export', reject: 'ContractorRequest.Reject'}"
@@ -38,18 +38,18 @@
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p><strong>{{ '::ContractorName' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
-                                    <p><strong>{{ '::RequestType' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
+                                    <p><strong>{{ '::Contractor Name' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
+                                    <p><strong>{{ '::Request Type' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
                                     <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate ? (selected.startDate | date:'dd/MM/yyyy') : '' }}</p>
                                     <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
                                     <ng-container *ngIf="!selected?.requestType">
-                                        <p><strong>{{ '::MolexPIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
-                                        <p><strong>{{ '::ContractorPICName' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorName }}</p>
-                                        <p><strong>{{ '::ContractorPICPhone' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorPhone }}</p>
-                                        <p><strong>{{ '::WorkingArea' | abpLocalization }}:</strong> {{ selected?.workingArea }}</p>
-                                        <p><strong>{{ '::WorkDescription' | abpLocalization }}:</strong> {{ selected?.workDescription }}</p>
+                                        <p><strong>{{ '::Molex PIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
+                                        <p><strong>{{ '::Contractor PIC Name' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorName }}</p>
+                                        <p><strong>{{ '::Contractor PIC Phone' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorPhone }}</p>
+                                        <p><strong>{{ '::Working Area' | abpLocalization }}:</strong> {{ selected?.workingArea }}</p>
+                                        <p><strong>{{ '::Work Description' | abpLocalization }}:</strong> {{ selected?.workDescription }}</p>
                                         <div *ngFor="let jobType of selected?.selections | groupBy:'jobTypeId'">
-                                            <p><strong>{{ '::JobType' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
+                                            <p><strong>{{ '::Job Type' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
                                             <div *ngFor="let section of jobType | groupBy:'jobSectionId'">
                                                 <p>{{ section[0]?.jobSectionName }}</p>
                                                 <ul>
@@ -64,7 +64,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="selected?.requestType">
-                                        <p><strong>{{ '::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermitCode }}</p>
+                                        <p><strong>{{ '::Old Work Permit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermitCode }}</p>
                                     </ng-container>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
                             [class.collapsed]="isCollapse">
-                            {{ '::LABEL_EmployeeList' | abpLocalization }}
+                            {{ '::Employee List' | abpLocalization }}
                         </button>
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
@@ -144,7 +144,7 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"
                             [class.collapsed]="isCollapse">
-                            {{ '::LABEL_Documents' | abpLocalization }}
+                            {{ '::Documents' | abpLocalization }}
                         </button>
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
@@ -173,12 +173,12 @@
         </div>
         <form [formGroup]="form" *ngIf="selected?.ehsApproveStatus === 0">
             <div class="form-group mb-2">
-                <label for="contractor-request-work-permit-code" [title]="'::INFO_WorkPermitCode' | abpLocalization">{{'::WorkPermitCode'|abpLocalization}}</label>
+                <label for="contractor-request-work-permit-code" [title]="'::INFO_WorkPermitCode' | abpLocalization">{{'::Work Permit Code'|abpLocalization}}</label>
                 <input type="text" id="contractor-request-work-permit-code" class="form-control" formControlName="workPermitCode"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="contractor-request-comment" [title]="'::INFO_Comment' | abpLocalization">{{'::LABEL_CommentText'|abpLocalization}}</label><span> * </span>
+                <label for="contractor-request-comment" [title]="'::INFO_Comment' | abpLocalization">{{'::Comment'|abpLocalization}}</label><span> * </span>
                 <textarea id="contractor-request-comment" class="form-control" formControlName="comment" rows="5"></textarea>
             </div>
         </form>

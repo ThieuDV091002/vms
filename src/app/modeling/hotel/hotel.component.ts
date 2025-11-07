@@ -49,7 +49,7 @@ export class HotelComponent
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_Hotel').subscribe(data => {
+    this.localizationService.get('::Hotel').subscribe(data => {
       this.info = data
     });
   }

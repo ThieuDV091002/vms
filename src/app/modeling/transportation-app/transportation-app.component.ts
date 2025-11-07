@@ -44,7 +44,7 @@ export class TransportationAppComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_TransportationApp').subscribe(data => {
+    this.localizationService.get('::Transportation App').subscribe(data => {
       this.info = data
     });
   }

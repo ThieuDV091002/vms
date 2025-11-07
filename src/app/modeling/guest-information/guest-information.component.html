@@ -1,6 +1,6 @@
-<app-modeling-template [title]="'::MENU_GuestInformation' | abpLocalization" [data]="data" [objectType]="'GuestInformation'"
+<app-modeling-template [title]="'::Guest Information' | abpLocalization" [data]="data" [objectType]="'GuestInformation'"
     [permissions]="{view: 'GuestInformation.View', notify: 'GuestInformation.Notify', list: 'GuestInformation.List'}"
-    [columns]="[{displayKey:'::FullName', field: 'fullName'},{displayKey:'::Company', field: 'company'},{displayKey:'::Title', field: 'title'},{displayKey:'::Purpose', field: 'purpose'},{displayKey:'::WorkWithWhomInMXV', field: 'workWithWhomInMolex'}]"
+    [columns]="[{displayKey:'::Full Name', field: 'fullName'},{displayKey:'::Company', field: 'company'},{displayKey:'::Title', field: 'title'},{displayKey:'::Purpose', field: 'purpose'},{displayKey:'::Work With Whom In MXV', field: 'workWithWhomInMolex'}]"
     [toolbarButtons]="{notify: true}" [list]="list" [hasLastUpdate]="false" (notifyData)="notify($event)"
     (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
     [columnActions]="[{ displayKey: '::ViewDetails', permission: 'GuestInformation.View', func: view ,parent:this}]"
@@ -37,23 +37,23 @@
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p><strong>{{ '::FullName' | abpLocalization }}:</strong> {{ selected?.fullName }}</p>
+                                    <p><strong>{{ '::Full Name' | abpLocalization }}:</strong> {{ selected?.fullName }}</p>
                                     <p><strong>{{ '::Company' | abpLocalization }}:</strong> {{ selected?.company }}</p>
                                     <p><strong>{{ '::Title' | abpLocalization }}:</strong> {{ selected?.title }}</p>
                                     <p><strong>{{ '::Purpose' | abpLocalization }}:</strong> {{ selected?.purpose }}</p>
-                                    <p><strong>{{ '::WorkWithWhomInMXV' | abpLocalization }}:</strong> {{ selected?.workWithWhomInMolex }}</p>
-                                    <p><strong>{{ '::FoodRestriction' | abpLocalization }}:</strong> {{ selected?.isFoodRestrict ? 'Yes' : 'No' }}</p>
+                                    <p><strong>{{ '::Work With Whom In MXV' | abpLocalization }}:</strong> {{ selected?.workWithWhomInMolex }}</p>
+                                    <p><strong>{{ '::Food Restriction' | abpLocalization }}:</strong> {{ selected?.isFoodRestrict ? 'Yes' : 'No' }}</p>
                                     <ng-container *ngIf="selected?.isFoodRestrict">
-                                        <p><strong>{{ '::FoodRestrictionDetail' | abpLocalization }}:</strong> {{ selected?.foodRestrictDetail }}</p>
+                                        <p><strong>{{ '::Food Restriction Detail' | abpLocalization }}:</strong> {{ selected?.foodRestrictDetail }}</p>
                                     </ng-container>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><strong>{{ '::HotelSupport' | abpLocalization }}:</strong> {{ selected?.isHotelSupport ? 'Yes' : 'No' }}</p>
+                                    <p><strong>{{ '::Hotel Support' | abpLocalization }}:</strong> {{ selected?.isHotelSupport ? 'Yes' : 'No' }}</p>
                                     <ng-container *ngIf="selected?.isHotelSupport">
-                                        <p><strong>{{ '::HotelName' | abpLocalization }}:</strong> {{ selected?.hotelName }}</p>
-                                        <p><strong>{{ '::RoomType' | abpLocalization }}:</strong> {{ selected?.roomType }}</p>
+                                        <p><strong>{{ '::Hotel Name' | abpLocalization }}:</strong> {{ selected?.hotelName }}</p>
+                                        <p><strong>{{ '::Room Type' | abpLocalization }}:</strong> {{ selected?.roomType }}</p>
                                     </ng-container>
-                                    <p><strong>{{ '::OtherRequest' | abpLocalization }}:</strong> {{ selected?.otherRequest }}</p>
+                                    <p><strong>{{ '::Other Request' | abpLocalization }}:</strong> {{ selected?.otherRequest }}</p>
                                 </div>
                             </div>
                         </div>
@@ -64,18 +64,18 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
                             [class.collapsed]="isCollapse">
-                            {{ '::LABEL_Flight' | abpLocalization }}
+                            {{ '::Flight Information' | abpLocalization }}
                         </button>
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6" *ngFor="let flight of selected?.flightInfos">
-                                    <p><strong>{{ '::FlightType' | abpLocalization }}:</strong> {{ flight.flightType ? 'Departure Flight' : 'Arrival Flight' }}</p>
-                                    <p><strong>{{ '::FlightDate' | abpLocalization }}:</strong> {{ flight.date | date:'dd/MM/yyyy' }}</p>
-                                    <p><strong>{{ '::FlightNo' | abpLocalization }}:</strong> {{ flight.no }}</p>
-                                    <p><strong>{{ '::FlightRoute' | abpLocalization }}:</strong> {{ flight.route }}</p>
-                                    <p><strong>{{ '::FlightTime' | abpLocalization }}:</strong> {{ flight.time.slice(0, 5)}}</p>
+                                    <p><strong>{{ '::Flight Type' | abpLocalization }}:</strong> {{ flight.flightType ? 'Departure Flight' : 'Arrival Flight' }}</p>
+                                    <p><strong>{{ '::Date' | abpLocalization }}:</strong> {{ flight.date | date:'dd/MM/yyyy' }}</p>
+                                    <p><strong>{{ '::No' | abpLocalization }}:</strong> {{ flight.no }}</p>
+                                    <p><strong>{{ '::Route' | abpLocalization }}:</strong> {{ flight.route }}</p>
+                                    <p><strong>{{ '::Time' | abpLocalization }}:</strong> {{ flight.time.slice(0, 5)}}</p>
                                 </div>
                             </div>
                         </div>
@@ -86,27 +86,27 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"
                             [class.collapsed]="isCollapse">
-                            {{ '::LABEL_Transportation&Uniform' | abpLocalization }}
+                            {{ '::Transportation & Uniform' | abpLocalization }}
                         </button>
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p><strong>{{ '::AirportTransportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isAirportTransport ? 'Yes' : 'No' }}</p>
-                                    <p><strong>{{ '::DailyTransportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isDailyTransport ? 'Yes' : 'No' }}</p>
+                                    <p><strong>{{ '::Airport Transportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isAirportTransport ? 'Yes' : 'No' }}</p>
+                                    <p><strong>{{ '::Daily Transportation' | abpLocalization }}:</strong> {{ selected?.transportInfo.isDailyTransport ? 'Yes' : 'No' }}</p>
                                     <ng-container *ngIf="selected?.transportInfo.isDailyTransport">
-                                        <p><strong>{{ '::TransportTime' | abpLocalization }}:</strong> {{ selected?.transportInfo.time.slice(0, 5) }}</p>
-                                        <p><strong>{{ '::TransportRoute' | abpLocalization }}:</strong> {{ selected?.transportInfo.route }}</p>
-                                        <p><strong>{{ '::TransportAddress' | abpLocalization }}:</strong> {{ selected?.transportInfo.address }}</p>
+                                        <p><strong>{{ '::Time' | abpLocalization }}:</strong> {{ selected?.transportInfo.time.slice(0, 5) }}</p>
+                                        <p><strong>{{ '::Route' | abpLocalization }}:</strong> {{ selected?.transportInfo.route }}</p>
+                                        <p><strong>{{ '::Address' | abpLocalization }}:</strong> {{ selected?.transportInfo.address }}</p>
                                     </ng-container>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><strong>{{ '::EnterFactory' | abpLocalization }}:</strong> {{ selected?.uniformInfo.isVisitFactory ? 'Yes' : 'No' }}</p>
+                                    <p><strong>{{ '::Enter Factory' | abpLocalization }}:</strong> {{ selected?.uniformInfo.isVisitFactory ? 'Yes' : 'No' }}</p>
                                     <ng-container *ngIf="selected?.uniformInfo.isVisitFactory">
-                                        <p><strong>{{ '::CameraCover' | abpLocalization }}:</strong> {{ selected?.uniformInfo.cameraCover }}</p>
-                                        <p><strong>{{ '::CardType' | abpLocalization }}:</strong> {{ selected?.uniformInfo.cardType ? 'Red' : 'Blue' }}</p>
-                                        <p><strong>{{ '::UniformType' | abpLocalization }}:</strong> {{ selected?.uniformInfo.uniformType ? 'Orange' : 'Green' }}</p>
+                                        <p><strong>{{ '::Camera Cover' | abpLocalization }}:</strong> {{ selected?.uniformInfo.cameraCover }}</p>
+                                        <p><strong>{{ '::Card Type' | abpLocalization }}:</strong> {{ selected?.uniformInfo.cardType ? 'Red' : 'Blue' }}</p>
+                                        <p><strong>{{ '::Uniform Type' | abpLocalization }}:</strong> {{ selected?.uniformInfo.uniformType ? 'Orange' : 'Green' }}</p>
                                     </ng-container>
                                 </div>
                             </div>

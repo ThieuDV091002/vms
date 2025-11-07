@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::MENU_Food' | abpLocalization" [data]="data" [objectType]="'Food'"
+<app-modeling-template [title]="'::Food' | abpLocalization" [data]="data" [objectType]="'Food'"
     [permissions]="{create: 'Food.Create', edit: 'Food.Update', delete: 'Food.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -19,7 +19,7 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="food-locationUrl" [title]="'::INFO_LocationURL' | abpLocalization">{{'::LocationURL'|abpLocalization}}</label><span> * </span>
+                <label for="food-locationUrl" [title]="'::INFO_LocationURL' | abpLocalization">{{'::Location URL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="food-locationUrl" class="form-control" formControlName="locationUrl"/>
             </div>
 

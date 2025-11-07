@@ -46,7 +46,7 @@ export class LocalAdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_LocalAdmin').subscribe(data => {
+    this.localizationService.get('::Local Admin').subscribe(data => {
       this.info = data
     });
   }

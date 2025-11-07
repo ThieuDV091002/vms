@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::MENU_Hotel' | abpLocalization" [data]="data" [objectType]="'Hotel'"
+<app-modeling-template [title]="'::Hotel' | abpLocalization" [data]="data" [objectType]="'Hotel'"
     [permissions]="{create: 'Hotel.Create', edit: 'Hotel.Update', delete: 'Hotel.Delete', copy: 'Hotel.Copy', import: 'Hotel.Import', export: 'Hotel.Export'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()" [copyPrefix]="'::LABEL_NewHotel' | abpLocalization"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
@@ -21,7 +21,7 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="hotel-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::DisplayName'|abpLocalization}}</label><span> * </span>
+                <label for="hotel-displayName" [title]="'::INFO_DisplayName' | abpLocalization">{{'::Display Name'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="hotel-displayName" class="form-control"
                     formControlName="displayName" />
             </div>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="hotel-roomRate" [title]="'::INFO_RoomRate' | abpLocalization">{{'::RoomRate'|abpLocalization}}</label><span> * </span>
+                <label for="hotel-roomRate" [title]="'::INFO_RoomRate' | abpLocalization">{{'::Room Rate'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="hotel-roomRate" class="form-control"
                     formControlName="roomRate" />
             </div>

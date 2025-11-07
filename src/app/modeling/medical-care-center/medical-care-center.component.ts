@@ -45,7 +45,7 @@ export class MedicalCareCenterComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_MedicalCareCenter').subscribe(data => {
+    this.localizationService.get('::Medical Care Center').subscribe(data => {
       this.info = data
     });
   }

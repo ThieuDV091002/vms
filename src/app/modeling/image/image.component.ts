@@ -44,7 +44,7 @@ export class ImageComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_Image').subscribe(data => {
+    this.localizationService.get('::Image').subscribe(data => {
       this.info = data
     });
   }

@@ -44,7 +44,7 @@ export class FoodComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_Food').subscribe(data => {
+    this.localizationService.get('::Food').subscribe(data => {
       this.info = data
     });
   }

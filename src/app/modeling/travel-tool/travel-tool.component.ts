@@ -45,7 +45,7 @@ export class TravelToolComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_TravelTool').subscribe(data => {
+    this.localizationService.get('::Travel Tool').subscribe(data => {
       this.info = data
     });
   }

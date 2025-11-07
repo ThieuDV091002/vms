@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::MENU_TransportationApp' | abpLocalization" [data]="data" [objectType]="'TransportationApp'"
+<app-modeling-template [title]="'::Transportation App' | abpLocalization" [data]="data" [objectType]="'TransportationApp'"
     [permissions]="{create: 'TransportationApp.Create', edit: 'TransportationApp.Update', delete: 'TransportationApp.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -19,7 +19,7 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="transportation-app-downloadUrl" [title]="'::INFO_DownloadURL' | abpLocalization">{{'::DownloadURL'|abpLocalization}}</label><span> * </span>
+                <label for="transportation-app-downloadUrl" [title]="'::INFO_DownloadURL' | abpLocalization">{{'::Download URL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="transportation-app-downloadUrl" class="form-control" formControlName="downloadUrl"/>
             </div>
 

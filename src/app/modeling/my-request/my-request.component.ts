@@ -58,7 +58,7 @@ export class MyRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_ContractorRequest').subscribe(data => {
+    this.localizationService.get('::Work Permit Request').subscribe(data => {
       this.info = data;
     });
   }

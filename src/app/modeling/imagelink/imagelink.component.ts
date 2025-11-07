@@ -46,7 +46,7 @@ export class ImageLinkComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_ImageLink').subscribe(data => {
+    this.localizationService.get('::Link').subscribe(data => {
       this.info = data
     });
   }

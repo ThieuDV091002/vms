@@ -44,7 +44,7 @@ export class AttractionComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_Attraction').subscribe(data => {
+    this.localizationService.get('::Attraction').subscribe(data => {
       this.info = data
     });
   }

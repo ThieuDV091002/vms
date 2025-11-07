@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::MENU_MedicalCareCenter' | abpLocalization" [data]="data" [objectType]="'MedicalCareCenter'"
+<app-modeling-template [title]="'::Medical Care Center' | abpLocalization" [data]="data" [objectType]="'MedicalCareCenter'"
     [permissions]="{create: 'MedicalCareCenter.Create', edit: 'MedicalCareCenter.Update', delete: 'MedicalCareCenter.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -18,7 +18,7 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="medical-care-center-locationUrl" [title]="'::INFO_LocationUrl' | abpLocalization">{{'::LocationURL'|abpLocalization}}</label><span> * </span>
+                <label for="medical-care-center-locationUrl" [title]="'::INFO_LocationUrl' | abpLocalization">{{'::Location URL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="medical-care-center-locationUrl" class="form-control" formControlName="locationUrl"/>
             </div>
 

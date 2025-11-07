@@ -41,7 +41,7 @@ export class GuestInformationComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::LABEL_GuestInformation').subscribe(data => {
+    this.localizationService.get('::Guest Information').subscribe(data => {
       this.info = data;
     });
   }

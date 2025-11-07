@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::MENU_LocalAdmin' | abpLocalization" [data]="data" [objectType]="'LocalAdmin'"
+<app-modeling-template [title]="'::Local Admin' | abpLocalization" [data]="data" [objectType]="'LocalAdmin'"
     [permissions]="{create: 'LocalAdmin.Create', edit: 'LocalAdmin.Update', delete: 'LocalAdmin.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -13,12 +13,12 @@
     <ng-template #abpBody>
         <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
             <div class="form-group mb-2">
-                <label for="localadmin-fullName" [title]="'::INFO_FullName' | abpLocalization">{{'::FullName'|abpLocalization}}</label><span> * </span>
+                <label for="localadmin-fullName" [title]="'::INFO_FullName' | abpLocalization">{{'::Full Name'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="localadmin-fullName" class="form-control" formControlName="fullName"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="localadmin-kochID" [title]="'::INFO_KochID' | abpLocalization">{{'::KochID'|abpLocalization}}</label><span> * </span>
+                <label for="localadmin-kochID" [title]="'::INFO_KochID' | abpLocalization">{{'::Koch ID'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="localadmin-kochID" class="form-control" formControlName="kochID"/>
             </div>
 
