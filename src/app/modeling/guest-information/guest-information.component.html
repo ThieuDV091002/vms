@@ -4,7 +4,7 @@
     [toolbarButtons]="{notify: true}" [list]="list" [hasLastUpdate]="false" (notifyData)="notify($event)"
     (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
     [columnActions]="[{ displayKey: '::ViewDetails', permission: 'GuestInformation.View', func: view ,parent:this}]"
-    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchGuest' | abpLocalization">
+    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::Search by Full Name / Company / Title / Purpose' | abpLocalization">
 </app-modeling-template>
 
 <abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">

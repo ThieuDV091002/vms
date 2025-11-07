@@ -3,7 +3,7 @@
     [columns]="[{displayKey:'::Contractor Name', field: 'contractorName'},{displayKey:'::Work Permit', field: 'workPermitCode'},{displayKey:'::Working Area', field: 'workingArea'},{displayKey:'::PIC Status', field: 'molexSupervisorApproveStatusText'},{displayKey:'::EHS Status', field: 'ehsApproveStatusText'}]"
     [list]="list" [hasLastUpdate]="false"
     [columnActions]="[{ displayKey: '::ViewDetails', permission: 'ContractorRequest.View', func: view ,parent:this}]"
-    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::LABEL_SearchContractor' | abpLocalization">
+    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::Search by Contractor Name' | abpLocalization">
 </app-modeling-template>
 
 <abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
