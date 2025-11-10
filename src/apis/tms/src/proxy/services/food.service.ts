@@ -47,14 +47,18 @@ export class FoodService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<FoodDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/food',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+      query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+      config?: Partial<Rest.Config>
+    ) =>
+      this.restService.request<any, PagedResultDto<FoodDto>>(
+        {
+          method: 'GET',
+          url: '/api/app/food',
+          params: query,
+        },
+        { apiName: this.apiName, ...config }
+      );
 
   update = (id: string, input: CreateUpdateFoodDto, config?: Partial<Rest.Config>) =>
     this.restService.request<any, FoodDto>(

@@ -47,14 +47,18 @@ export class TextService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<TextDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/text',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+        query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+        config?: Partial<Rest.Config>
+      ) =>
+        this.restService.request<any, PagedResultDto<TextDto>>(
+          {
+            method: 'GET',
+            url: '/api/app/text',
+            params: query,
+          },
+          { apiName: this.apiName, ...config }
+        );
 
   update = (id: string, input: CreateUpdateTextDto, config?: Partial<Rest.Config>) =>
     this.restService.request<any, TextDto>(

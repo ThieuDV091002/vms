@@ -47,14 +47,18 @@ export class TransportationAppService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<TransportationAppDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/transportation-app',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+        query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+        config?: Partial<Rest.Config>
+      ) =>
+        this.restService.request<any, PagedResultDto<TransportationAppDto>>(
+          {
+            method: 'GET',
+            url: '/api/app/transportation-app',
+            params: query,
+          },
+          { apiName: this.apiName, ...config }
+        );
 
   update = (id: string, input: CreateUpdateTransportationAppDto, config?: Partial<Rest.Config>) =>
     this.restService.request<any, TransportationAppDto>(

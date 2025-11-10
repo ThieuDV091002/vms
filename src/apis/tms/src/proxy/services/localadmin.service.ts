@@ -47,14 +47,18 @@ export class LocalAdminService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<LocalAdminDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/local-admin',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+      query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+      config?: Partial<Rest.Config>
+    ) =>
+      this.restService.request<any, PagedResultDto<LocalAdminDto>>(
+        {
+          method: 'GET',
+          url: '/api/app/local-admin',
+          params: query,
+        },
+        { apiName: this.apiName, ...config }
+      );
 
   getBySite = (site: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, LocalAdminDto[]>(

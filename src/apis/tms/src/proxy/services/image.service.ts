@@ -2,6 +2,7 @@ import { RestService, Rest } from '@abp/ng.core';
 import type { PagedResultDto } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
 import { CreateUpdateImageDto, ImageDto } from '../dtos/image';
+import { Image } from '../dtos';
 
 @Injectable({
   providedIn: 'root',
@@ -47,14 +48,18 @@ export class ImageService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<ImageDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/image',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+      query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+      config?: Partial<Rest.Config>
+    ) =>
+      this.restService.request<any, PagedResultDto<ImageDto>>(
+        {
+          method: 'GET',
+          url: '/api/app/image',
+          params: query,
+        },
+        { apiName: this.apiName, ...config }
+      );
 
   getBySection = (section: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, ImageDto>(

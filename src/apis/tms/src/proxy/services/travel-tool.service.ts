@@ -47,14 +47,18 @@ export class TravelToolService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<TravelToolDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/tool',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+        query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+        config?: Partial<Rest.Config>
+      ) =>
+        this.restService.request<any, PagedResultDto<TravelToolDto>>(
+          {
+            method: 'GET',
+            url: '/api/app/tool',
+            params: query,
+          },
+          { apiName: this.apiName, ...config }
+        );
 
   getByToolType = (toolType: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, TravelToolDto[]>(

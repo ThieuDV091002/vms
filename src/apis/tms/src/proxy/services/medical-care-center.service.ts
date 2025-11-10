@@ -50,14 +50,18 @@ export class MedicalCareCenterService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<MedicalCareCenterDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/medical-care-center',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+      query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+      config?: Partial<Rest.Config>
+    ) =>
+      this.restService.request<any, PagedResultDto<MedicalCareCenterDto>>(
+        {
+          method: 'GET',
+          url: '/api/app/medical-care-center',
+          params: query,
+        },
+        { apiName: this.apiName, ...config }
+      );
 
   getByCity = (city: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, MedicalCareCenterDto[]>(

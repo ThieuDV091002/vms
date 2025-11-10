@@ -47,11 +47,15 @@ export class AttractionService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
+  getList = (
+    query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+    config?: Partial<Rest.Config>
+  ) =>
     this.restService.request<any, PagedResultDto<AttractionDto>>(
       {
         method: 'GET',
         url: '/api/app/attraction',
+        params: query,
       },
       { apiName: this.apiName, ...config }
     );

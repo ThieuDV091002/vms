@@ -47,14 +47,18 @@ export class ImageLinkService {
       { apiName: this.apiName, ...config }
     );
 
-  getList = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<ImageLinkDto>>(
-      {
-        method: 'GET',
-        url: '/api/app/link',
-      },
-      { apiName: this.apiName, ...config }
-    );
+  getList = (
+      query?: { skipCount?: number; maxResultCount?: number; sorting?: string },
+      config?: Partial<Rest.Config>
+    ) =>
+      this.restService.request<any, PagedResultDto<ImageLinkDto>>(
+        {
+          method: 'GET',
+          url: '/api/app/link',
+          params: query,
+        },
+        { apiName: this.apiName, ...config }
+      );
 
   getBySection = (section: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, ImageLinkDto[]>(
