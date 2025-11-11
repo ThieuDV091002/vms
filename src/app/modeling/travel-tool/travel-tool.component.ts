@@ -121,11 +121,7 @@ export class TravelToolComponent implements OnInit {
           this.uploadFile = null;
           this.photoUrl = null;
           this.list.get();
-      },
-      error: err => {
-        this.toasterService.error(err.error?.message || '::LABEL_OperationFailed');
-        this.inProgress = false;
-      },
+      }
     });
     }
   
@@ -194,10 +190,7 @@ export class TravelToolComponent implements OnInit {
         }
         this.photoUrl = imageUrl;
         this.attachmentMap.set(photoId, imageUrl);
-      },
-      error: err => {
-        this.toasterService.error(err.error?.message || '::LABEL_PhotoLoadFailed');
-      },
+      }
     });
   }
 
