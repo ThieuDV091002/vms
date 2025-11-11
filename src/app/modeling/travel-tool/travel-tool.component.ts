@@ -26,7 +26,7 @@ export class TravelToolComponent implements OnInit {
   form: FormGroup;
   columns = [
     { displayKey: '::Name', field: 'name' },
-    { displayKey: '::Type', field: 'toolType' },
+    { displayKey: 'vms::ToolType', field: 'toolType' },
   ];
   info: string;
   uploadFile: File;
@@ -45,7 +45,7 @@ export class TravelToolComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Travel Tool').subscribe(data => {
+    this.localizationService.get('vms::LABEL_TravelTool').subscribe(data => {
       this.info = data
     });
   }

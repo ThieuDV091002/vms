@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Link' | abpLocalization" [data]="data" [objectType]="'ImageLink'"
+<app-modeling-template [title]="'vms::MENU_ImageLink' | abpLocalization" [data]="data" [objectType]="'ImageLink'"
     [permissions]="{create: 'ImageLink.Create', edit: 'ImageLink.Update', delete: 'ImageLink.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -14,30 +14,30 @@
         <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
 
             <div class="form-group mb-2">
-                <label for="imagelink-section" [title]="'::INFO_Section' | abpLocalization">{{'::Section'|abpLocalization}}</label><span> * </span>
+                <label for="imagelink-section" [title]="'::INFO_Section' | abpLocalization">{{'vms::Section'|abpLocalization}}</label><span> * </span>
                 <search-select id="imagelink-section" [items]="sections" displayName="displayName" valueName="id"
                     (change)="selectChange($event)" [value]="this.form.controls['section'].value">
                 </search-select>
             </div>
            
             <div class="form-group mb-2">
-                <label for="imagelink-heading" [title]="'::INFO_Heading' | abpLocalization">{{'::Heading'|abpLocalization}}</label><span> * </span>
+                <label for="imagelink-heading" [title]="'::INFO_Heading' | abpLocalization">{{'vms::Heading'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="imagelink-heading" class="form-control" formControlName="heading"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="imagelink-body" [title]="'::INFO_Body' | abpLocalization">{{'::Body'|abpLocalization}}</label>
+                <label for="imagelink-body" [title]="'::INFO_Body' | abpLocalization">{{'vms::Body'|abpLocalization}}</label>
                 <input type="text" id="imagelink-body" class="form-control" formControlName="body"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="imagelink-url" [title]="'::INFO_URL' | abpLocalization">{{'::URL'|abpLocalization}}</label><span> * </span>
+                <label for="imagelink-url" [title]="'::INFO_URL' | abpLocalization">{{'vms::URL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="imagelink-url" class="form-control" formControlName="url"/>
             </div>
 
             <div class="form-group mb-2">
                 <label for="image-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="image-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">

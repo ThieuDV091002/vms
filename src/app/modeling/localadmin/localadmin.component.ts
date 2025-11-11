@@ -25,9 +25,9 @@ export class LocalAdminComponent implements OnInit {
   data: PagedResultDto<LocalAdminDto> = { items: [], totalCount: 0 };
   form: FormGroup;
   columns = [
-    { displayKey: '::FullName', field: 'fullName' },
-    { displayKey: '::Site', field: 'site' },
-    { displayKey: '::Title', field: 'title' },
+    { displayKey: 'vms::FullName', field: 'fullName' },
+    { displayKey: 'vms::Site', field: 'site' },
+    { displayKey: 'vms::Title', field: 'title' },
   ];
   info: string;
   uploadFile: File;
@@ -46,7 +46,7 @@ export class LocalAdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Local Admin').subscribe(data => {
+    this.localizationService.get('vms::LABEL_LocalAdmin').subscribe(data => {
       this.info = data
     });
   }

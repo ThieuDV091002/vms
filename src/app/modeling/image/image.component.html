@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Image' | abpLocalization" [data]="data" [objectType]="'ImageLink'"
+<app-modeling-template [title]="'vms::MENU_Image' | abpLocalization" [data]="data" [objectType]="'ImageLink'"
     [permissions]="{create: 'ImageLink.Create', edit: 'ImageLink.Update', delete: 'ImageLink.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -14,7 +14,7 @@
         <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
 
             <div class="form-group mb-2">
-                <label for="image-section" [title]="'::INFO_Section' | abpLocalization">{{'::Section'|abpLocalization}}</label><span> * </span>
+                <label for="image-section" [title]="'::INFO_Section' | abpLocalization">{{'vms::Section'|abpLocalization}}</label><span> * </span>
                 <search-select id="image-section" [items]="sections" displayName="displayName" valueName="id"
                     (change)="selectChange($event)" [value]="this.form.controls['section'].value">
                 </search-select>
@@ -22,7 +22,7 @@
 
             <div class="form-group mb-2">
                 <label for="imagelink-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="imagelink-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">

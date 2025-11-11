@@ -35,11 +35,11 @@ export class MyRequestComponent implements OnInit {
   isModalVisible: boolean;
   data: PagedResultDto<ContractorRequestListDto> = { items: [], totalCount: 0 };
   columns = [
-    { displayKey: '::Contractor Name', field: 'contractorName' },
-    { displayKey: '::Work Permit', field: 'workPermitCode' },
-    { displayKey: '::Working Area', field: 'workingArea' },
-    { displayKey: '::PIC Status', field: 'molexSupervisorApproveStatusText' },
-    { displayKey: '::EHS Status', field: 'ehsApproveStatusText' },
+    { displayKey: 'vms::ContractorName', field: 'contractorName' },
+    { displayKey: 'vms::WorkPermit', field: 'workPermitCode' },
+    { displayKey: 'vms::WorkingArea', field: 'workingArea' },
+    { displayKey: 'vms::PICStatus', field: 'molexSupervisorApproveStatusText' },
+    { displayKey: 'vms::EHSStatus', field: 'ehsApproveStatusText' },
   ];
   info: string;
   contractorName = '';
@@ -58,7 +58,7 @@ export class MyRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Work Permit Request').subscribe(data => {
+    this.localizationService.get('vms::LABEL_WorkPermitRequest').subscribe(data => {
       this.info = data;
     });
   }
@@ -125,14 +125,14 @@ export class MyRequestComponent implements OnInit {
 
   approve(e: any) {
     this.confirmationService
-      .warn('::LABEL_ApproveConfirmationMessage', '', {
+      .warn('vms::LABEL_ApproveConfirmationMessage', '', {
         messageLocalizationParams: [this.info, e.contractorName],
       })
       .subscribe(status => {
         if (status === Confirmation.Status.confirm) {
           const approvalStatus = 1;
           this.service.updateMolexSupervisorApproveStatus(e.id, approvalStatus).subscribe(() => {
-            this.toasterService.success('::LABEL_SuccessfullyApproved', '', {
+            this.toasterService.success('vms::LABEL_SuccessfullyApproved', '', {
               messageLocalizationParams: [this.info, e.contractorName],
             });
           });
@@ -144,14 +144,14 @@ export class MyRequestComponent implements OnInit {
 
   reject(e: any) {
     this.confirmationService
-      .warn('::LABEL_RejectConfirmationMessage', '', {
+      .warn('vms::LABEL_RejectConfirmationMessage', '', {
         messageLocalizationParams: [this.info, e.contractorName],
       })
       .subscribe(status => {
         if (status === Confirmation.Status.confirm) {
           const approvalStatus = 2;
           this.service.updateMolexSupervisorApproveStatus(e.id, approvalStatus).subscribe(() => {
-            this.toasterService.success('::LABEL_SuccessfullyRejected', '', {
+            this.toasterService.success('vms::LABEL_SuccessfullyRejected', '', {
               messageLocalizationParams: [this.info, e.contractorName],
             });
           });

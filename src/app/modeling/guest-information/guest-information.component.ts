@@ -23,11 +23,11 @@ export class GuestInformationComponent implements OnInit {
   isModalVisible: boolean;
   data: PagedResultDto<GuestInfoListDto> = { items: [], totalCount: 0 };
   columns = [
-    { displayKey: '::Full Name', field: 'fullName' },
-    { displayKey: '::Company', field: 'company' },
-    { displayKey: '::Title', field: 'title' },
-    { displayKey: '::Purpose', field: 'purpose' },
-    { displayKey: '::Work With Whom In MXV', field: 'workWithWhomInMolex' },
+    { displayKey: 'vms::FullName', field: 'fullName' },
+    { displayKey: 'vms::Company', field: 'company' },
+    { displayKey: 'vms::Title', field: 'title' },
+    { displayKey: 'vms::Purpose', field: 'purpose' },
+    { displayKey: 'vms::WorkWithWhomInMXV', field: 'workWithWhomInMolex' },
   ];
   info: string;
   keyword = '';
@@ -41,7 +41,7 @@ export class GuestInformationComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Guest Information').subscribe(data => {
+    this.localizationService.get('vms::LABEL_GuestInformation').subscribe(data => {
       this.info = data;
     });
   }
@@ -72,7 +72,7 @@ export class GuestInformationComponent implements OnInit {
     const ids = e.objectIds;
     const names = e.objectNames;
     this.confirmationService
-      .warn('::LABEL_NotificationConfirmationMessage', '', {
+      .warn('vms::LABEL_NotificationConfirmationMessage', '', {
         messageLocalizationParams: [this.info, names.join(',<br/>')],
       })
       .subscribe(status => {

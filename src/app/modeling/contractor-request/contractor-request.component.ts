@@ -32,11 +32,11 @@ export class ContractorRequestComponent implements OnInit {
   data: PagedResultDto<ContractorRequestListDto> = { items: [], totalCount: 0 };
   form: FormGroup;
   columns = [
-    { displayKey: '::Contractor Name', field: 'contractorName' },
-    { displayKey: '::Work Permit', field: 'workPermitCode' },
-    { displayKey: '::Working Area', field: 'workingArea' },
-    { displayKey: '::PIC Status', field: 'molexSupervisorApproveStatusText' },
-    { displayKey: '::EHS Status', field: 'ehsApproveStatusText' },
+    { displayKey: 'vms::ContractorName', field: 'contractorName' },
+    { displayKey: 'vms::WorkPermit', field: 'workPermitCode' },
+    { displayKey: 'vms::WorkingArea', field: 'workingArea' },
+    { displayKey: 'vms::PICStatus', field: 'molexSupervisorApproveStatusText' },
+    { displayKey: 'vms::EHSStatus', field: 'ehsApproveStatusText' },
   ];
   info: string;
   contractorName = '';
@@ -60,7 +60,7 @@ export class ContractorRequestComponent implements OnInit {
       comment: ['', Validators.required],
     });
     this.hookToQuery();
-    this.localizationService.get('::Work Permit Request').subscribe(data => {
+    this.localizationService.get('vms::LABEL_WorkPermitRequest').subscribe(data => {
       this.info = data;
     });
   }
@@ -138,14 +138,14 @@ export class ContractorRequestComponent implements OnInit {
     const comment = this.form.get('comment').value;
     const workPermitCode = this.form.get('workPermitCode').value;
     this.confirmationService
-      .warn('::LABEL_ApproveConfirmationMessage', '', {
+      .warn('vms::LABEL_ApproveConfirmationMessage', '', {
         messageLocalizationParams: [this.info, row.contractorName],
       })
       .subscribe(status => {
         if (status === Confirmation.Status.confirm) {
           this.service.approveEhsApproveStatus(row.id, comment, workPermitCode).subscribe({
             next: () => {
-              this.toasterService.success('::LABEL_SuccessfullyApproved', '', {
+              this.toasterService.success('vms::LABEL_SuccessfullyApproved', '', {
                 messageLocalizationParams: [this.info, row.contractorName],
               });
               this.isModalVisible = false;
@@ -162,14 +162,14 @@ export class ContractorRequestComponent implements OnInit {
     }
     const comment = this.form.get('comment').value;
     this.confirmationService
-      .warn('::LABEL_RejectConfirmationMessage', '', {
+      .warn('vms::LABEL_RejectConfirmationMessage', '', {
         messageLocalizationParams: [this.info, row.contractorName],
       })
       .subscribe(status => {
         if (status === Confirmation.Status.confirm) {
           this.service.rejectEhsApproveStatus(row.id, comment).subscribe({
             next: () => {
-              this.toasterService.success('::LABEL_SuccessfullyRejected', '', {
+              this.toasterService.success('vms::LABEL_SuccessfullyRejected', '', {
                 messageLocalizationParams: [this.info, row.contractorName],
               });
               this.isModalVisible = false;

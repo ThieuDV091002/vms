@@ -1,15 +1,15 @@
-<app-modeling-template [title]="'::Work Permit Request'" [data]="data" [objectType]="'ContractorRequest'"
+<app-modeling-template [title]="'vms::MENU_WorkPermitRequest'" [data]="data" [objectType]="'ContractorRequest'"
     [permissions]="{view: 'ContractorRequest.View', updateStatus: 'ContractorRequest.UpdateStatus', list: 'ContractorRequest.List'}"
-    [columns]="[{displayKey:'::Contractor Name', field: 'contractorName'},{displayKey:'::Work Permit', field: 'workPermitCode'},{displayKey:'::Working Area', field: 'workingArea'},{displayKey:'::PIC Status', field: 'molexSupervisorApproveStatusText'},{displayKey:'::EHS Status', field: 'ehsApproveStatusText'}]"
+    [columns]="[{displayKey:'vms::ContractorName', field: 'contractorName'},{displayKey:'vms::WorkPermit', field: 'workPermitCode'},{displayKey:'vms::WorkingArea', field: 'workingArea'},{displayKey:'vms::PICStatus', field: 'molexSupervisorApproveStatusText'},{displayKey:'vms::EHSStatus', field: 'ehsApproveStatusText'}]"
     [list]="list" [hasLastUpdate]="false"
-    [columnActions]="[{ displayKey: '::ViewDetails', permission: 'ContractorRequest.View', func: view ,parent:this}]"
-    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'::Search by Contractor Name' | abpLocalization">
+    [columnActions]="[{ displayKey: 'vms::ViewDetail', permission: 'ContractorRequest.View', func: view ,parent:this}]"
+    (filterChange)="searchByfilter($event)" filterType="Master" [placeholder]="'vms::LABEL_SearchContractor' | abpLocalization">
 </app-modeling-template>
 
 <abp-modal [(visible)]="isModalVisible" [options]="{size: 'xl'}">
     <ng-template #abpHeader>
         <div class="d-flex justify-content-between align-items-center w-100">
-            <h3 class="m-0">{{'::Contractor Request' | abpLocalization }}</h3>
+            <h3 class="m-0">{{'vms::MENU_WorkPermitRequest' | abpLocalization }}</h3>
             <div>
                 <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
                     {{'::LABEL_ExpandAll' | abpLocalization}}
@@ -36,19 +36,19 @@
                         <div class="accordion-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p><strong>{{ '::Contractor Name' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
-                                    <p><strong>{{ '::Request Type' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
+                                    <p><strong>{{ 'vms::ContractorName' | abpLocalization }}:</strong> {{ selected?.contractorName }}</p>
+                                    <p><strong>{{ 'vms::RequestType' | abpLocalization }}:</strong> {{ selected?.requestType ? 'Extend old work permit/Add person' : 'Apply for a new work permit' }}</p>
                                     
                                     <ng-container *ngIf="!selected?.requestType">
                                         <p><strong>{{ '::From' | abpLocalization }}:</strong> {{ selected?.startDate | date:'dd/MM/yyyy' }}</p>
                                         <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
-                                        <p><strong>{{ '::Molex PIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
-                                        <p><strong>{{ '::Contractor PIC Name' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorName }}</p>
-                                        <p><strong>{{ '::Contractor PIC Phone' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorPhone }}</p>
-                                        <p><strong>{{ '::Working Area' | abpLocalization }}:</strong> {{ selected?.workingArea }}</p>
-                                        <p><strong>{{ '::Work Description' | abpLocalization }}:</strong> {{ selected?.workDescription }}</p>
+                                        <p><strong>{{ 'vms::MolexPIC' | abpLocalization }}:</strong> {{ selected?.molexSupervisorName }}</p>
+                                        <p><strong>{{ 'vms::ContractorPICName' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorName }}</p>
+                                        <p><strong>{{ 'vms::ContractorPICPhone' | abpLocalization }}:</strong> {{ selected?.contractorSupervisorPhone }}</p>
+                                        <p><strong>{{ 'vms::WorkingArea' | abpLocalization }}:</strong> {{ selected?.workingArea }}</p>
+                                        <p><strong>{{ 'vms::WorkDescription' | abpLocalization }}:</strong> {{ selected?.workDescription }}</p>
                                         <div *ngFor="let jobType of selected?.selections | groupBy:'jobTypeId'">
-                                            <p><strong>{{ '::Job Type' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
+                                            <p><strong>{{ 'vms::JobType' | abpLocalization }}:</strong> {{ jobType[0]?.jobTypeName }}</p>
                                             <div *ngFor="let section of jobType | groupBy:'jobSectionId'">
                                                 <p>{{ section[0]?.jobSectionName }}</p>
                                                 <ul>
@@ -63,8 +63,8 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="selected?.requestType">
-                                        <p><strong>{{ '::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
-                                        <p><strong>{{ '::Old Work Permit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermitCode }}</p>
+                                        <p><strong>{{ 'vms::To' | abpLocalization }}:</strong> {{ selected?.endDate | date:'dd/MM/yyyy' }}</p>
+                                        <p><strong>{{ 'vms::OldWorkPermit' | abpLocalization }}:</strong> {{ selected?.oldWorkPermitCode }}</p>
                                     </ng-container>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
                             [class.collapsed]="isCollapse">
-                            {{ '::Employee List' | abpLocalization }}
+                            {{ 'vms::LABEL_EmployeeList' | abpLocalization }}
                         </button>
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" [class.show]="!isCollapse">
@@ -88,12 +88,12 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Full Name</th>
-                                                    <th>Date of Birth</th>
-                                                    <th>Company</th>
-                                                    <th>Passport</th>
-                                                    <th>Management Department</th>
-                                                    <th>Molex Supervisor</th>
+                                                    <th>{{ 'vms::FullName' | abpLocalization }}</th>
+                                                    <th>{{ 'vms::DateOfBirth' | abpLocalization }}</th>
+                                                    <th>{{ 'vms::Company' | abpLocalization }}</th>
+                                                    <th>{{ 'vms::ID_Card' | abpLocalization }}</th>
+                                                    <th>{{ 'vms::ManagementDepartment' | abpLocalization }}</th>
+                                                    <th>{{ 'vms::MolexPIC' | abpLocalization }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -112,7 +112,7 @@
 
                                     <div class="file-container" *ngFor="let file of employeeListFiles">
                                         <div *ngIf="file.loading">
-                                        <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' | abpLocalization }}
+                                        <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ 'vms::LoadingWithThreeDot' | abpLocalization }}
                                         </div>
                                         <div *ngIf="!file.loading">
                                         <img
@@ -137,16 +137,16 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"
                             [class.collapsed]="isCollapse">
-                            {{ '::Documents' | abpLocalization }}
+                            {{ 'vms::LABEL_Document' | abpLocalization }}
                         </button>
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" [class.show]="!isCollapse">
                         <div class="accordion-body">
                             <div class="row">
-                                <div *ngIf="documentFiles.length === 0">{{ '::NoFilesAvailable' | abpLocalization }}</div>
+                                <div *ngIf="documentFiles.length === 0">{{ 'vms::NoFilesAvailable' | abpLocalization }}</div>
                                 <div class="col-md-4" *ngFor="let file of documentFiles">
                                     <div *ngIf="file.loading">
-                                        <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' | abpLocalization }}
+                                        <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ 'vms::LoadingWithThreeDot' | abpLocalization }}
                                     </div>
                                     <div *ngIf="!file.loading" style="display: flex; flex-direction: column;">
                                         <img *ngIf="file.isImage" [src]="file.mediaAccessUrl" alt="{{ file.fileName }}"

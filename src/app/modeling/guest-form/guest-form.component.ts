@@ -46,7 +46,7 @@ export class GuestFormComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    this.localizationService.get('::LABEL_ContractorRequest').subscribe(data => {
+    this.localizationService.get('vms::LABEL_GuestRegistration').subscribe(data => {
       this.info = data;
     });
 
@@ -68,9 +68,9 @@ export class GuestFormComponent implements OnInit{
       ]),
 
       isHotelSupport: [null, Validators.required],
-      hotelId: [''],
-      hotelName: [''],
-      roomType: [''],
+      hotelId: [null],
+      hotelName: [null],
+      roomType: [null],
 
       isFoodRestrict: [null, Validators.required],
       foodRestrictDetail: [''],
@@ -186,9 +186,9 @@ export class GuestFormComponent implements OnInit{
         { date: '', no: '', route: '', time: '', flightType: FlightType.Departure }
       ],
       isHotelSupport: null,
-      hotelId: '',
-      hotelName: '',
-      roomType: '',
+      hotelId: null,
+      hotelName: null,
+      roomType: null,
       isFoodRestrict: null,
       foodRestrictDetail: '',
       otherRequest: '',

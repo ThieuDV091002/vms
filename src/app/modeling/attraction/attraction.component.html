@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Attraction' | abpLocalization" [data]="data" [objectType]="'Attraction'"
+<app-modeling-template [title]="'vms::MENU_Attraction' | abpLocalization" [data]="data" [objectType]="'Attraction'"
     [permissions]="{create: 'Attraction.Create', edit: 'Attraction.Update', delete: 'Attraction.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -24,13 +24,13 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="attraction-locationUrl" [title]="'::INFO_LocationURL' | abpLocalization">{{'::Location URL'|abpLocalization}}</label><span> * </span>
+                <label for="attraction-locationUrl" [title]="'::INFO_LocationURL' | abpLocalization">{{'vms::LocationURL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="attraction-locationUrl" class="form-control" formControlName="locationUrl"/>
             </div>
 
             <div class="form-group mb-2">
                 <label for="attraction-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="attraction-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">

@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Food' | abpLocalization" [data]="data" [objectType]="'Food'"
+<app-modeling-template [title]="'vms::MENU_Food' | abpLocalization" [data]="data" [objectType]="'Food'"
     [permissions]="{create: 'Food.Create', edit: 'Food.Update', delete: 'Food.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -19,13 +19,13 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="food-locationUrl" [title]="'::INFO_LocationURL' | abpLocalization">{{'::Location URL'|abpLocalization}}</label><span> * </span>
+                <label for="food-locationUrl" [title]="'::INFO_LocationURL' | abpLocalization">{{'vms::LocationURL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="food-locationUrl" class="form-control" formControlName="locationUrl"/>
             </div>
 
             <div class="form-group mb-2">
                 <label for="food-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="food-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">

@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Travel Tool' | abpLocalization" [data]="data" [objectType]="'TravelTool'"
+<app-modeling-template [title]="'vms::MENU_TravelTool' | abpLocalization" [data]="data" [objectType]="'TravelTool'"
     [permissions]="{create: 'Tool.Create', edit: 'Tool.Update', delete: 'Tool.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -18,12 +18,12 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="travel-tool-url" [title]="'::INFO_Url' | abpLocalization">{{'::URL'|abpLocalization}}</label><span> * </span>
+                <label for="travel-tool-url" [title]="'::INFO_Url' | abpLocalization">{{'vms::URL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="travel-tool-url" class="form-control" formControlName="url"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="travel-tool-toolType" [title]="'::INFO_ToolType' | abpLocalization">{{'::Tool Type'|abpLocalization}}</label><span> * </span>
+                <label for="travel-tool-toolType" [title]="'::INFO_ToolType' | abpLocalization">{{'vms::ToolType'|abpLocalization}}</label><span> * </span>
                 <search-select id="travel-tool-toolType" [items]="types" displayName="displayName" valueName="id"
                     (change)="selectChange($event)" [value]="this.form.controls['toolType'].value">
                 </search-select>
@@ -31,7 +31,7 @@
 
             <div class="form-group mb-2">
                 <label for="travel-tool-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="travel-tool-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">

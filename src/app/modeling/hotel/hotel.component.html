@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Hotel' | abpLocalization" [data]="data" [objectType]="'Hotel'"
+<app-modeling-template [title]="'vms::MENU_Hotel' | abpLocalization" [data]="data" [objectType]="'Hotel'"
     [permissions]="{create: 'Hotel.Create', edit: 'Hotel.Update', delete: 'Hotel.Delete', copy: 'Hotel.Copy', import: 'Hotel.Import', export: 'Hotel.Export'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()" [copyPrefix]="'::LABEL_NewHotel' | abpLocalization"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)" (multiDelete)="multiDelete($event)"
@@ -27,26 +27,26 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="hotel-room" [title]="'::INFO_Room' | abpLocalization">{{'::Room'|abpLocalization}}</label><span> * </span>
+                <label for="hotel-room" [title]="'::INFO_Room' | abpLocalization">{{'vms::Room'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="hotel-room" class="form-control"
                     formControlName="room" />
             </div>
 
             <div class="form-group mb-2">
-                <label for="hotel-roomRate" [title]="'::INFO_RoomRate' | abpLocalization">{{'::Room Rate'|abpLocalization}}</label><span> * </span>
+                <label for="hotel-roomRate" [title]="'::INFO_RoomRate' | abpLocalization">{{'vms::Room Rate'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="hotel-roomRate" class="form-control"
                     formControlName="roomRate" />
             </div>
 
             <div class="form-group mb-2">
-                <label for="hotel-address" [title]="'::INFO_Address' | abpLocalization">{{'::Address'|abpLocalization}}</label><span> * </span>
+                <label for="hotel-address" [title]="'::INFO_Address' | abpLocalization">{{'vms::Address'|abpLocalization}}</label><span> * </span>
                 <textarea type="text" id="hotel-address" class="form-control"
                     formControlName="address"></textarea>
             </div>
 
             <div class="form-group mb-2">
                 <label for="distance-to-molex" [title]="'::INFO_DistanceToMolexDongAnh' | abpLocalization">
-                    {{'::DistanceToMolexDongAnh' | abpLocalization}}
+                    {{'vms::DistanceToMolexDongAnh' | abpLocalization}}
                 </label><span> * </span>
                 <input type="number" id="distance-to-molex" class="form-control"
                         formControlName="distanceToMolexDongAnh" step="any" />
@@ -54,7 +54,7 @@
 
             <div class="form-group mb-2">
             <label for="driving-time-to-molex" [title]="'::INFO_DrivingTimeToMolexDongAnh' | abpLocalization">
-                {{'::DrivingTimeToMolexDongAnh' | abpLocalization}}
+                {{'vms::DrivingTimeToMolexDongAnh' | abpLocalization}}
             </label><span> * </span>
             <input type="number" id="driving-time-to-molex" class="form-control"
                     formControlName="drivingTimeToMolexDongAnh" step="any" />
@@ -62,7 +62,7 @@
 
             <div class="form-group mb-2">
             <label for="distance-to-noibai" [title]="'::INFO_DistanceToNoiBai' | abpLocalization">
-                {{'::DistanceToNoiBai' | abpLocalization}}
+                {{'vms::DistanceToNoiBai' | abpLocalization}}
             </label><span> * </span>
             <input type="number" id="distance-to-noibai" class="form-control"
                     formControlName="distanceToNoiBai" step="any" />
@@ -70,7 +70,7 @@
 
             <div class="form-group mb-2">
             <label for="driving-time-to-noibai" [title]="'::INFO_DrivingTimeToNoiBai' | abpLocalization">
-                {{'::DrivingTimeToNoiBai' | abpLocalization}}
+                {{'vms::DrivingTimeToNoiBai' | abpLocalization}}
             </label><span> * </span>
             <input type="number" id="driving-time-to-noibai" class="form-control"
                     formControlName="drivingTimeToNoiBai" step="any" />

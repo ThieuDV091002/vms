@@ -31,9 +31,9 @@ export class HotelComponent
   columns = [
     { displayKey: '::Name', field: 'name' },
     { displayKey: '::DisplayName', field: 'displayName' },
-    { displayKey: '::Room', field: 'room' },
-    { displayKey: '::RoomRate', field: 'roomRate' },
-    { displayKey: '::Address', field: 'address' },
+    { displayKey: 'vms::Room', field: 'room' },
+    { displayKey: 'vms::RoomRate', field: 'roomRate' },
+    { displayKey: 'vms::Address', field: 'address' },
   ];
   info: string;
   constructor(
@@ -49,7 +49,7 @@ export class HotelComponent
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Hotel').subscribe(data => {
+    this.localizationService.get('vms::LABEL_Hotel').subscribe(data => {
       this.info = data
     });
   }

@@ -25,7 +25,7 @@ export class ImageComponent implements OnInit {
   data: PagedResultDto<ImageDto> = { items: [], totalCount: 0 };
   form: FormGroup;
   columns = [
-    { displayKey: '::Section', field: 'section' },
+    { displayKey: 'vms::Section', field: 'section' },
   ];
   info: string;
   uploadFile: File;
@@ -44,7 +44,7 @@ export class ImageComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Image').subscribe(data => {
+    this.localizationService.get('vms::LABEL_Image').subscribe(data => {
       this.info = data
     });
   }

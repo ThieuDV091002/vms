@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Local Admin' | abpLocalization" [data]="data" [objectType]="'LocalAdmin'"
+<app-modeling-template [title]="'vms::MENU_LocalAdmin' | abpLocalization" [data]="data" [objectType]="'LocalAdmin'"
     [permissions]="{create: 'LocalAdmin.Create', edit: 'LocalAdmin.Update', delete: 'LocalAdmin.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -13,22 +13,22 @@
     <ng-template #abpBody>
         <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
             <div class="form-group mb-2">
-                <label for="localadmin-fullName" [title]="'::INFO_FullName' | abpLocalization">{{'::Full Name'|abpLocalization}}</label><span> * </span>
+                <label for="localadmin-fullName" [title]="'::INFO_FullName' | abpLocalization">{{'vms::FullName'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="localadmin-fullName" class="form-control" formControlName="fullName"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="localadmin-kochID" [title]="'::INFO_KochID' | abpLocalization">{{'::Koch ID'|abpLocalization}}</label><span> * </span>
+                <label for="localadmin-kochID" [title]="'::INFO_KochID' | abpLocalization">{{'vms::KochID'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="localadmin-kochID" class="form-control" formControlName="kochID"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="localadmin-title" [title]="'::INFO_Title' | abpLocalization">{{'::Title'|abpLocalization}}</label><span> * </span>
+                <label for="localadmin-title" [title]="'::INFO_Title' | abpLocalization">{{'vms::Title'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="localadmin-title" class="form-control" formControlName="title"/>
             </div>
 
             <div class="form-group mb-2">
-                <label for="localadmin-site" [title]="'::INFO_Site' | abpLocalization">{{'::Site'|abpLocalization}}</label><span> * </span>
+                <label for="localadmin-site" [title]="'::INFO_Site' | abpLocalization">{{'vms::Site'|abpLocalization}}</label><span> * </span>
                 <search-select id="localadmin-site" [items]="sites" displayName="displayName" valueName="id"
                     (change)="selectChange($event)" [value]="this.form.controls['site'].value">
                 </search-select>
@@ -36,7 +36,7 @@
 
             <div class="form-group mb-2">
                 <label for="localadmin-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="localadmin-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">

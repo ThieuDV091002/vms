@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ImagelinkComponent } from './imagelink.component';
+import { ImageLinkComponent } from './imagelink.component';
 
 describe('ImagelinkComponent', () => {
-  let component: ImagelinkComponent;
-  let fixture: ComponentFixture<ImagelinkComponent>;
+  let component: ImageLinkComponent;
+  let fixture: ComponentFixture<ImageLinkComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ImagelinkComponent]
+      imports: [ImageLinkComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ImagelinkComponent);
+    fixture = TestBed.createComponent(ImageLinkComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

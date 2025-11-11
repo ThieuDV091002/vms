@@ -40,7 +40,7 @@ export class TextComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Text').subscribe(data => {
+    this.localizationService.get('vms::LABEL_Text').subscribe(data => {
       this.info = data
     });
   }

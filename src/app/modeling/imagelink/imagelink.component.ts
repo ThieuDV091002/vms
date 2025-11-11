@@ -25,9 +25,9 @@ export class ImageLinkComponent implements OnInit {
   data: PagedResultDto<ImageLinkDto> = { items: [], totalCount: 0 };
   form: FormGroup;
   columns = [
-    { displayKey: '::Section', field: 'section' },
-    { displayKey: '::Heading', field: 'heading' },
-    { displayKey: '::Body', field: 'body' },
+    { displayKey: 'vms::Section', field: 'section' },
+    { displayKey: 'vms::Heading', field: 'heading' },
+    { displayKey: 'vms::Body', field: 'body' },
   ];
   info: string;
   uploadFile: File;
@@ -46,7 +46,7 @@ export class ImageLinkComponent implements OnInit {
 
   ngOnInit(): void {
     this.hookToQuery();
-    this.localizationService.get('::Link').subscribe(data => {
+    this.localizationService.get('vms::MENU_Link').subscribe(data => {
       this.info = data
     });
   }

@@ -1,86 +1,86 @@
 <form [formGroup]="contractorForm" (ngSubmit)="onSubmit()" style="padding-top: 40px;" id="contractor-form-top">
-    <h2 style="color: black;" #formTop>{{ '::Work Permit Registration (Registration Form for Contractors)' | abpLocalization }}</h2>
+    <h2 style="color: black;" #formTop>{{ 'vms::LABEL_ContractorForm' | abpLocalization }}</h2>
 
     <div class="form-group full-width">
-        <label for="requestType">{{ '::Registration classification' | abpLocalization }}<span> * </span></label>
+        <label for="requestType">{{ 'vms::LABEL_RequestType' | abpLocalization }}<span> * </span></label>
         <select formControlName="requestType" id="requestType" required>
-            <option value="" disabled selected>{{ '::Select an option' | abpLocalization }}</option>
-            <option value="0">{{ '::Apply for a new work permit' | abpLocalization }}</option>
-            <option Value="1">{{ '::Extend old work permit/Add person' | abpLocalization }}</option>
+            <option value="" disabled selected>{{ 'vms::LABEL_Select' | abpLocalization }}</option>
+            <option value="0">{{ 'vms::LABEL_NewRequest' | abpLocalization }}</option>
+            <option Value="1">{{ 'vms::LABEL_ExtendRequest' | abpLocalization }}</option>
         </select>
     </div>
 
     <div *ngIf="contractorForm.get('requestType')?.value === '0'">
         <div class="form-row">
             <div class="form-group">
-                <label for="molexSupervisorName">{{ '::Molex PIC Name' | abpLocalization }}<span> * </span></label>
+                <label for="molexSupervisorName">{{ 'vms::MolexPIC' | abpLocalization }}<span> * </span></label>
                 <input type="text" id="molexSupervisorName" formControlName="molexSupervisorName" required>
             </div>
             <div class="form-group">
-                <label for="contractorName">{{ '::Contractor Name' | abpLocalization }}<span> * </span></label>
+                <label for="contractorName">{{ 'vms::ContractorName' | abpLocalization }}<span> * </span></label>
                 <input type="text" id="contractorName" formControlName="contractorName" required>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="contractorSupervisorName">{{ '::Contractor PIC Name' | abpLocalization }}<span> * </span></label>
+                <label for="contractorSupervisorName">{{ 'vms::ContractorPICName' | abpLocalization }}<span> * </span></label>
                 <input type="text" id="contractorSupervisorName" formControlName="contractorSupervisorName" required>
             </div>
             <div class="form-group">
-                <label for="contractorSupervisorPhone">{{ '::Contractor PIC Phone' | abpLocalization }}<span> * </span></label>
+                <label for="contractorSupervisorPhone">{{ 'vms::ContractorPICPhone' | abpLocalization }}<span> * </span></label>
                 <input type="text" id="contractorSupervisorPhone" formControlName="contractorSupervisorPhone" required>
             </div>
         </div>
         <div class="form-group full-width">
-            <label for="workingArea">{{ '::Working Area' | abpLocalization }}<span> * </span></label>
+            <label for="workingArea">{{ 'vms::WorkingArea' | abpLocalization }}<span> * </span></label>
             <input type="text" id="workingArea" formControlName="workingArea" required>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="startDate">{{ '::From' | abpLocalization }}<span> * </span></label>
+                <label for="startDate">{{ 'vms::From' | abpLocalization }}<span> * </span></label>
                 <br>
                 <input type="date" id="startDate" formControlName="startDate" required>
             </div>
             <div class="form-group">
-                <label for="endDate">{{ '::To' | abpLocalization }}<span> * </span></label>
+                <label for="endDate">{{ 'vms::To' | abpLocalization }}<span> * </span></label>
                 <br>
                 <input type="date" id="endDate" formControlName="endDate" required>
             </div>
             <div class="form-group">
-                <label for="employeeNumber">{{ '::Number of contractor employees working' | abpLocalization }}<span> * </span></label>
+                <label for="employeeNumber">{{ 'vms::EmployeeNumber' | abpLocalization }}<span> * </span></label>
                 <input type="number" id="employeeNumber" formControlName="employeeNumber" required>
             </div>
         </div>
 
         <div formArrayName="employeeLists">
-            <p>{{ '::Employee List' | abpLocalization }}<span> * </span></p>
-            <button type="button" (click)="addEmployee()" class="add-btn">{{ '::Add' | abpLocalization }}</button>
+            <p>{{ 'vms::LABEL_EmployeeList' | abpLocalization }}<span> * </span></p>
+            <button type="button" (click)="addEmployee()" class="add-btn">{{ 'vms::Add' | abpLocalization }}</button>
             <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="fullName-{{i}}">{{ '::Full Name' | abpLocalization }}<span> * </span></label>
+                        <label for="fullName-{{i}}">{{ 'vms::FullName' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="dateOfBirth-{{i}}">{{ '::Date Of Birth' | abpLocalization }}<span> * </span></label>
+                        <label for="dateOfBirth-{{i}}">{{ 'vms::DateOfBirth' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
                     </div>
                     <div class="form-group">
-                        <label for="passport-{{i}}">{{ '::ID Card/Passport' | abpLocalization }}<span> * </span></label>
+                        <label for="passport-{{i}}">{{ 'vms::ID_Card' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="passport-{{i}}" formControlName="passport" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="company-{{i}}">{{ '::Company' | abpLocalization }}<span> * </span></label>
+                        <label for="company-{{i}}">{{ 'vms::Company' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="company-{{i}}" formControlName="company" required>
                     </div>
                     <div class="form-group">
-                        <label for="managementDepartment-{{i}}">{{ '::Management Department' | abpLocalization }}</label>
+                        <label for="managementDepartment-{{i}}">{{ 'vms::ManagementDepartment' | abpLocalization }}</label>
                         <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment">
                     </div>
                     <div class="form-group">
-                        <label for="molexSupervisor-{{i}}">{{ '::Molex PIC' | abpLocalization }}</label>
+                        <label for="molexSupervisor-{{i}}">{{ 'vms::MolexPIC' | abpLocalization }}</label>
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor">
                     </div>
                 </div>
@@ -88,7 +88,7 @@
             </div>
         </div>
 
-        <p>{{ '::Please add to the below file and upload or add each employee one by one.' | abpLocalization }}</p>
+        <p>{{ 'vms::LABEL_UploadEmployeeFileGuide' | abpLocalization }}</p>
             <div class="file-container">
                 <div>
                     <a
@@ -102,15 +102,15 @@
             </div>
 
         <div class="form-group full-width">
-            <label for="employeeListFile">{{ '::Employee List File' | abpLocalization }}</label>
+            <label for="employeeListFile">{{ 'vms::EmployeeListFile' | abpLocalization }}</label>
             <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
         <div class="form-group full-width">
-            <label for="workDescription">{{ '::Work Description' | abpLocalization }}<span> * </span></label>
+            <label for="workDescription">{{ 'vms::WorkDescription' | abpLocalization }}<span> * </span></label>
             <textarea id="workDescription" formControlName="workDescription" required></textarea>
         </div>
         <div class="form-group full-width">
-            <label for="jobTypeId">{{ '::Job Type' | abpLocalization }}<span> * </span></label>
+            <label for="jobTypeId">{{ 'vms::JobType' | abpLocalization }}<span> * </span></label>
             <div *ngFor="let jobType of jobTypes" class="radio-option" style="display: flex; align-items: center;">
                 <input 
                     type="radio" 
@@ -152,48 +152,48 @@
     <div *ngIf="contractorForm.get('requestType')?.value === '1'">
         <div class="form-row">
             <div class="form-group">
-                <label for="oldWorkPermitCode">{{ '::Old Work Permit Code' | abpLocalization }}<span> * </span></label>
+                <label for="oldWorkPermitCode">{{ 'vms::OldWorkPermitCode' | abpLocalization }}<span> * </span></label>
                 <input type="text" id="oldWorkPermitCode" formControlName="oldWorkPermitCode" required>
             </div>
             <div class="form-group">
-                <label for="contractorName">{{ '::Contractor Name' | abpLocalization }}<span> * </span></label>
+                <label for="contractorName">{{ 'vms::ContractorName' | abpLocalization }}<span> * </span></label>
                 <input type="text" id="contractorName" formControlName="contractorName" required>
             </div>
         </div>
         <div class="form-group full-width">
-            <label for="endDate">{{ '::Extend To' | abpLocalization }}<span> * </span></label>
+            <label for="endDate">{{ 'vms::ExtendToDate' | abpLocalization }}<span> * </span></label>
             <input type="date" id="endDate" formControlName="endDate" required>
         </div>
 
         <div formArrayName="employeeLists">
-            <p>{{ '::Additional employees list' | abpLocalization }}</p>
-            <button type="button" (click)="addEmployee()" class="add-btn">{{ '::Add' | abpLocalization }}</button>
+            <p>{{ 'vms::LABEL_AdditonalEmployee' | abpLocalization }}</p>
+            <button type="button" (click)="addEmployee()" class="add-btn">{{ 'vms::Add' | abpLocalization }}</button>
             <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="fullName-{{i}}">{{ '::Full Name' | abpLocalization }}<span> * </span></label>
+                        <label for="fullName-{{i}}">{{ 'vms::FullName' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="dateOfBirth-{{i}}">{{ '::Date Of Birth' | abpLocalization }}<span> * </span></label>
+                        <label for="dateOfBirth-{{i}}">{{ 'vms::DateOfBirth' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
                     </div>
                     <div class="form-group">
-                        <label for="passport-{{i}}">{{ '::ID Card/Passport' | abpLocalization }}<span> * </span></label>
+                        <label for="passport-{{i}}">{{ 'vms::ID_Card' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="passport-{{i}}" formControlName="passport" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="company-{{i}}">{{ '::Company' | abpLocalization }}<span> * </span></label>
+                        <label for="company-{{i}}">{{ 'vms::Company' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="company-{{i}}" formControlName="company" required>
                     </div>
                     <div class="form-group">
-                        <label for="managementDepartment-{{i}}">{{ '::Management Department' | abpLocalization }}</label>
+                        <label for="managementDepartment-{{i}}">{{ 'vms::ManagementDepartment' | abpLocalization }}</label>
                         <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment">
                     </div>
                     <div class="form-group">
-                        <label for="molexSupervisor-{{i}}">{{ '::Molex PIC' | abpLocalization }}</label>
+                        <label for="molexSupervisor-{{i}}">{{ 'vms::MolexPIC' | abpLocalization }}</label>
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor">
                     </div>
                 </div>
@@ -201,11 +201,11 @@
             </div>
         </div>
         <div *ngIf="oldEmployeeListFiles.length > 0" class="old-files">
-            <p>{{ '::Previous employee list file' | abpLocalization }}:</p>
-            <p>{{ '::Please add to the old employee list file and upload below.' | abpLocalization }}</p>
+            <p>{{ 'vms::OldEmployeeListFile' | abpLocalization }}:</p>
+            <p>{{ 'vms::LABEL_AddEmployeeFileGuide' | abpLocalization }}</p>
             <div class="file-container" *ngFor="let file of oldEmployeeListFiles">
                 <div *ngIf="file.loading">
-                    <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ '::LoadingWithThreeDot' }}
+                    <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ 'vms::LoadingWithThreeDot' }}
                 </div>
                 <div *ngIf="!file.loading">
                     <img
@@ -223,7 +223,7 @@
         </div>
         <div class="form-group full-width">
             <div class="file-container" *ngIf="oldEmployeeListFiles.length === 0">
-                <p>{{ '::Please add to the below file and upload or add each employee one by one.' | abpLocalization }}</p>
+                <p>{{ 'vms::LABEL_UploadEmployeeFileGuide' | abpLocalization }}</p>
                 <div>
                     <a
                         href="./assets/vms/Employee_List.xlsx"
@@ -234,41 +234,41 @@
                     </a>
                 </div>
             </div>
-            <label for="employeeListFile">{{ '::Additional employee list file' | abpLocalization }}</label>
+            <label for="employeeListFile">{{ 'vms::AdditionalFile' | abpLocalization }}</label>
             <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label for="molexSupervisorEmail">{{ '::Email of Molex employee supervising work performance' | abpLocalization }}<span> * </span></label>
+            <label for="molexSupervisorEmail">{{ 'vms::LABEL_MolexPICEmail' | abpLocalization }}<span> * </span></label>
             <input type="email" id="molexSupervisorEmail" formControlName="molexSupervisorEmail" required>
         </div>
         <div class="form-group">
-            <label for="contractorEmail">{{ "::Contractor's email to receive approval result" | abpLocalization }}<span> * </span></label>
+            <label for="contractorEmail">{{ "vms::LABEL_ContractorEmail" | abpLocalization }}<span> * </span></label>
             <br>
             <input type="email" id="contractorEmail" formControlName="contractorEmail" required>
         </div>
     </div>
 
     <div class="form-group full-width">
-        <label>{{ '::The contractor confirmed that the training video had been sent to all employees and that they had viewed and understood the content' | abpLocalization }}:<span> * </span></label>
+        <label>{{ 'vms::LABEL_VideoConfirm' | abpLocalization }}:<span> * </span></label>
         <div style="margin-top: 8px; display: flex; gap: 20px; align-items: center;">
             <label style="display: flex; align-items: center;">
                 <input type="radio" formControlName="videoConfirmed" value="yes" required>
-                <span style="margin-left: 5px;">{{ '::Seen and understood' | abpLocalization }}</span>
+                <span style="margin-left: 5px;">{{ 'vms::LABEL_ConfirmVideo' | abpLocalization }}</span>
             </label>
         </div>
         <p style="margin-top: 10px;">
-            {{ '::Training video link' | abpLocalization }}:
+            {{ 'vms::LABEL_VideoTraining' | abpLocalization }}:
             <a href="https://www.youtube.com/watch?v=IQg8GvOY6Pw&t=42s" target="_blank" rel="noopener noreferrer">
-                {{ '::Here' | abpLocalization }}
+                {{ 'vms::Here' | abpLocalization }}
             </a>
         </p>
     </div>
 
     <div class="form-group full-width">
-        <label for="documentFiles">{{ '::Document' | abpLocalization }}</label>
+        <label for="documentFiles">{{ 'vms::LABEL_Document' | abpLocalization }}</label>
         <input 
             type="file" 
             id="documentFiles" 
@@ -279,7 +279,7 @@
             accept="image/*,.pdf,.doc,.docx,.xlsx,.xls" 
         />
         <div *ngIf="documentFiles.length > 0" class="uploaded-files">
-            <p>{{ '::Uploaded documents' | abpLocalization }}:</p>
+            <p>{{ 'vms::LABEL_UploadedDocuments' | abpLocalization }}:</p>
             <ul>
                 <li *ngFor="let preview of documentPreviews; let i=index" class="file-item">
                     <span>{{ preview.file.name }}</span>

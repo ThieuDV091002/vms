@@ -31,6 +31,7 @@ import { ThemeLeptonXModule } from '@volosoft/abp.ng.theme.lepton-x';
 import { CustomErrorComponent } from './shared/components/custom-error/custom-error.component';
 import { CustomErrorHandlerService } from './shared/services/custom-error-handler.service';
 import { CustomToasterService, ORIGINAL_TOASTER_SERVICE } from './shared/services/custom-toaster.service';
+import { localizationResources } from 'src/assets/i18n';
 @NgModule({
   imports: [
     ThemeSharedModule.forRoot({
@@ -46,6 +47,7 @@ import { CustomToasterService, ORIGINAL_TOASTER_SERVICE } from './shared/service
     CoreModule.forRoot({
       environment,
       registerLocaleFn: registerLocale(),
+      localizations: localizationResources,
     }),
     AbpOAuthModule.forRoot(),
 

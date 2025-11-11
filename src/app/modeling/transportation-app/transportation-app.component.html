@@ -1,4 +1,4 @@
-<app-modeling-template [title]="'::Transportation App' | abpLocalization" [data]="data" [objectType]="'TransportationApp'"
+<app-modeling-template [title]="'vms::MENU_TransportationApp' | abpLocalization" [data]="data" [objectType]="'TransportationApp'"
     [permissions]="{create: 'TransportationApp.Create', edit: 'TransportationApp.Update', delete: 'TransportationApp.Delete'}"
     [columns]="columns" [customAction]="" [list]="list" (dataAdd)="add()"
     (dataEdit)="edit($event)" (dataDelete)="delete($event)"
@@ -19,13 +19,13 @@
             </div>
 
             <div class="form-group mb-2">
-                <label for="transportation-app-downloadUrl" [title]="'::INFO_DownloadURL' | abpLocalization">{{'::Download URL'|abpLocalization}}</label><span> * </span>
+                <label for="transportation-app-downloadUrl" [title]="'::INFO_DownloadURL' | abpLocalization">{{'vms::DownloadURL'|abpLocalization}}</label><span> * </span>
                 <input type="text" id="transportation-app-downloadUrl" class="form-control" formControlName="downloadUrl"/>
             </div>
 
             <div class="form-group mb-2">
                 <label for="transportation-app-photo"
-                    [title]="'::INFO_Photo' | abpLocalization">{{'::Photo'|abpLocalization}}</label><span> * </span>
+                    [title]="'::INFO_Photo' | abpLocalization">{{'vms::Photo'|abpLocalization}}</label><span> * </span>
                 <input #fileInput id="transportation-app-photo" type="file" class="form-control"
                     (change)="onFileChange($event)" accept="image/*" />
                 <div *ngIf="photoUrl" class="mt-2">
