@@ -1,5 +1,5 @@
-<form style="padding-top: 40px;" [formGroup]="guestForm" (ngSubmit)="onSubmit()">
-    <h2 style="color: black;" #formTop>Guest Information</h2>
+<form [formGroup]="guestForm" (ngSubmit)="onSubmit()" #formTop>
+    <h2>Guest Information</h2>
 
     <div class="form-row">
         <div class="form-group">
@@ -172,7 +172,7 @@
         <textarea id="otherRequest" formControlName="otherRequest"></textarea>
     </div>
 
-    <button type="submit" [disabled]="guestForm.invalid || isSubmitting">
+    <abp-button style="padding-top: 20px;" (click)="onSubmit()" type="submit" [disabled]="guestForm.invalid || isSubmitting">
         Submit
-    </button>
+    </abp-button>
 </form>

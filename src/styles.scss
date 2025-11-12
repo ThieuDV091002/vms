@@ -1,15 +1,15 @@
 :root .lpx-theme-dark,
 .lpx-theme-dim {
-  --lpx-logo: url('/assets/images/logo/logo-dark.png');
-  --lpx-logo-icon: url('/assets/images/logo/icon.png');
+  --lpx-logo: url('/assets/images/logo/vms-logo-dark-transparent.png');
+  --lpx-logo-icon: url('/assets/images/logo/vms-icon-transparent-bg.png');
   --lpx-navbar-text-color: #bbbbbb;
   --overall-view-bg: #23272f;
   --overall-view-value-color: #fff;
 }
 
 :root .lpx-theme-light {
-  --lpx-logo: url('/assets/images/logo/logo-light.png');
-  --lpx-logo-icon: url('/assets/images/logo/icon.png');
+  --lpx-logo: url('/assets/images/logo/vms-logo-light-transparent.png');
+  --lpx-logo-icon: url('/assets/images/logo/vms-icon-transparent-bg.png');
   --lpx-navbar-text-color: #424242;
   --lpx-navbar-active-text-color: #062a44;
   --overall-view-bg: #f3f6f9;

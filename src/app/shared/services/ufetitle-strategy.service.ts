@@ -42,7 +42,7 @@ export class UFETitleStrategy extends TitleStrategy {
     }
 
     const projectName = this.localizationService.instant({
-      key: '::AppName',
+      key: 'vms::AppName',
       defaultValue: 'UFE',
     });
 

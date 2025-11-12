@@ -1,5 +1,5 @@
-<form [formGroup]="contractorForm" (ngSubmit)="onSubmit()" style="padding-top: 40px;" id="contractor-form-top">
-    <h2 style="color: black;" #formTop>{{ 'vms::LABEL_ContractorForm' | abpLocalization }}</h2>
+<form [formGroup]="contractorForm" (ngSubmit)="onSubmit()" id="contractor-form-top" #formTop>
+    <h2>{{ 'vms::LABEL_ContractorForm' | abpLocalization }}</h2>
 
     <div class="form-group full-width">
         <label for="requestType">{{ 'vms::LABEL_RequestType' | abpLocalization }}<span> * </span></label>
@@ -290,5 +290,5 @@
         </div>
     </div>
 
-    <button type="submit" [disabled]="contractorForm.invalid || isSubmitting">{{ '::Submit' | abpLocalization }}</button>
+    <abp-button style="padding-top: 20px;" (click)="onSubmit()" type="submit" [disabled]="contractorForm.invalid || isSubmitting">{{ '::Submit' | abpLocalization }}</abp-button>
 </form>

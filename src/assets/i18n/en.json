@@ -135,6 +135,7 @@
     "MENU_TravelingGuide": "Traveling Guide",
     "MENU_VisitorManagement": "Visitor Management",
     "LABEL_ApproveConfirmationMessage": "Proceed to approve '{0}' ''{1}''?",
-    "LABEL_RejectConfirmationMessage": "Proceed to reject '{0}' ''{1}''?"
+    "LABEL_RejectConfirmationMessage": "Proceed to reject '{0}' ''{1}''?",
+    "AppName": "UFE VMS"
   }
 }
