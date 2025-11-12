@@ -38,17 +38,17 @@
                     <input type="date" id="date-{{i}}" formControlName="date" required>
                 </div>
                 <div class="form-group">
-                    <label for="no-{{i}}">Flight No<span> * </span></label>
+                    <label for="no-{{i}}">No<span> * </span></label>
                     <input type="text" id="no-{{i}}" formControlName="no" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="route-{{i}}">Flight Route<span> * </span></label>
+                    <label for="route-{{i}}">Route<span> * </span></label>
                     <input type="text" id="route-{{i}}" formControlName="route" required>
                 </div>
                 <div class="form-group">
-                    <label for="time-{{i}}">Time<span> * </span></label>
+                    <label for="time-{{i}}">{{ i === 0 ? 'Time (Landing time in Vietnam)' : 'Time (Departure time from Vietnam)' }}<span> * </span></label>
                     <input type="time" id="time-{{i}}" formControlName="time" required>
                 </div>
             </div>
