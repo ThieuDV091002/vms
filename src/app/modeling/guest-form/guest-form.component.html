@@ -1,6 +1,12 @@
 <form [formGroup]="guestForm" (ngSubmit)="onSubmit()" #formTop>
     <h2>Guest Information</h2>
 
+    <div class="form-group full-width">
+        <p>Welcome to Molex Vietnam Visitor Registration</p>
+        <p>For safety and security, please kindly register your visit here.</p>
+        <p>* Required</p>
+    </div>
+
     <div class="form-row">
         <div class="form-group">
             <label for="fullName">Full Name<span> * </span></label>
@@ -23,39 +29,22 @@
     </div>
     <div class="form-row">
         <div class="form-group">
+            <label for="startDate">Start Date<span> * </span></label>
+            <input type="date" id="startDate" formControlName="startDate" required>
+        </div>
+        <div class="form-group">
+            <label for="endDate">End Date<span> * </span></label>
+            <input type="date" id="endDate" formControlName="endDate" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
             <label for="workWithWhomInMolex">Work With Whom In Molex<span> * </span></label>
             <input type="text" id="workWithWhomInMolex" formControlName="workWithWhomInMolex" required>
         </div>
     </div>
-    <div formArrayName="flightInfos">
-        <div *ngFor="let flight of flightInfos.controls; let i=index" [formGroupName]="i">
-            <div class="form-group full-width">
-                <p>{{ i === 0 ? 'Arrival Flight' : 'Departure Flight' }}</p>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="date-{{i}}">Date<span> * </span></label>
-                    <input type="date" id="date-{{i}}" formControlName="date" required>
-                </div>
-                <div class="form-group">
-                    <label for="no-{{i}}">No<span> * </span></label>
-                    <input type="text" id="no-{{i}}" formControlName="no" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="route-{{i}}">Route<span> * </span></label>
-                    <input type="text" id="route-{{i}}" formControlName="route" required>
-                </div>
-                <div class="form-group">
-                    <label for="time-{{i}}">{{ i === 0 ? 'Time (Landing time in Vietnam)' : 'Time (Departure time from Vietnam)' }}<span> * </span></label>
-                    <input type="time" id="time-{{i}}" formControlName="time" required>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="form-group full-width">
-        <p>Do you need support to book Hotel? If yes, please select a hotel or advise hotel name and room type</p>
+        <p>Do you need support to book Hotel? If yes, please select a hotel or advise hotel name and room type (Optional)</p>
         <label for="isHotelSupport">Hotel Support<span> * </span></label>
         <select formControlName="isHotelSupport" id="isHotelSupport">
             <option value="" disabled selected>Choose an option</option>
@@ -80,6 +69,33 @@
             <div class="form-group">
                 <label for="roomType">Room Type</label>
                 <input type="text" id="roomType" formControlName="roomType">
+            </div>
+        </div>
+    </div>
+    <div formArrayName="flightInfos" *ngIf="guestForm.get('isHotelSupport').value">
+        <div *ngFor="let flight of flightInfos.controls; let i=index" [formGroupName]="i">
+            <div class="form-group full-width">
+                <p>{{ i === 0 ? 'Arrival Flight' : 'Departure Flight' }}</p>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date-{{i}}">Date<span> * </span></label>
+                    <input type="date" id="date-{{i}}" formControlName="date">
+                </div>
+                <div class="form-group">
+                    <label for="no-{{i}}">No<span> * </span></label>
+                    <input type="text" id="no-{{i}}" formControlName="no">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="route-{{i}}">Route<span> * </span></label>
+                    <input type="text" id="route-{{i}}" formControlName="route">
+                </div>
+                <div class="form-group">
+                    <label for="time-{{i}}">{{ i === 0 ? 'Time (Landing time in Vietnam)' : 'Time (Departure time from Vietnam)' }}<span> * </span></label>
+                    <input type="time" id="time-{{i}}" formControlName="time">
+                </div>
             </div>
         </div>
     </div>
@@ -168,7 +184,7 @@
         </div>
     </div>
     <div class="form-group full-width">
-        <label for="otherRequest">Other request</label>
+        <label for="otherRequest">Other request (Optional)</label>
         <textarea id="otherRequest" formControlName="otherRequest"></textarea>
     </div>
 

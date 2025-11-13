@@ -76,6 +76,8 @@ import { ContractorRequestComponent } from './modeling/contractor-request/contra
 import { TravelGuidePageComponent } from './modeling/travel-guide-page/travel-guide-page.component';
 import { GuestFormComponent } from './modeling/guest-form/guest-form.component';
 import { ContractorFormComponent } from './modeling/contractor-form/contractor-form.component';
+import { DepartmentPicComponent } from './modeling/department-pic/department-pic.component';
+import { DomesticGuestFormComponent } from './modeling/domestic-guest-form/domestic-guest-form.component';
 export const routes: Routes = [
   {
     path: '',
@@ -315,6 +317,16 @@ export const routes: Routes = [
     path: 'contractor-form',
     component: ContractorFormComponent,
     title: "Contractor Form"
+  },
+  {
+    path: 'domestic-guest-form',
+    component: DomesticGuestFormComponent,
+    title: "Domestic Guest Form"
+  },
+  {
+    path: 'department-pic-matrix',
+    component: DepartmentPicComponent,
+    title: "Department PIC Matrix"
   },
   {
     path: 'travel-guide/text',

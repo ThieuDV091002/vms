@@ -10,3 +10,4 @@ export * from './transportation-app.service';
 export * from './travel-tool.service';
 export * from './guest-info.service';
 export * from './contractor-request.service';
+export * from './department-pic.service';

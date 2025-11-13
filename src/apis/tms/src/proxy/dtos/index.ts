@@ -9,5 +9,6 @@ import * as TransportationApp from "./transportation-app";
 import * as TravelTool from "./travel-tool";
 import * as GuestInformation from "./guest-information";
 import * as ContractorRequest from "./contractor-request";
-export {Text, Attraction, Food, Image, ImageLink, LocalAdmin, MedicalCareCenter, TransportationApp, TravelTool, GuestInformation, ContractorRequest};
+import * as DepartmentPICMatrix from "./department-pic";
+export {Text, Attraction, Food, Image, ImageLink, LocalAdmin, MedicalCareCenter, TransportationApp, TravelTool, GuestInformation, ContractorRequest, DepartmentPICMatrix};
 export * from './models';

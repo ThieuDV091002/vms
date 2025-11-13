@@ -52,6 +52,8 @@ export interface GuestInfoDto extends ExtensibleAuditedEntityDto<string> {
     company?: string;
     title?: string;
     purpose?: string;
+    startDate?: string;
+    endDate?: string;
     workWithWhomInMolex?: string;
     isHotelSupport?: boolean;
     hotelId?: string;
@@ -74,6 +76,8 @@ export interface CreateGuestInfoDto {
     company?: string;
     title?: string;
     purpose?: string;
+    startDate?: string;
+    endDate?: string;
     workWithWhomInMolex?: string;
     isHotelSupport?: boolean;
     hotelId?: string;

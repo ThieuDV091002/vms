@@ -50,6 +50,12 @@
     "MENU_GuestRegistration": "Đăng ký thông tin khách",
     "MENU_ContractorRegistration": "Đăng ký giấy phép làm việc",
     "MENU_TravelingGuide": "Hướng dẫn du lịch",
-    "MENU_VisitorManagement": "Quản lý khách"
+    "MENU_VisitorManagement": "Quản lý khách",
+    "LABEL_DomesticGuestRegistration": "Đăng ký khách nội địa",
+    "LABEL_DomesticGuestForm": "Biểu mẫu đăng ký cho khách nội địa",
+    "DepartmentSelect": "Lựa chọn một phòng ban",
+    "Purpose": "Lý do vào công ty",
+    "WorkDate": "Ngày làm việc",
+    "Email": "Email của nhân viên Molex"
   }
 }

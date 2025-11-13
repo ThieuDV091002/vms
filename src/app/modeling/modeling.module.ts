@@ -119,6 +119,8 @@ import { ContractorRequestComponent } from './contractor-request/contractor-requ
 import { TravelGuidePageComponent } from './travel-guide-page/travel-guide-page.component';
 import { GuestFormComponent } from './guest-form/guest-form.component';
 import { ContractorFormComponent } from './contractor-form/contractor-form.component';
+import { DepartmentPicComponent } from './department-pic/department-pic.component';
+import { DomesticGuestFormComponent } from './domestic-guest-form/domestic-guest-form.component';
 
 @NgModule({
   declarations: [
@@ -166,6 +168,8 @@ import { ContractorFormComponent } from './contractor-form/contractor-form.compo
     GroupByPipe,
     GuestFormComponent,
     ContractorFormComponent,
+    DomesticGuestFormComponent,
+    DepartmentPicComponent,
     PermissionManagementComponent,
     ImportDetailComponent,
     CentralizedUsersComponent,

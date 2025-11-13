@@ -136,6 +136,16 @@
     "MENU_VisitorManagement": "Visitor Management",
     "LABEL_ApproveConfirmationMessage": "Proceed to approve '{0}' ''{1}''?",
     "LABEL_RejectConfirmationMessage": "Proceed to reject '{0}' ''{1}''?",
-    "AppName": "UFE VMS"
+    "AppName": "UFE VMS",
+    "LABEL_DepartmentPICMatrix": "Department PIC Matrix",
+    "MENU_DepartmentPICMatrix": "Department PIC Matrix",
+    "LABEL_NewDepartmentPICMatrix": "New Department PIC Matrix",
+    "PICName": "PIC Name",
+    "PICEmail": "PIC Email",
+    "LABEL_DomesticGuestRegistration": "Domestic Guest Registration",
+    "LABEL_DomesticGuestForm": "Registration Form for Domestic Guests",
+    "DepartmentSelect": "Select a department",
+    "WorkDate": "Work Date",
+    "Email": "Email of supervising Molex employee"
   }
 }

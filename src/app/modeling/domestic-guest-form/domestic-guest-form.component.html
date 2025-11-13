@@ -1,0 +1,41 @@
+<form [formGroup]="domesticGuestForm" (ngSubmit)="onSubmit()" #formTop class="lpx-theme-light">
+    <h2>{{ 'vms::LABEL_DomesticGuestForm' | abpLocalization }}</h2>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="fullName">{{ 'vms::FullName' | abpLocalization }}<span> * </span></label>
+            <input type="text" id="fullName" formControlName="fullName" required>
+        </div>
+        <div class="form-group">
+            <label for="company">{{ 'vms::Company' | abpLocalization }}</label>
+            <input type="text" id="company" formControlName="company">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="department">{{ 'vms::ManagementDepartment' | abpLocalization }}<span> * </span></label>
+            <select formControlName="department" id="department" required>
+                <option value="" disabled selected>{{ 'vms::DepartmentSelect' | abpLocalization }}</option>
+                <option *ngFor="let dept of departments" [value]="dept.name">{{ dept.displayName }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">{{ 'vms::Email' | abpLocalization }}</label>
+            <input type="email" id="email" formControlName="email">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="purpose">{{ 'vms::Purpose' | abpLocalization }}<span> * </span></label>
+            <input type="text" id="purpose" formControlName="purpose" required>
+        </div>
+        <div class="form-group">
+            <label for="workDate">{{ 'vms::WorkDate' | abpLocalization }}<span> * </span></label>
+            <input type="date" id="workDate" formControlName="workDate" required>
+        </div>
+    </div>
+
+    <abp-button style="padding-top: 20px;" (click)="onSubmit()" type="submit" [disabled]="domesticGuestForm.invalid || isSubmitting">
+        {{ '::Submit' | abpLocalization }}
+    </abp-button>
+</form>

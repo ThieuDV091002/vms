@@ -19,9 +19,9 @@ enum FlightType {
 @Component({
   selector: 'app-guest-form',
   templateUrl: './guest-form.component.html',
-  styleUrl: './guest-form.component.scss'
+  styleUrl: './guest-form.component.scss',
 })
-export class GuestFormComponent implements OnInit{
+export class GuestFormComponent implements OnInit {
   @ViewChild('formTop') formTop!: ElementRef;
 
   scrollToTop(): void {
@@ -60,11 +60,13 @@ export class GuestFormComponent implements OnInit{
       company: ['', Validators.required],
       title: ['', Validators.required],
       purpose: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
       workWithWhomInMolex: ['', Validators.required],
 
       flightInfos: this.fb.array([
         this.createFlightGroup(FlightType.Arrival),
-        this.createFlightGroup(FlightType.Departure)
+        this.createFlightGroup(FlightType.Departure),
       ]),
 
       isHotelSupport: [null, Validators.required],
@@ -82,15 +84,49 @@ export class GuestFormComponent implements OnInit{
         isDailyTransport: [null, Validators.required],
         time: [''],
         route: [''],
-        address: ['']
+        address: [''],
       }),
 
       uniformInfo: this.fb.group({
         isVisitFactory: [null, Validators.required],
         cameraCover: [''],
         cardType: [''],
-        uniformType: ['']
-      })
+        uniformType: [''],
+      }),
+    });
+    this.guestForm.get('isHotelSupport')?.valueChanges.subscribe(isHotelSupport => {
+      const flightArray = this.guestForm.get('flightInfos') as FormArray;
+      if (isHotelSupport) {
+        flightArray.clear();
+        flightArray.push(this.createFlightGroup(FlightType.Arrival));
+        flightArray.push(this.createFlightGroup(FlightType.Departure));
+        this.markFlightInfosRequired();
+      } else {
+        this.clearFlightInfosValidators();
+      }
+    });
+  }
+
+  private markFlightInfosRequired() {
+    const flightArray = this.flightInfos;
+    flightArray.controls.forEach((control, index) => {
+      const flightType = control.get('flightType')?.value;
+      if (flightType === FlightType.Arrival || flightType === FlightType.Departure) {
+        ['date', 'no', 'route', 'time'].forEach(field => {
+          control.get(field)?.setValidators(Validators.required);
+          control.get(field)?.updateValueAndValidity();
+        });
+      }
+    });
+  }
+
+  private clearFlightInfosValidators() {
+    const flightArray = this.flightInfos;
+    flightArray.controls.forEach(control => {
+      ['date', 'no', 'route', 'time'].forEach(field => {
+        control.get(field)?.clearValidators();
+        control.get(field)?.updateValueAndValidity();
+      });
     });
   }
 
@@ -100,7 +136,7 @@ export class GuestFormComponent implements OnInit{
       no: ['', Validators.required],
       route: ['', Validators.required],
       time: ['', Validators.required],
-      flightType: [type, Validators.required]
+      flightType: [type, Validators.required],
     });
   }
 
@@ -118,27 +154,34 @@ export class GuestFormComponent implements OnInit{
 
     const formValue = this.guestForm.value;
 
-    const flightInfos: CreateFlightInfoDto[] = formValue.flightInfos.map((f: any) => ({
+    const flightInfos: CreateFlightInfoDto[] = formValue.isHotelSupport ? formValue.flightInfos.map((f: any) => ({
       date: f.date,
       no: f.no,
       route: f.route,
       time: f.time,
-      flightType: f.flightType
-    }));
+      flightType: f.flightType,
+    })) : [];
 
     const transportInfo = {
       isAirportTransport: formValue.transportInfo.isAirportTransport,
       isDailyTransport: formValue.transportInfo.isDailyTransport,
       time: formValue.transportInfo.time || null,
       route: formValue.transportInfo.route || null,
-      address: formValue.transportInfo.address || null
+      address: formValue.transportInfo.address || null,
     };
 
     const uniformInfo = {
       isVisitFactory: formValue.uniformInfo.isVisitFactory,
-      cardType: formValue.uniformInfo.cardType != null ? Number(formValue.uniformInfo.cardType) : null,
-      uniformType: formValue.uniformInfo.uniformType != null ? Number(formValue.uniformInfo.uniformType) : null,
-      cameraCover: formValue.uniformInfo.cameraCover != null ? Number(formValue.uniformInfo.cameraCover) : null
+      cardType:
+        formValue.uniformInfo.cardType != null ? Number(formValue.uniformInfo.cardType) : null,
+      uniformType:
+        formValue.uniformInfo.uniformType != null
+          ? Number(formValue.uniformInfo.uniformType)
+          : null,
+      cameraCover:
+        formValue.uniformInfo.cameraCover != null
+          ? Number(formValue.uniformInfo.cameraCover)
+          : null,
     };
 
     const dto: CreateGuestInfoDto = {
@@ -146,6 +189,8 @@ export class GuestFormComponent implements OnInit{
       company: formValue.company,
       title: formValue.title,
       purpose: formValue.purpose,
+      startDate: formValue.startDate,
+      endDate: formValue.endDate,
       workWithWhomInMolex: formValue.workWithWhomInMolex,
       isHotelSupport: formValue.isHotelSupport,
       hotelId: formValue.hotelId || null,
@@ -156,13 +201,13 @@ export class GuestFormComponent implements OnInit{
       otherRequest: formValue.otherRequest || null,
       flightInfos,
       transportInfo,
-      uniformInfo
+      uniformInfo,
     };
 
     this.guestInfoService.create(dto).subscribe({
       next: () => {
         this.toasterService.success('::LABEL_CreatedSuccessfully', '', {
-          messageLocalizationParams: [this.info, formValue.fullName]
+          messageLocalizationParams: [this.info, formValue.fullName],
         });
         this.resetForm();
         this.isSubmitting = false;
@@ -170,7 +215,7 @@ export class GuestFormComponent implements OnInit{
       },
       error: () => {
         this.isSubmitting = false;
-      }
+      },
     });
   }
 
@@ -180,11 +225,9 @@ export class GuestFormComponent implements OnInit{
       company: '',
       title: '',
       purpose: '',
+      startDate: '',
+      endDate: '',
       workWithWhomInMolex: '',
-      flightInfos: [
-        { date: '', no: '', route: '', time: '', flightType: FlightType.Arrival },
-        { date: '', no: '', route: '', time: '', flightType: FlightType.Departure }
-      ],
       isHotelSupport: null,
       hotelId: null,
       hotelName: null,
@@ -197,20 +240,27 @@ export class GuestFormComponent implements OnInit{
         isDailyTransport: null,
         time: '',
         route: '',
-        address: ''
+        address: '',
       },
       uniformInfo: {
         isVisitFactory: null,
         cameraCover: '',
         cardType: '',
-        uniformType: ''
-      }
+        uniformType: '',
+      },
     });
+
+    const flightArray = this.flightInfos;
+    flightArray.clear();
+    flightArray.push(this.createFlightGroup(FlightType.Arrival));
+    flightArray.push(this.createFlightGroup(FlightType.Departure));
+    this.clearFlightInfosValidators();
   }
 
   loadHotels() {
-    this.hotelService.getList({ filter: '', sorting: '', skipCount: 0, maxResultCount: 100, ids: [] })
-      .subscribe(res => this.hotels = res.items);
+    this.hotelService
+      .getList({ filter: '', sorting: '', skipCount: 0, maxResultCount: 100, ids: [] })
+      .subscribe(res => (this.hotels = res.items));
   }
 
   toggleMobileMenu() {

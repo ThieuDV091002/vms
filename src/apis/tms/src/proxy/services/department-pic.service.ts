@@ -1,48 +1,41 @@
 import { RestService, Rest } from '@abp/ng.core';
 import type { PagedResultDto } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
-import type {
-  CreateUpdateHotelDto,
-  HotelDto,
-  HotelGetListInput,
-  ImportResultDto,
-  ModelingHistoryDto,
-  ModelingInput,
-} from '../dtos/models';
 import type { FileType } from '../file-type.enum';
 import type { OverridingMode } from '../overriding-mode.enum';
+import { CreateUpdateDepartmentPICMatrixDto, DepartmentPICMatrixDto, DepartmentPICMatrixGetListInput, ImportResultDto, ModelingHistoryDto, ModelingInput } from '../dtos/department-pic';
 
 @Injectable({
   providedIn: 'root',
 })
-export class HotelService {
+export class DepartmentPICService {
   apiName = 'vms';
 
-  copy = (input: CreateUpdateHotelDto, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto>(
+  copy = (input: CreateUpdateDepartmentPICMatrixDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, DepartmentPICMatrixDto>(
       {
         method: 'POST',
-        url: '/api/app/hotel/copy',
+        url: '/api/app/department-pICMatrix/copy',
         body: input,
       },
       { apiName: this.apiName, ...config }
     );
 
-  create = (input: CreateUpdateHotelDto, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto>(
+  create = (input: CreateUpdateDepartmentPICMatrixDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, DepartmentPICMatrixDto>(
       {
         method: 'POST',
-        url: '/api/app/hotel',
+        url: '/api/app/department-pICMatrix',
         body: input,
       },
       { apiName: this.apiName, ...config }
     );
 
-  createOrUpdate = (data: CreateUpdateHotelDto, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto>(
+  createOrUpdate = (data: CreateUpdateDepartmentPICMatrixDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, DepartmentPICMatrixDto>(
       {
         method: 'POST',
-        url: '/api/app/hotel/or-update',
+        url: '/api/app/department-pICMatrix/or-update',
         body: data,
       },
       { apiName: this.apiName, ...config }
@@ -52,7 +45,7 @@ export class HotelService {
     this.restService.request<any, void>(
       {
         method: 'DELETE',
-        url: `/api/app/hotel/${id}`,
+        url: `/api/app/department-pICMatrix/${id}`,
       },
       { apiName: this.apiName, ...config }
     );
@@ -61,7 +54,7 @@ export class HotelService {
     this.restService.request<any, number[]>(
       {
         method: 'POST',
-        url: '/api/app/hotel/export-all',
+        url: '/api/app/department-pICMatrix/export-all',
         params: { fileType },
       },
       { apiName: this.apiName, ...config }
@@ -71,7 +64,7 @@ export class HotelService {
     this.restService.request<any, number[]>(
       {
         method: 'POST',
-        url: '/api/app/hotel/export',
+        url: '/api/app/department-pICMatrix/export',
         params: { fileType },
         body: ids,
       },
@@ -79,50 +72,50 @@ export class HotelService {
     );
 
   get = (id: string, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto>(
+    this.restService.request<any, DepartmentPICMatrixDto>(
       {
         method: 'GET',
-        url: `/api/app/hotel/${id}`,
+        url: `/api/app/department-pICMatrix/${id}`,
       },
       { apiName: this.apiName, ...config }
     );
 
   getAllInstances = (config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto[]>(
+    this.restService.request<any, DepartmentPICMatrixDto[]>(
       {
         method: 'GET',
-        url: '/api/app/hotel/instances',
+        url: '/api/app/department-pICMatrix/instances',
       },
       { apiName: this.apiName, ...config }
     );
 
   getByName = (name: string, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto>(
+    this.restService.request<any, DepartmentPICMatrixDto>(
       {
         method: 'GET',
-        url: '/api/app/hotel/by-name',
+        url: '/api/app/department-pICMatrix/by-name',
         params: { name },
       },
       { apiName: this.apiName, ...config }
     );
 
-  getExistInstances = (entities: CreateUpdateHotelDto[], config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto[]>(
+  getExistInstances = (entities: CreateUpdateDepartmentPICMatrixDto[], config?: Partial<Rest.Config>) =>
+    this.restService.request<any, DepartmentPICMatrixDto[]>(
       {
         method: 'POST',
-        url: '/api/app/hotel/get-exist-instances',
+        url: '/api/app/department-pICMatrix/get-exist-instances',
         body: entities,
       },
       { apiName: this.apiName, ...config }
     );
 
-  getList = (input: HotelGetListInput, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, PagedResultDto<HotelDto>>(
+  getList = (input: DepartmentPICMatrixGetListInput, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, PagedResultDto<DepartmentPICMatrixDto>>(
       {
         method: 'GET',
-        url: '/api/app/hotel',
+        url: '/api/app/department-pICMatrix',
         params: {
-          name: input.filter,
+          name: input.name,
           sorting: input.sorting,
           skipCount: input.skipCount,
           maxResultCount: input.maxResultCount,
@@ -135,7 +128,7 @@ export class HotelService {
     this.restService.request<any, PagedResultDto<ModelingHistoryDto>>(
       {
         method: 'GET',
-        url: '/api/app/hotel/modeling-history',
+        url: '/api/app/department-pICMatrix/modeling-history',
         params: {
           id: input.id,
           sorting: input.sorting,
@@ -147,14 +140,14 @@ export class HotelService {
     );
 
   importByDtosAndMode = (
-    dtos: CreateUpdateHotelDto[],
+    dtos: CreateUpdateDepartmentPICMatrixDto[],
     mode: OverridingMode,
     config?: Partial<Rest.Config>
   ) =>
     this.restService.request<any, ImportResultDto>(
       {
         method: 'POST',
-        url: '/api/app/hotel/import',
+        url: '/api/app/department-pICMatrix/import',
         params: { mode },
         body: dtos,
       },
@@ -165,27 +158,27 @@ export class HotelService {
     this.restService.request<any, boolean>(
       {
         method: 'POST',
-        url: '/api/app/hotel/multiple-delete',
+        url: '/api/app/department-pICMatrix/multiple-delete',
         body: ids,
       },
       { apiName: this.apiName, ...config }
     );
 
-  multipleUpdate = (inputs: Record<string, CreateUpdateHotelDto>, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto[]>(
+  multipleUpdate = (inputs: Record<string, CreateUpdateDepartmentPICMatrixDto>, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, DepartmentPICMatrixDto[]>(
       {
         method: 'PUT',
-        url: '/api/app/hotel/multiple-update',
+        url: '/api/app/department-pICMatrix/multiple-update',
         body: inputs,
       },
       { apiName: this.apiName, ...config }
     );
 
-  update = (id: string, input: CreateUpdateHotelDto, config?: Partial<Rest.Config>) =>
-    this.restService.request<any, HotelDto>(
+  update = (id: string, input: CreateUpdateDepartmentPICMatrixDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, DepartmentPICMatrixDto>(
       {
         method: 'PUT',
-        url: `/api/app/hotel/${id}`,
+        url: `/api/app/department-pICMatrix/${id}`,
         body: input,
       },
       { apiName: this.apiName, ...config }

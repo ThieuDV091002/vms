@@ -23,11 +23,13 @@
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="contractorSupervisorName">{{ 'vms::ContractorPICName' | abpLocalization }}<span> * </span></label>
+                <label for="contractorSupervisorName">{{ 'vms::ContractorPICName' | abpLocalization }}<span> *
+                    </span></label>
                 <input type="text" id="contractorSupervisorName" formControlName="contractorSupervisorName" required>
             </div>
             <div class="form-group">
-                <label for="contractorSupervisorPhone">{{ 'vms::ContractorPICPhone' | abpLocalization }}<span> * </span></label>
+                <label for="contractorSupervisorPhone">{{ 'vms::ContractorPICPhone' | abpLocalization }}<span> *
+                    </span></label>
                 <input type="text" id="contractorSupervisorPhone" formControlName="contractorSupervisorPhone" required>
             </div>
         </div>
@@ -54,15 +56,18 @@
 
         <div formArrayName="employeeLists">
             <p>{{ 'vms::LABEL_EmployeeList' | abpLocalization }}<span> * </span></p>
-            <button type="button" (click)="addEmployee()" class="add-btn">{{ 'vms::Add' | abpLocalization }}</button>
-            <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
+            <button type="button" (click)="addEmployee()" class="add-btn">{{ 'vms::Add' | abpLocalization
+                }}</button>
+            <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i"
+                class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="fullName-{{i}}">{{ 'vms::FullName' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="dateOfBirth-{{i}}">{{ 'vms::DateOfBirth' | abpLocalization }}<span> * </span></label>
+                        <label for="dateOfBirth-{{i}}">{{ 'vms::DateOfBirth' | abpLocalization }}<span> *
+                            </span></label>
                         <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
                     </div>
                     <div class="form-group">
@@ -76,7 +81,8 @@
                         <input type="text" id="company-{{i}}" formControlName="company" required>
                     </div>
                     <div class="form-group">
-                        <label for="managementDepartment-{{i}}">{{ 'vms::ManagementDepartment' | abpLocalization }}</label>
+                        <label for="managementDepartment-{{i}}">{{ 'vms::ManagementDepartment' | abpLocalization
+                            }}</label>
                         <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment">
                     </div>
                     <div class="form-group">
@@ -84,26 +90,25 @@
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor">
                     </div>
                 </div>
-                <button type="button" (click)="removeEmployee(i)" class="delete-btn" style="margin-top: 10px;">{{ '::Delete' | abpLocalization }}</button>
+                <button type="button" (click)="removeEmployee(i)" class="delete-btn" style="margin-top: 10px;">{{
+                    '::Delete' | abpLocalization }}</button>
             </div>
         </div>
 
         <p>{{ 'vms::LABEL_UploadEmployeeFileGuide' | abpLocalization }}</p>
-            <div class="file-container">
-                <div>
-                    <a
-                        href="./assets/vms/Employee_List.xlsx"
-                        download="Employee_List.xlsx"
-                        >
-                        <i class="fa fa-file-excel-o me-2" aria-hidden="true"></i>
-                        Employee_List.xlsx
-                    </a>
-                </div>
+        <div class="file-container">
+            <div>
+                <a href="./assets/vms/Employee_List.xlsx" download="Employee_List.xlsx">
+                    <i class="fa fa-file-excel-o me-2" aria-hidden="true"></i>
+                    Employee_List.xlsx
+                </a>
             </div>
+        </div>
 
         <div class="form-group full-width">
             <label for="employeeListFile">{{ 'vms::EmployeeListFile' | abpLocalization }}</label>
-            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
+            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;"
+                class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
         <div class="form-group full-width">
             <label for="workDescription">{{ 'vms::WorkDescription' | abpLocalization }}<span> * </span></label>
@@ -112,27 +117,26 @@
         <div class="form-group full-width">
             <label for="jobTypeId">{{ 'vms::JobType' | abpLocalization }}<span> * </span></label>
             <div *ngFor="let jobType of jobTypes" class="radio-option" style="display: flex; align-items: center;">
-                <input 
-                    type="radio" 
-                    id="job-{{jobType.id}}" 
-                    name="jobTypeId" 
-                    [value]="jobType.id" 
-                    formControlName="jobTypeId"
-                    required
-                />
+                <input type="radio" id="job-{{jobType.id}}" name="jobTypeId" [value]="jobType.id"
+                    formControlName="jobTypeId" required />
                 <label for="job-{{jobType.id}}" [title]="jobType.jobName">
                     {{ jobType.jobName }}
                 </label>
-                </div>
+            </div>
         </div>
 
-        <div *ngIf="selectedJobTypeDetail" class="job-details">        
+        <div *ngIf="selectedJobTypeDetail" class="job-details">
             <div formArrayName="selectedSections">
-                <div *ngFor="let sectionCtrl of contractorForm.get('selectedSections')['controls']; let sectionIndex=index" [formGroupName]="sectionIndex">
-                    <p style="color: black; display: flex;max-width: 700px;word-break: break-word;white-space: normal;">{{ selectedJobTypeDetail.sections[sectionIndex].name }}</p>
-                    <div *ngFor="let option of selectedJobTypeDetail.sections[sectionIndex].options; let optionIndex=index">
-                        <label style="color: #4c4c4c; padding-bottom: 5px; display: flex;max-width: 700px;word-break: break-word;white-space: normal;">
-                            <input type="checkbox" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)" (change)="toggleOption(sectionIndex, option.jobOptionId, $event.target.checked)">
+                <div *ngFor="let sectionCtrl of contractorForm.get('selectedSections')['controls']; let sectionIndex=index"
+                    [formGroupName]="sectionIndex">
+                    <p style="display: flex;max-width: 700px;word-break: break-word;white-space: normal;">
+                        {{ selectedJobTypeDetail.sections[sectionIndex].name }}:<span>   * </span></p>
+                    <div
+                        *ngFor="let option of selectedJobTypeDetail.sections[sectionIndex].options; let optionIndex=index">
+                        <label
+                            style="color: #4c4c4c; padding-bottom: 5px; display: flex;max-width: 700px;word-break: break-word;white-space: normal;">
+                            <input type="checkbox" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)"
+                                (change)="toggleOption(sectionIndex, option.jobOptionId, $event.target.checked)">
                             {{ option.name }}
                         </label>
                     </div>
@@ -141,8 +145,10 @@
             <div [formGroup]="contractorForm.get('textFieldsValues')">
                 <div *ngFor="let field of selectedJobTypeDetail.textFields">
                     <div class="form-group full-width">
-                        <label for="{{ field.jobTextFieldId }}">{{ field.field }}<span *ngIf="field.isRequired"> * </span></label>
-                        <input type="text" [id]="field.jobTextFieldId" [formControlName]="field.jobTextFieldId" [required]="field.isRequired">
+                        <label for="{{ field.jobTextFieldId }}">{{ field.field }}<span *ngIf="field.isRequired"> *
+                            </span></label>
+                        <input type="text" [id]="field.jobTextFieldId" [formControlName]="field.jobTextFieldId"
+                            [required]="field.isRequired">
                     </div>
                 </div>
             </div>
@@ -152,7 +158,8 @@
     <div *ngIf="contractorForm.get('requestType')?.value === '1'">
         <div class="form-row">
             <div class="form-group">
-                <label for="oldWorkPermitCode">{{ 'vms::OldWorkPermitCode' | abpLocalization }}<span> * </span></label>
+                <label for="oldWorkPermitCode">{{ 'vms::OldWorkPermitCode' | abpLocalization }}<span> *
+                    </span></label>
                 <input type="text" id="oldWorkPermitCode" formControlName="oldWorkPermitCode" required>
             </div>
             <div class="form-group">
@@ -167,15 +174,18 @@
 
         <div formArrayName="employeeLists">
             <p>{{ 'vms::LABEL_AdditonalEmployee' | abpLocalization }}</p>
-            <button type="button" (click)="addEmployee()" class="add-btn">{{ 'vms::Add' | abpLocalization }}</button>
-            <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i" class="employee-section">
+            <button type="button" (click)="addEmployee()" class="add-btn">{{ 'vms::Add' | abpLocalization
+                }}</button>
+            <div *ngFor="let employee of employeeLists.controls; let i=index" [formGroupName]="i"
+                class="employee-section">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="fullName-{{i}}">{{ 'vms::FullName' | abpLocalization }}<span> * </span></label>
                         <input type="text" id="fullName-{{i}}" formControlName="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="dateOfBirth-{{i}}">{{ 'vms::DateOfBirth' | abpLocalization }}<span> * </span></label>
+                        <label for="dateOfBirth-{{i}}">{{ 'vms::DateOfBirth' | abpLocalization }}<span> *
+                            </span></label>
                         <input type="text" id="dateOfBirth-{{i}}" formControlName="dateOfBirth" required>
                     </div>
                     <div class="form-group">
@@ -189,7 +199,8 @@
                         <input type="text" id="company-{{i}}" formControlName="company" required>
                     </div>
                     <div class="form-group">
-                        <label for="managementDepartment-{{i}}">{{ 'vms::ManagementDepartment' | abpLocalization }}</label>
+                        <label for="managementDepartment-{{i}}">{{ 'vms::ManagementDepartment' | abpLocalization
+                            }}</label>
                         <input type="text" id="managementDepartment-{{i}}" formControlName="managementDepartment">
                     </div>
                     <div class="form-group">
@@ -197,7 +208,8 @@
                         <input type="text" id="molexSupervisor-{{i}}" formControlName="molexSupervisor">
                     </div>
                 </div>
-                <button type="button" (click)="removeEmployee(i)" class="delete-btn" style="margin-top: 10px;">{{ '::Delete' | abpLocalization }}</button>
+                <button type="button" (click)="removeEmployee(i)" class="delete-btn" style="margin-top: 10px;">{{
+                    '::Delete' | abpLocalization }}</button>
             </div>
         </div>
         <div *ngIf="oldEmployeeListFiles.length > 0" class="old-files">
@@ -208,13 +220,8 @@
                     <i class="fa fa-pulse fa-spinner me-2" aria-hidden="true"></i>{{ 'vms::LoadingWithThreeDot' }}
                 </div>
                 <div *ngIf="!file.loading">
-                    <img
-                        *ngIf="file.isImage"
-                        [src]="file.mediaAccessUrl"
-                        alt="{{ file.fileName }}"
-                        class="cursor-pointer file-image"
-                        (click)="getPreviewImage(file.fileUrl)"
-                    />
+                    <img *ngIf="file.isImage" [src]="file.mediaAccessUrl" alt="{{ file.fileName }}"
+                        class="cursor-pointer file-image" (click)="getPreviewImage(file.fileUrl)" />
                     <a *ngIf="!file.isImage" [href]="file.mediaAccessUrl" [download]="file.fileName">
                         {{ file.fileName }}
                     </a>
@@ -225,28 +232,27 @@
             <div class="file-container" *ngIf="oldEmployeeListFiles.length === 0">
                 <p>{{ 'vms::LABEL_UploadEmployeeFileGuide' | abpLocalization }}</p>
                 <div>
-                    <a
-                        href="./assets/vms/Employee_List.xlsx"
-                        download="Employee_List.xlsx"
-                        >
+                    <a href="./assets/vms/Employee_List.xlsx" download="Employee_List.xlsx">
                         <i class="fa fa-file-excel-o me-2" aria-hidden="true"></i>
                         Employee_List.xlsx
                     </a>
                 </div>
             </div>
             <label for="employeeListFile">{{ 'vms::AdditionalFile' | abpLocalization }}</label>
-            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;" class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
+            <input type="file" id="employeeListFile" formControlName="employeeListFile" style="height: 40px;"
+                class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label for="molexSupervisorEmail">{{ 'vms::LABEL_MolexPICEmail' | abpLocalization }}<span> * </span></label>
+            <label for="molexSupervisorEmail">{{ 'vms::LABEL_MolexPICEmail' | abpLocalization }}<span> *
+                </span></label>
             <input type="email" id="molexSupervisorEmail" formControlName="molexSupervisorEmail" required>
         </div>
         <div class="form-group">
-            <label for="contractorEmail">{{ "vms::LABEL_ContractorEmail" | abpLocalization }}<span> * </span></label>
-            <br>
+            <label for="contractorEmail">{{ "vms::LABEL_ContractorEmail" | abpLocalization }}<span> *
+                </span></label>
             <input type="email" id="contractorEmail" formControlName="contractorEmail" required>
         </div>
     </div>
@@ -269,26 +275,21 @@
 
     <div class="form-group full-width">
         <label for="documentFiles">{{ 'vms::LABEL_Document' | abpLocalization }}</label>
-        <input 
-            type="file" 
-            id="documentFiles" 
-            multiple 
-            (change)="onDocumentFilesChange($event)" 
-            style="height: 40px;" 
-            class="form-control mb-3" 
-            accept="image/*,.pdf,.doc,.docx,.xlsx,.xls" 
-        />
+        <input type="file" id="documentFiles" multiple (change)="onDocumentFilesChange($event)" style="height: 40px;"
+            class="form-control mb-3" accept="image/*,.pdf,.doc,.docx,.xlsx,.xls" />
         <div *ngIf="documentFiles.length > 0" class="uploaded-files">
             <p>{{ 'vms::LABEL_UploadedDocuments' | abpLocalization }}:</p>
             <ul>
                 <li *ngFor="let preview of documentPreviews; let i=index" class="file-item">
                     <span>{{ preview.file.name }}</span>
                     <img *ngIf="preview.url" [src]="preview.url" alt="Preview" class="file-preview" />
-                    <button type="button" (click)="removeDocumentFile(i)" class="delete-btn" style="align-items: end;">{{ '::Delete' | abpLocalization }}</button>
+                    <button type="button" (click)="removeDocumentFile(i)" class="delete-btn"
+                        style="align-items: end;">{{ '::Delete' | abpLocalization }}</button>
                 </li>
             </ul>
         </div>
     </div>
 
-    <abp-button style="padding-top: 20px;" (click)="onSubmit()" type="submit" [disabled]="contractorForm.invalid || isSubmitting">{{ '::Submit' | abpLocalization }}</abp-button>
+    <abp-button style="padding-top: 20px;" (click)="onSubmit()" type="submit"
+        [disabled]="contractorForm.invalid || isSubmitting">{{ '::Submit' | abpLocalization }}</abp-button>
 </form>
