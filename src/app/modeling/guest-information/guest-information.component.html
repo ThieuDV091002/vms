@@ -41,17 +41,19 @@
                                     <p><strong>{{ 'vms::Company' | abpLocalization }}:</strong> {{ selected?.company }}</p>
                                     <p><strong>{{ 'vms::Title' | abpLocalization }}:</strong> {{ selected?.title }}</p>
                                     <p><strong>{{ 'vms::Purpose' | abpLocalization }}:</strong> {{ selected?.purpose }}</p>
+                                    <p><strong>{{ 'vms::From' | abpLocalization }}:</strong> {{ selected?.startDate }}</p>
+                                    <p><strong>{{ 'vms::To' | abpLocalization }}:</strong> {{ selected?.endDate }}</p>
                                     <p><strong>{{ 'vms::WorkWithWhomInMXV' | abpLocalization }}:</strong> {{ selected?.workWithWhomInMolex }}</p>
-                                    <p><strong>{{ 'vms::FoodRestriction' | abpLocalization }}:</strong> {{ selected?.isFoodRestrict ? 'Yes' : 'No' }}</p>
-                                    <ng-container *ngIf="selected?.isFoodRestrict">
-                                        <p><strong>{{ 'vms::FoodRestrictionDetail' | abpLocalization }}:</strong> {{ selected?.foodRestrictDetail }}</p>
-                                    </ng-container>
                                 </div>
                                 <div class="col-md-6">
                                     <p><strong>{{ 'vms::HotelSupport' | abpLocalization }}:</strong> {{ selected?.isHotelSupport ? 'Yes' : 'No' }}</p>
                                     <ng-container *ngIf="selected?.isHotelSupport">
                                         <p><strong>{{ 'vms::HotelName' | abpLocalization }}:</strong> {{ selected?.hotelName }}</p>
                                         <p><strong>{{ 'vms::RoomType' | abpLocalization }}:</strong> {{ selected?.roomType }}</p>
+                                    </ng-container>
+                                    <p><strong>{{ 'vms::FoodRestriction' | abpLocalization }}:</strong> {{ selected?.isFoodRestrict ? 'Yes' : 'No' }}</p>
+                                    <ng-container *ngIf="selected?.isFoodRestrict">
+                                        <p><strong>{{ 'vms::FoodRestrictionDetail' | abpLocalization }}:</strong> {{ selected?.foodRestrictDetail }}</p>
                                     </ng-container>
                                     <p><strong>{{ 'vms::OtherRequest' | abpLocalization }}:</strong> {{ selected?.otherRequest }}</p>
                                 </div>

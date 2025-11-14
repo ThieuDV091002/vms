@@ -10,6 +10,7 @@ import { LocalizationService } from '@abp/ng.core';
 import { CreateDomesticGuestDto } from '@apis/vms/dtos/domestic-guest';
 import { DomesticGuestService } from '@apis/vms/services/domestic-guest.service';
 import { DepartmentPICService } from '@apis/vms/services';
+import { ThemeService } from 'src/app/shared/services/theme.service';
 
 @Component({
   selector: 'app-domestic-guest-form',
@@ -36,7 +37,8 @@ export class DomesticGuestFormComponent implements OnInit {
     private domesticGuestService: DomesticGuestService,
     private departmentService: DepartmentPICService,
     public toasterService: ToasterService,
-    private localizationService: LocalizationService
+    private localizationService: LocalizationService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +48,10 @@ export class DomesticGuestFormComponent implements OnInit {
 
     this.loadDepartments();
     this.buildForm();
+  }
+
+  isDarkMode() {
+    return this.themeService.isDarkTheme();
   }
 
   private buildForm() {
