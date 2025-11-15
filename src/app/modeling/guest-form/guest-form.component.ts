@@ -5,6 +5,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HotelDto } from '@apis/vms/dtos';
 import { CreateFlightInfoDto, CreateGuestInfoDto } from '@apis/vms/dtos/guest-information';
 import { GuestInfoService, HotelService } from '@apis/vms/services';
+import { ThemeService } from '../../shared/services/theme.service';
 
 enum FlightType {
   Arrival = 0,
@@ -28,7 +29,8 @@ export class GuestFormComponent implements OnInit {
     private guestInfoService: GuestInfoService,
     private hotelService: HotelService,
     public toasterService: ToasterService,
-    private localizationService: LocalizationService
+    private localizationService: LocalizationService,
+    public themeService: ThemeService
   ) {}
 
   toggleMobileMenu() {
@@ -81,7 +83,7 @@ export class GuestFormComponent implements OnInit {
 
   loadHotels() {
     this.hotelService.getList({
-      filter: '', sorting: '', skipCount: 0, maxResultCount: 100,
+      filter: '', skipCount: 0, maxResultCount: 100,
       ids: []
     }).subscribe({
       next: (result) => {
