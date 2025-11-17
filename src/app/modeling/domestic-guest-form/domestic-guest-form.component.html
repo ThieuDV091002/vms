@@ -1,5 +1,10 @@
 <form [formGroup]="domesticGuestForm" (ngSubmit)="onSubmit()" #formTop>
     <h2>{{ 'vms::LABEL_DomesticGuestForm' | abpLocalization }}</h2>
+    <div class="form-group full-width">
+        <p>{{ 'vms::Welcome' | abpLocalization }}</p>
+        <p>{{ 'vms::Guide' | abpLocalization }}</p>
+        <p>{{ 'vms::Required' | abpLocalization }}</p>
+    </div>
 
     <div class="form-row">
         <div class="form-group">

@@ -1,5 +1,10 @@
 <form [formGroup]="contractorForm" (ngSubmit)="onSubmit()" id="contractor-form-top" #formTop>
     <h2>{{ 'vms::LABEL_ContractorForm' | abpLocalization }}</h2>
+    <div class="form-group full-width">
+        <p>{{ 'vms::Welcome' | abpLocalization }}</p>
+        <p>{{ 'vms::Guide' | abpLocalization }}</p>
+        <p>{{ 'vms::Required' | abpLocalization }}</p>
+    </div>
 
     <div class="form-group full-width">
         <label for="requestType">{{ 'vms::LABEL_RequestType' | abpLocalization }}<span> * </span></label>

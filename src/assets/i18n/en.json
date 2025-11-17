@@ -146,6 +146,9 @@
     "LABEL_DomesticGuestForm": "Registration Form For Domestic Guests",
     "DepartmentSelect": "Select a department",
     "WorkDate": "Work Date",
-    "Email": "Email of supervising Molex employee"
+    "Email": "Email of supervising Molex employee",
+    "Welcome": "Welcome to Molex Vietnam Visitor Registration",
+    "Guide": "For safety and security, please kindly register your visit here.",
+    "Required": "* Required"
   }
 }
