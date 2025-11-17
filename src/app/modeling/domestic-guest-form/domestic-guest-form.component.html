@@ -16,7 +16,7 @@
             <label for="department">{{ 'vms::ManagementDepartment' | abpLocalization }}<span> * </span></label>
             <select formControlName="department" id="department" required>
                 <option value="" disabled selected>{{ 'vms::DepartmentSelect' | abpLocalization }}</option>
-                <option *ngFor="let dept of departments" [value]="dept.name">{{ dept.displayName }}</option>
+                <option *ngFor="let dept of departments" [value]="dept.normalizedName">{{ dept.displayName }}</option>
             </select>
         </div>
         <div class="form-group">

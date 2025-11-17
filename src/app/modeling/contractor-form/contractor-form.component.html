@@ -155,6 +155,7 @@
         </div>
     </div>
 
+    <div class="form-section">
     <div *ngIf="contractorForm.get('requestType')?.value === '1'">
         <div class="form-row">
             <div class="form-group">
@@ -243,6 +244,7 @@
                 class="form-control mb-3" accept=".xlsx,.xls" (change)="onEmployeeListFileChange($event)" />
         </div>
     </div>
+    </div>
 
     <div class="form-row">
         <div class="form-group">
@@ -252,7 +254,7 @@
         </div>
         <div class="form-group">
             <label for="contractorEmail">{{ "vms::LABEL_ContractorEmail" | abpLocalization }}<span> *
-                </span></label>
+                </span></label><br>
             <input type="email" id="contractorEmail" formControlName="contractorEmail" required>
         </div>
     </div>
