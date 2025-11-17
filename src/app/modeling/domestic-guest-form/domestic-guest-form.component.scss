@@ -69,6 +69,7 @@ form p.description {
     margin-bottom: 6px;
     font-size: 14px;
     font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
 }
 
 .form-group input,
@@ -111,5 +112,108 @@ form p.description {
 @media (min-width: 1024px) {
     .form-group.full-width {
         max-width: 800px;
+    }
+}
+
+:host-context(.lpx-theme-dark) {
+
+    form {
+        background-color: #1b1b1b;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    form p.title,
+    form h2,
+    form p.description {
+        color: #f7fafc;
+    }
+
+    .form-group {
+        label {
+            color: rgba(226, 232, 240, 0.9);
+        }
+
+        input,
+        textarea,
+        select {
+            background-color: #090c11;
+            color: #f7fafc;
+            border: 1px solid #4a5568;
+
+            &:focus {
+                border-color: #60a5fa;
+                box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            }
+
+            &::placeholder {
+                color: #718096;
+            }
+        }
+
+        select {
+            option {
+                background-color: #090c11;
+                color: #f7fafc;
+            }
+        }
+
+        input[type="date"],
+        input[type="time"] {
+            &::-webkit-calendar-picker-indicator {
+                filter: invert(1);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.lpx-theme-dark {
+    form {
+        background-color: #1b1b1b;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    form p.title,
+    form h2,
+    form p.description {
+        color: #f7fafc;
+    }
+
+    .form-group {
+        label {
+            color: rgba(226, 232, 240, 0.9);
+        }
+
+        input,
+        textarea,
+        select {
+            background-color: #090c11;
+            color: #f7fafc;
+            border: 1px solid #4a5568;
+
+            &:focus {
+                border-color: #60a5fa;
+                box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            }
+
+            &::placeholder {
+                color: #718096;
+            }
+        }
+
+        select {
+            option {
+                background-color: #090c11;
+                color: #f7fafc;
+            }
+        }
+
+        input[type="date"],
+        input[type="time"] {
+            &::-webkit-calendar-picker-indicator {
+                filter: invert(1);
+                cursor: pointer;
+            }
+        }
     }
 }

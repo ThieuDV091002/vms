@@ -121,7 +121,7 @@
         </div>
         <div class="form-group full-width">
             <label for="jobTypeId">{{ 'vms::JobType' | abpLocalization }}<span> * </span></label>
-            <div *ngFor="let jobType of jobTypes" class="radio-option" style="display: flex; align-items: center;">
+            <div *ngFor="let jobType of jobTypes" class="radio-option" style="display: flex; align-items: center; gap: 8px;">
                 <input type="radio" id="job-{{jobType.id}}" name="jobTypeId" [value]="jobType.id"
                     formControlName="jobTypeId" required />
                 <label for="job-{{jobType.id}}" [title]="jobType.jobName">
@@ -140,7 +140,7 @@
                         *ngFor="let option of selectedJobTypeDetail.sections[sectionIndex].options; let optionIndex=index">
                         <label
                             style="color: #4c4c4c; padding-bottom: 5px; display: flex;max-width: 700px;word-break: break-word;white-space: normal;">
-                            <input type="checkbox" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)"
+                            <input type="checkbox" style="margin-right: 8px;" [checked]="isOptionSelected(sectionIndex, option.jobOptionId)"
                                 (change)="toggleOption(sectionIndex, option.jobOptionId, $event.target.checked)">
                             {{ option.name }}
                         </label>
