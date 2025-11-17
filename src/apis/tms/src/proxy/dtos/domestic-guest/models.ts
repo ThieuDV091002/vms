@@ -1,3 +1,5 @@
+import { PagedAndSortedResultRequestDto } from "@abp/ng.core";
+
 export interface CreateDomesticGuestDto {
     fullName?: string;
     company?: string;
@@ -17,4 +19,11 @@ export interface DomesticGuestDto {
     purpose?: string;
     workDate?: string;
     tenantId?: string;
+}
+
+export interface DomesticGuestGetListDto extends PagedAndSortedResultRequestDto {
+    fullName?: string;
+    company?: string;
+    department?: string;
+    workDate?: string;
 }

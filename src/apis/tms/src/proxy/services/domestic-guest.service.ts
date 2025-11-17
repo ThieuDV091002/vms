@@ -1,6 +1,6 @@
-import { RestService, Rest } from '@abp/ng.core';
+import { RestService, Rest, PagedResultDto } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
-import { CreateDomesticGuestDto, DomesticGuestDto } from '../dtos/domestic-guest';
+import { CreateDomesticGuestDto, DomesticGuestDto, DomesticGuestGetListDto } from '../dtos/domestic-guest';
 
 @Injectable({
   providedIn: 'root',
@@ -17,5 +17,24 @@ export class DomesticGuestService {
       },
       { apiName: this.apiName, ...config }
     );
+
+  getList = (input: DomesticGuestGetListDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, PagedResultDto<DomesticGuestDto>>(
+      {
+        method: 'GET',
+        url: '/api/app/domestic-guest',
+        params: {
+          fullName: input.fullName,
+          company: input.company,
+          department: input.department,
+          workDate: input.workDate,
+          sorting: input.sorting,
+          skipCount: input.skipCount,
+          maxResultCount: input.maxResultCount,
+        },
+      },
+      { apiName: this.apiName, ...config }
+    );
+
   constructor(private restService: RestService) {}
 }

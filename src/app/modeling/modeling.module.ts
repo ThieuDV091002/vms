@@ -121,6 +121,7 @@ import { GuestFormComponent } from './guest-form/guest-form.component';
 import { ContractorFormComponent } from './contractor-form/contractor-form.component';
 import { DepartmentPicComponent } from './department-pic/department-pic.component';
 import { DomesticGuestFormComponent } from './domestic-guest-form/domestic-guest-form.component';
+import { DomesticGuestComponent } from './domestic-guest/domestic-guest.component';
 
 @NgModule({
   declarations: [
@@ -169,6 +170,7 @@ import { DomesticGuestFormComponent } from './domestic-guest-form/domestic-guest
     GuestFormComponent,
     ContractorFormComponent,
     DomesticGuestFormComponent,
+    DomesticGuestComponent,
     DepartmentPicComponent,
     PermissionManagementComponent,
     ImportDetailComponent,

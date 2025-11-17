@@ -78,6 +78,7 @@ import { GuestFormComponent } from './modeling/guest-form/guest-form.component';
 import { ContractorFormComponent } from './modeling/contractor-form/contractor-form.component';
 import { DepartmentPicComponent } from './modeling/department-pic/department-pic.component';
 import { DomesticGuestFormComponent } from './modeling/domestic-guest-form/domestic-guest-form.component';
+import { DomesticGuestComponent } from './modeling/domestic-guest/domestic-guest.component';
 export const routes: Routes = [
   {
     path: '',
@@ -322,6 +323,11 @@ export const routes: Routes = [
     path: 'domestic-guest-form',
     component: DomesticGuestFormComponent,
     title: "Domestic Guest Form"
+  },
+  {
+    path: 'domestic-guest',
+    component: DomesticGuestComponent,
+    title: "Domestic Guest"
   },
   {
     path: 'department-pic-matrix',

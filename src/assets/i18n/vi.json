@@ -59,6 +59,8 @@
     "Email": "Email của nhân viên Molex",
     "Welcome": "Chào mừng đến với hệ thống đăng ký khách của Molex Việt Nam",
     "Guide": "Vì lý do an toàn và bảo mật, vui lòng đăng ký thông tin của bạn tại đây.",
-    "Required": "* Bắt buộc"
+    "Required": "* Bắt buộc",
+    "LABEL_ManageDomesticGuest": "Danh sách khách nội địa",
+    "Clear": "Xóa"
   }
 }

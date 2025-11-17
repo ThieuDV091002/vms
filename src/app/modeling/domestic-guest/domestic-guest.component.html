@@ -1,0 +1,76 @@
+<abp-page>
+    <div class="row entry-row fixed-header">
+        <div class="col-auto content-header w-100 d-flex justify-content-between">
+            <div class="d-flex">
+                <h2 class="content-header-title">{{('vms::LABEL_ManageDomesticGuest') | abpLocalization}}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-0 flex-grow-1">
+        <div class="card-body">
+            <div id="advanced-filter">
+                <div class="overflow-hidden">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-fullname">{{ 'vms::FullName'|abpLocalization }}</label>
+                                <input type="text" class="form-control" [(ngModel)]="advancedFilter.fullName" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-company">{{ 'vms::Company'|abpLocalization }}</label>
+                                <input type="text" class="form-control" [(ngModel)]="advancedFilter.company" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-department">{{ 'vms::ManagementDepartment'|abpLocalization }}</label>
+                                <ng-select [items]="departments" appendTo="body" bindValue="normalizedName"
+                                    [(ngModel)]="advancedFilter.department" bindLabel="name">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group text-start">
+                                <label for="filter-workdate">{{ 'vms::WorkDate'|abpLocalization }}</label>
+                                <input type="text" class="form-control" [(ngModel)]="advancedFilter.workDate" [minDate]="minDate" [maxDate]="maxDate" bsDatepicker
+                                    [bsConfig]="{containerClass: 'theme-dark-blue', adaptivePosition: true, keepDatepickerOpened: true, dateInputFormat: 'DD MMM YYYY'}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex pt-2 justify-content-end">
+                    <button type="button" class="btn btn-outline-primary btn-sm mx-2" (click)="clearAdvancedFilter()">
+                        {{ 'vms::Clear' | abpLocalization }}
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="search()">
+                        {{ 'AbpUi::PagerSearch' | abpLocalization }}
+                    </button>
+                </div>
+            </div>
+            <ngx-datatable [rows]="domesticGuests.items" [count]="domesticGuests.totalCount" [list]="list" default>
+                <ngx-datatable-column [name]="'vms::FullName' | abpLocalization" prop="fullName" [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'vms::Company' | abpLocalization" prop="company" [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column
+                [name]="'vms::ManagementDepartment' | abpLocalization"
+                prop="department"
+                [sortable]="false">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ formatDepartment(row.department) }}
+                </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'vms::Purpose' | abpLocalization" prop="purpose" [sortable]="false">
+                </ngx-datatable-column>
+                <ngx-datatable-column [name]="'vms::WorkDate' | abpLocalization" [width]="120"
+                    [canAutoResize]="false" prop="workDate" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span>{{ row.workDate | date: 'dd MMM yyyy' }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+            </ngx-datatable>
+        </div>
+    </div>
+</abp-page>

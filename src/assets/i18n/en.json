@@ -149,6 +149,8 @@
     "Email": "Email of supervising Molex employee",
     "Welcome": "Welcome to Molex Vietnam Visitor Registration",
     "Guide": "For safety and security, please kindly register your visit here.",
-    "Required": "* Required"
+    "Required": "* Required",
+    "LABEL_ManageDomesticGuest": "Manage Domestic Guest",
+    "Clear": "Clear"
   }
 }
