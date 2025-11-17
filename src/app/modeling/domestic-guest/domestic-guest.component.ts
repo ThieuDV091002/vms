@@ -42,6 +42,7 @@ export class DomesticGuestComponent {
   }
   minDate = new Date('2024-01-01');
   maxDate = new Date('2050-12-31');
+  pageSize = 10;
 
   constructor(
     private domesticGuestService: DomesticGuestService,
@@ -59,6 +60,7 @@ export class DomesticGuestComponent {
   }
 
   ngOnInit(): void {
+    this.adjustPageSize();
     this.loadDepartments();
     this.hookToQuery();
     this.localizationService.get('::LABEL_DomesticGuest').subscribe(data => {
@@ -76,8 +78,7 @@ export class DomesticGuestComponent {
         workDate: this.advancedFilter.workDate 
         ? this.formatDateToYYYYMMDD(this.advancedFilter.workDate)
         : null,
-        maxResultCount: 10,
-        sorting: "workDate asc"
+        sorting: query.sorting ?? 'workDate asc'
       }))
       .subscribe(res => {
         this.domesticGuests = res;
@@ -133,5 +134,29 @@ export class DomesticGuestComponent {
     this.form.get('workDate').valueChanges.subscribe(() => {
       this.cdr.detectChanges();
     });
+  }
+
+  pageChange(event: any) {
+    const newSize = Number(event);
+    if (!isNaN(newSize) && newSize > 0) {
+      this.pageSize = newSize;
+    }
+  }
+
+  private adjustPageSize() {
+    const height = window.screen.height;
+    if (height >= 1440) {
+      this.list.maxResultCount = 30;
+      this.pageSize = 30;
+    } else if (height >= 1080) {
+      this.list.maxResultCount = 20;
+      this.pageSize = 20;
+    } else if (height >= 864) {
+      this.list.maxResultCount = 15;
+      this.pageSize = 15;
+    } else {
+      this.list.maxResultCount = 10;
+      this.pageSize = 10;
+    }
   }
 }

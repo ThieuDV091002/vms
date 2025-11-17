@@ -49,7 +49,8 @@
                     </button>
                 </div>
             </div>
-            <ngx-datatable [rows]="domesticGuests.items" [count]="domesticGuests.totalCount" [list]="list" default>
+            <ngx-datatable [rows]="domesticGuests.items" [count]="domesticGuests.totalCount" [list]="list" [limit]="pageSize"
+                [scrollbarV]="pageSize === 10 ? false : true" default>
                 <ngx-datatable-column [name]="'vms::FullName' | abpLocalization" prop="fullName" [sortable]="false">
                 </ngx-datatable-column>
                 <ngx-datatable-column [name]="'vms::Company' | abpLocalization" prop="company" [sortable]="false">
@@ -70,6 +71,14 @@
                         <span>{{ row.workDate | date: 'dd MMM yyyy' }}</span>
                     </ng-template>
                 </ngx-datatable-column>
+                <ngx-datatable-footer>
+                    <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                        let-offset="offset">
+                        <app-datatable-footer [rowCount]="rowCount" [pageSize]="pageSize" [offset]="offset" [list]="list"
+                            (page)="pageChange($event)">
+                        </app-datatable-footer>
+                    </ng-template>
+                </ngx-datatable-footer>
             </ngx-datatable>
         </div>
     </div>
