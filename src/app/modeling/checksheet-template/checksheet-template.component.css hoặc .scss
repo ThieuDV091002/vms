@@ -1,0 +1,35 @@
+.checksheet-template-container {
+  padding: 20px;
+  height: 100%;
+  overflow: auto;
+}
+
+.checksheet-table-card {
+  height: 100%;
+  min-height: 500px;
+  border: 1px solid var(--lpx-widget-border-color);
+  border-radius: 10px;
+  padding: 15px;
+  background: var(--lpx-content-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+:host ::ng-deep {
+  .checksheet-table-card {
+    app-modeling-template {
+      height: 100%;
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .checksheet-template-container .row > div {
+    margin-bottom: 20px;
+  }
+  
+  .checksheet-table-card {
+    min-height: 400px;
+  }
+}
+

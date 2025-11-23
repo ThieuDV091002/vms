@@ -122,6 +122,9 @@ import { ContractorFormComponent } from './contractor-form/contractor-form.compo
 import { DepartmentPicComponent } from './department-pic/department-pic.component';
 import { DomesticGuestFormComponent } from './domestic-guest-form/domestic-guest-form.component';
 import { DomesticGuestComponent } from './domestic-guest/domestic-guest.component';
+import { ChecksheetTemplateComponent } from './checksheet-template/checksheet-template.component';
+import { ChecksheetApprovalListComponent } from './checksheet-template/checksheet-approval-list.component';
+import { ChecksheetRowComponent } from './checksheet-template/checksheet-row.component';
 
 @NgModule({
   declarations: [
@@ -226,7 +229,10 @@ import { DomesticGuestComponent } from './domestic-guest/domestic-guest.componen
     AssignedRolesComponent,
     SiteSettingsComponent,
     MonthlyTargetSettingComponent,
-    ProductionReviewBoardSettingComponent
+    ProductionReviewBoardSettingComponent,
+    ChecksheetTemplateComponent,
+    ChecksheetApprovalListComponent,
+    ChecksheetRowComponent
   ],
   exports: [UserMenusComponent, RolesManagementComponent, TextTemplateComponent],
   imports: [

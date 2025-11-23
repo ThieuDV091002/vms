@@ -1,0 +1,300 @@
+<div class="checksheet-template-container">
+  <div class="row">
+    <!-- Table 1 -->
+    <div class="col-md-6 mb-3">
+      <div class="checksheet-table-card">
+        <app-modeling-template [title]="'::LABEL_ChecksheetTemplate1'" [data]="data1" [objectType]="'ChecksheetTemplate1'"
+          [permissions]="{create: 'ChecksheetTemplate.Create', edit: 'ChecksheetTemplate.Edit', delete: 'ChecksheetTemplate.Delete', copy: 'ChecksheetTemplate.Copy', import: 'ChecksheetTemplate.Import', export: 'ChecksheetTemplate.Export'}"
+          [columns]="columns" [customAction]="" [list]="list1" (dataAdd)="addTable1()" [copyPrefix]="'::LABEL_NewChecksheetTemplate'"
+          (dataEdit)="editTable1($event)" (dataDelete)="deleteTable1($event)" (multiDelete)="multiDeleteTable1($event)"
+          [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization"
+          [columnActions]="[{ displayKey: '::LABEL_ViewDetail', permission: 'ChecksheetTemplate.View', func: viewTable1, parent: this }]">
+        </app-modeling-template>
+      </div>
+    </div>
+
+    <!-- Table 2 -->
+    <div class="col-md-6 mb-3">
+      <div class="checksheet-table-card">
+        <app-modeling-template [title]="'::LABEL_ChecksheetTemplate2'" [data]="data2" [objectType]="'ChecksheetTemplate2'"
+          [permissions]="{create: 'ChecksheetTemplate.Create', edit: 'ChecksheetTemplate.Edit', delete: 'ChecksheetTemplate.Delete', copy: 'ChecksheetTemplate.Copy', import: 'ChecksheetTemplate.Import', export: 'ChecksheetTemplate.Export'}"
+          [columns]="columns" [customAction]="" [list]="list2" (dataAdd)="addTable2()" [copyPrefix]="'::LABEL_NewChecksheetTemplate'"
+          (dataEdit)="editTable2($event)" (dataDelete)="deleteTable2($event)" (multiDelete)="multiDeleteTable2($event)"
+          [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization"
+          [columnActions]="[{ displayKey: '::LABEL_ViewDetail', permission: 'ChecksheetTemplate.View', func: viewTable2, parent: this }]">
+        </app-modeling-template>
+      </div>
+    </div>
+
+    <!-- Table 3 -->
+    <div class="col-md-6 mb-3">
+      <div class="checksheet-table-card">
+        <app-modeling-template [title]="'::LABEL_ChecksheetTemplate3'" [data]="data3" [objectType]="'ChecksheetTemplate3'"
+          [permissions]="{create: 'ChecksheetTemplate.Create', edit: 'ChecksheetTemplate.Edit', delete: 'ChecksheetTemplate.Delete', copy: 'ChecksheetTemplate.Copy', import: 'ChecksheetTemplate.Import', export: 'ChecksheetTemplate.Export'}"
+          [columns]="columns" [customAction]="" [list]="list3" (dataAdd)="addTable3()" [copyPrefix]="'::LABEL_NewChecksheetTemplate'"
+          (dataEdit)="editTable3($event)" (dataDelete)="deleteTable3($event)" (multiDelete)="multiDeleteTable3($event)"
+          [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization"
+          [columnActions]="[{ displayKey: '::LABEL_ViewDetail', permission: 'ChecksheetTemplate.View', func: viewTable3, parent: this }]">
+        </app-modeling-template>
+      </div>
+    </div>
+
+    <!-- Table 4 -->
+    <div class="col-md-6 mb-3">
+      <div class="checksheet-table-card">
+        <app-modeling-template [title]="'::LABEL_ChecksheetTemplate4'" [data]="data4" [objectType]="'ChecksheetTemplate4'"
+          [permissions]="{create: 'ChecksheetTemplate.Create', edit: 'ChecksheetTemplate.Edit', delete: 'ChecksheetTemplate.Delete', copy: 'ChecksheetTemplate.Copy', import: 'ChecksheetTemplate.Import', export: 'ChecksheetTemplate.Export'}"
+          [columns]="columns" [customAction]="" [list]="list4" (dataAdd)="addTable4()" [copyPrefix]="'::LABEL_NewChecksheetTemplate'"
+          (dataEdit)="editTable4($event)" (dataDelete)="deleteTable4($event)" (multiDelete)="multiDeleteTable4($event)"
+          [hasLastUpdate]="true" [placeholder]="'::LABEL_SearchName' | abpLocalization"
+          [columnActions]="[{ displayKey: '::LABEL_ViewDetail', permission: 'ChecksheetTemplate.View', func: viewTable4, parent: this }]">
+        </app-modeling-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<abp-modal [(visible)]="isModalVisible" [options]="{size: 'lg'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center header-width">
+      <h3 class="m-0">{{ (selected?.id ? '::Edit' : '::Create') | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="accordion accordion-flush">
+        <!-- General Section -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#general" type="button"
+              aria-controls="general" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_General' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="general" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="checksheet-name" [title]="'::INFO_Name' | abpLocalization">{{'::Name'|abpLocalization}}</label><span> * </span>
+                    <input type="text" id="checksheet-name" class="form-control" formControlName="name" autofocus />
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="checksheet-area" [title]="'::INFO_Area' | abpLocalization">{{'::LABEL_Area'|abpLocalization}}</label><span> * </span>
+                    <ng-select [items]="areas" appendTo="body" bindValue="id" bindLabel="displayName"
+                      formControlName="areaId" [clearable]="false"></ng-select>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-2">
+                  <div class="form-group">
+                    <label for="checksheet-cell" [title]="'::INFO_Cell' | abpLocalization">{{'::LABEL_Cell'|abpLocalization}}</label><span> * </span>
+                    <ng-select [items]="filteredCells" appendTo="body" bindValue="id" bindLabel="displayName"
+                      formControlName="cellId" [clearable]="false" [disabled]="!form.get('areaId').value"></ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approval List Section -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#approval-list" type="button"
+              aria-controls="approval-list" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_ApprovalList' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="approval-list" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <app-checksheet-approval-list 
+                [approvalList]="selected?.approvalList || []" 
+                [users]="users"
+                (approvalListChange)="updateApprovalList($event)">
+              </app-checksheet-approval-list>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row Section -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#rows" type="button"
+              aria-controls="rows" aria-expanded="true" [class.collapsed]="isCollapse">
+              {{ '::LABEL_Rows' | abpLocalization }}
+            </button>
+          </h2>
+          <div id="rows" class="accordion-collapse collapse" [class.show]="!isCollapse">
+            <div class="accordion-body">
+              <app-checksheet-row 
+                [rows]="selected?.rows || []"
+                (rowsChange)="updateRows($event)">
+              </app-checksheet-row>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div *ngIf="!form" class="text-center"><i class="fa fa-pulse fa-spinner" aria-hidden="true"></i></div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Cancel' | abpLocalization }}
+    </button>
+    <abp-button iconClass="fa fa-check" [disabled]="form?.invalid" (click)="save()">{{
+      'AbpIdentity::Save' | abpLocalization
+      }}</abp-button>
+  </ng-template>
+</abp-modal>
+
+<!-- View Detail Modal -->
+<abp-modal [(visible)]="isViewModalVisible" [options]="{size: 'xl'}">
+  <ng-template #abpHeader>
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <h3 class="m-0">{{'::LABEL_ViewDetail' | abpLocalization }}</h3>
+      <div>
+        <button type="button" class="btn btn-outline-primary btn-sm me-1" (click)="isViewCollapse = false;">
+          {{'::LABEL_ExpandAll' | abpLocalization}}
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="isViewCollapse = true;">
+          {{'::LABEL_CollapseAll' | abpLocalization}}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <div class="accordion accordion-flush" *ngIf="viewSelected">
+      <!-- General Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#view-general" aria-expanded="true" aria-controls="view-general"
+            [class.collapsed]="isViewCollapse">
+            {{ '::LABEL_General' | abpLocalization }}
+          </button>
+        </h2>
+        <div id="view-general" class="accordion-collapse collapse" [class.show]="!isViewCollapse">
+          <div class="accordion-body">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>{{ '::Name' | abpLocalization }}:</strong> {{ viewSelected?.name }}</p>
+                <p><strong>{{ '::LABEL_Area' | abpLocalization }}:</strong> {{ getAreaName(viewSelected?.areaId) }}</p>
+                <p><strong>{{ '::LABEL_Cell' | abpLocalization }}:</strong> {{ getCellName(viewSelected?.cellId) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Approval List Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#view-approval-list" aria-expanded="true" aria-controls="view-approval-list"
+            [class.collapsed]="isViewCollapse">
+            {{ '::LABEL_ApprovalList' | abpLocalization }}
+          </button>
+        </h2>
+        <div id="view-approval-list" class="accordion-collapse collapse" [class.show]="!isViewCollapse">
+          <div class="accordion-body">
+            <div *ngIf="!viewSelected?.approvalList || viewSelected.approvalList.length === 0">
+              {{ '::NoDataAvailableInDatatable' | abpLocalization }}
+            </div>
+            <table class="table table-bordered table-sm" *ngIf="viewSelected?.approvalList && viewSelected.approvalList.length > 0">
+              <thead>
+                <tr>
+                  <th>{{ '::LABEL_Order' | abpLocalization }}</th>
+                  <th>{{ '::LABEL_User' | abpLocalization }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of getSortedApprovalList()">
+                  <td>{{ item.order }}</td>
+                  <td>{{ getUserName(item.userId) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row Section -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#view-rows" aria-expanded="true" aria-controls="view-rows"
+            [class.collapsed]="isViewCollapse">
+            {{ '::LABEL_Rows' | abpLocalization }}
+          </button>
+        </h2>
+        <div id="view-rows" class="accordion-collapse collapse" [class.show]="!isViewCollapse">
+          <div class="accordion-body">
+            <div *ngIf="!viewSelected?.rows || viewSelected.rows.length === 0">
+              {{ '::NoDataAvailableInDatatable' | abpLocalization }}
+            </div>
+            <div *ngFor="let row of viewSelected?.rows; let idx = index" class="mb-3 p-3 border rounded">
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <p><strong>{{ '::LABEL_Title' | abpLocalization }}:</strong> {{ row.title }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>{{ '::LABEL_Subtitle' | abpLocalization }}:</strong> {{ row.subtitle || '-' }}</p>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <p><strong>{{ '::LABEL_Type' | abpLocalization }}:</strong> {{ row.type === 'okng' ? 'OK/NG' : 'Text' }}</p>
+                </div>
+              </div>
+              <div class="row" *ngIf="row.type === 'okng' && row.images && row.images.length > 0">
+                <div class="col-12">
+                  <p><strong>{{ '::LABEL_Attachments' | abpLocalization }}:</strong></p>
+                  <div class="row">
+                    <div class="col-md-3 mb-2" *ngFor="let image of row.images">
+                      <div style="position: relative; height: 150px;">
+                        <img [src]="getImageUrl(image)" 
+                             alt="Image" 
+                             class="cursor-pointer" 
+                             style="width: 100%; height: 100%; object-fit: cover; border: 1px solid #ddd; border-radius: 4px;"
+                             (click)="previewImage(getImageUrl(image))" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comment Area -->
+    <div class="mt-3">
+      <div class="form-group mb-2">
+        <label for="checksheet-comment" [title]="'::INFO_Comment' | abpLocalization">{{'::LABEL_CommentText'|abpLocalization}}</label>
+        <textarea id="checksheet-comment" class="form-control" [(ngModel)]="comment" rows="5"></textarea>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-outline-primary" abpClose>
+      {{ 'AbpIdentity::Close' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
